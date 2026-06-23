@@ -87,6 +87,12 @@ php spark shield:user create
 | [CodeIgniter Shield](https://shield.codeigniter.com) | Authentication & Authorization |
 | [Bootstrap 5.3](https://getbootstrap.com) | UI Framework |
 | [Bootstrap Icons 1.11](https://icons.getbootstrap.com) | Icon set |
+| [jQuery](https://jquery.com) | DOM / dependency ของ DataTables |
+| [DataTables](https://datatables.net) | ตารางข้อมูล (ค้นหา / เรียง / แบ่งหน้า) |
+| [Tom Select](https://tom-select.js.org) | Dropdown ค้นหาได้ (เลือก Location ฯลฯ) |
+| [Cropper.js](https://fengyuanchen.github.io/cropperjs) | ครอปรูป Avatar ตอนอัปโหลด |
+| [QR Code Generator (Kazuhiko Arase)](https://github.com/kazuhikoarase/qrcode-generator) | สร้าง QR Code สำหรับ Wi-Fi |
+| [html-to-image](https://github.com/bubkoo/html-to-image) | Export Voucher เป็นรูปภาพ |
 | [Google Fonts — Prompt](https://fonts.google.com/specimen/Prompt) | Font หลัก (รองรับภาษาไทย) |
-| [IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) | Font สำหรับ Voucher Code |
-| [QRCode.js](https://github.com/davidshimjs/qrcodejs) | สร้าง QR Code สำหรับ Wi-Fi |
+| [Poppins](https://fonts.google.com/specimen/Poppins) | Font หัวข้อ / UI |
+| [Google Sans Code](https://fonts.google.com/specimen/Google+Sans+Code) | Font สำหรับ Voucher Code |
