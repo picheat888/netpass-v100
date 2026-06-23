@@ -1,0 +1,795 @@
+/* ==========================================================================
+   Request Modal (#requestModal) — Wizard ขอ Voucher Wi-Fi
+   ใช้ร่วมในหน้า Voucher (admin) และ My Voucher (user)
+   โหลดจาก templates/request_modal.php
+   ========================================================================== */
+
+/* ตัด content ที่ล้นมุมโค้งทิ้ง + เรียง header เหนือ np-rq แนวตั้ง (ให้ np-rq flex เติมที่เหลือได้) */
+#requestModal .modal-content {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ───── Layout: rail ขั้นตอน (ซ้าย) + คอลัมน์เนื้อหา (ขวา) ───── */
+.np-rq {
+  display: grid;
+  /* คอลัมน์ซ้าย = ความกว้าง rail (np-rq-rail) ขวา = เนื้อหา */
+  grid-template-columns: 245px 1fr;
+}
+
+.np-rq-rail {
+  background: linear-gradient(180deg, #fbfcfe, #f4f7fc);
+  border-right: 1px solid #ecedf3;
+  padding: 24px 20px;
+}
+
+/* แถบหัว dialog เต็มความกว้าง: ชื่อ (ซ้าย) + ปุ่มปิด (ขวา) */
+.np-rq-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 24px;
+  /* เส้นคั่นเต็มแนวใต้หัว ก่อนเข้า rail + เนื้อหา */
+  border-bottom: 1px solid #ecedf3;
+}
+
+.np-rq-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 28px;
+}
+
+.np-rq-brand .ico {
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  background: #3b7ddd;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-right: 5px;
+}
+
+/* ───── ขั้นตอน: วงกลมเลข + เส้นต่อ (สถานะ active/done) ───── */
+.np-steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.np-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 0;
+  position: relative;
+}
+
+/* เส้นต่อระหว่างขั้น (ลากต่อเนื่องจากเลขนี้ไปถึงเลขถัดไป) */
+.np-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 40px;
+  bottom: -14px;
+  width: 2px;
+  background: #e4e7f0;
+}
+
+.np-step.done::before {
+  background: #0ea66b;
+}
+
+/* แถบไฮไลต์ขั้นที่กำลังทำ — เต็มความกว้าง rail เป็นจุดยึดสายตา */
+.np-step.active::after {
+  content: "";
+  position: absolute;
+  inset: 0 -12px;
+  background: #eef4fd;
+  border-radius: 12px;
+  z-index: -1;
+}
+
+.np-step-num {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #e4e7f0;
+  background: #fff;
+  color: #9097ab;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: 0.2s;
+}
+
+.np-step.active .np-step-num {
+  border-color: #3b7ddd;
+  background: #3b7ddd;
+  color: #fff;
+  /* วงแหวนสีขาวตัดเลขให้เด่นออกจากแถบไฮไลต์ฟ้า */
+  box-shadow: 0 0 0 3px #fff;
+}
+
+.np-step.done .np-step-num {
+  border-color: #0ea66b;
+  background: #0ea66b;
+  color: #fff;
+}
+
+.np-step-lbl {
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.np-step-lbl .k {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9097ab;
+}
+
+.np-step-lbl .t {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4255;
+  line-height: 1.3;
+}
+
+.np-step.active .np-step-lbl .t {
+  color: #1b1e2b;
+  font-weight: 600;
+}
+
+/* ───── คอลัมน์เนื้อหา: หัว (ชื่อขั้น + ปุ่มปิด) / body เลื่อนได้ / ปุ่ม ───── */
+.np-rq-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.np-rq-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 15px;
+}
+
+/* ฝั่งขวาของหัว step: error (บน) + ปุ่ม action (ล่าง) ชิดขวา */
+.np-rq-top-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Validation alert เล็ก inline: [ (i) ข้อความ ] โทน alert-danger */
+.np-valid-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #b42318;
+  background: #fef3f2;
+  border: 1px solid #fda29b;
+  border-radius: 8px;
+}
+
+/* ไอคอน (i) เป็น SVG ฝังใน background — ไม่พึ่ง icon font และไม่โดน textContent ทับ */
+.np-valid-alert::before {
+  content: "";
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  background: no-repeat center / contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23d92d20'/%3E%3Ccircle cx='8' cy='4.7' r='1' fill='white'/%3E%3Crect x='7.1' y='6.6' width='1.8' height='5.2' rx='.9' fill='white'/%3E%3C/svg%3E");
+}
+
+/* validation รวมใน Step 4 ยืดเต็มความกว้างเท่าการ์ด guest */
+#reqStep4 .np-valid-alert {
+  display: flex;
+}
+
+.np-rq-top #reqStepTitle {
+  font-size: 28px;
+}
+
+.np-rq-top #reqStepSub {
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.np-rq-close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 9px;
+  background: #f1f3f8;
+  color: #6b7280;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s;
+}
+
+.np-rq-close:hover {
+  background: #e7eaf2;
+  color: #1b1e2b;
+}
+
+.np-rq-body {
+  padding: 16px 24px 8px;
+  overflow-y: auto;
+  max-height: 54vh;
+}
+
+.np-rq-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px 20px;
+  /* เส้นคั่น minimal เหนือแถวปุ่ม (คั่นจาก np-rq-body) */
+  border-top: 1px solid #ecedf3;
+}
+
+/* ───── การ์ดเลือก Location ───── */
+.np-loc-card {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fff;
+  margin-bottom: 10px;
+}
+
+.np-loc-card:hover:not(.np-disabled) {
+  border-color: #3b7ddd;
+  background: #f0f5ff;
+}
+
+.np-loc-card.selected {
+  border-color: #3b7ddd;
+  background: #eef2fd;
+}
+
+.np-loc-card.np-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.np-loc-icon {
+  width: 36px;
+  height: 36px;
+  background: #eef2fd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b7ddd;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.np-loc-name {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.np-loc-ssid {
+  font-size: 12px;
+  color: #868e96;
+  margin-top: 2px;
+}
+
+.np-loc-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3b7ddd;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 52px;
+}
+
+.np-loc-badge.empty {
+  color: #dc3545;
+}
+
+/* จอกว้าง (≥992px เดสก์ท็อป/tablet แนวนอน): การ์ด Location เรียง 2 ใบ/แถว */
+@media (min-width: 992px) {
+  #reqStep2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* ระยะห่างการ์ดมาจาก gap ของ grid */
+  #reqStep2 .np-loc-card {
+    margin-bottom: 0;
+  }
+
+  /* ข้อความ "ไม่มี voucher คงเหลือ" กินเต็มแถว */
+  #reqStep2 > p {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ───── การ์ดเลือก Duration ───── */
+.np-dur-card {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 16px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  background: #fff;
+  height: 100%;
+}
+
+.np-dur-card:hover:not(.np-disabled) {
+  border-color: #3b7ddd;
+  background: #f0f5ff;
+}
+
+.np-dur-card.selected {
+  border-color: #3b7ddd;
+  background: #eef2fd;
+}
+
+.np-dur-card.np-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.np-dur-icon {
+  font-size: 22px;
+  color: #3b7ddd;
+  margin-bottom: 6px;
+}
+
+.np-dur-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.np-dur-sub {
+  font-size: 11px;
+  color: #868e96;
+  margin-top: 2px;
+}
+
+.np-dur-stock {
+  font-size: 12px;
+  color: #0ea66b;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.np-dur-cnt {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ───── หน้าสรุป/ยืนยัน (Confirm) ───── */
+.np-confirm-box {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.np-confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.np-confirm-row:last-child {
+  border: none;
+  padding-bottom: 0;
+}
+
+.np-confirm-row > i {
+  font-size: 20px;
+  color: #3b7ddd;
+  width: 28px;
+  text-align: center;
+}
+
+.np-confirm-lbl {
+  font-size: 12px;
+  color: #868e96;
+}
+
+.np-confirm-val {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+
+/* ───── เงื่อนไข + แถวข้อมูล Guest ───── */
+/* ไม่มี scroll ในตัว — ปล่อยให้ไหลตามเนื้อหา แล้วใช้ np-rq-body เป็น scroll เดียว
+   (กัน scroll ซ้อน 2 ชั้น ที่ทำให้ผู้ใช้หา checkbox ยากบนจอเล็ก) */
+.np-terms-box {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #495057;
+  line-height: 1.7;
+}
+
+/* หัวข้อเงื่อนไข */
+.np-terms-box .np-terms-text {
+  font-weight: 600;
+  /* สีหัวข้อเข้มขึ้น ให้แยกจากเนื้อหาชัด */
+  color: #1b1e2b;
+  padding-left: 10px;
+
+}
+
+/* เนื้อหาเงื่อนไข */
+.np-terms-box .np-terms-content {
+  padding: 10px 0 10px 20px;
+}
+
+/* แต่ละย่อหน้าในเนื้อหา — ปรับ margin-bottom เพื่อคุมระยะห่างระหว่างบรรทัด */
+.np-terms-box .np-terms-content p {
+  margin: 0 0 10px;
+}
+
+/* ย่อหน้าสุดท้ายไม่ต้องเว้นล่าง */
+.np-terms-box .np-terms-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* จัด checkbox ยอมรับเงื่อนไข (Step 1) ให้อยู่กึ่งกลาง */
+#reqStep1 .form-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* ล้าง padding/margin ของ Bootstrap form-check เพื่อให้จัดกลางได้ตรง */
+  padding-left: 0;
+}
+
+#reqStep1 .form-check .form-check-input {
+  margin-left: 0;
+  margin-top: 0;
+  float: none;
+}
+
+#reqStep1 .form-check .form-check-label {
+  font-size: 14px;
+}
+
+.np-guest-row {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+/* icon ในช่อง guest — SVG เป็น background + เว้นซ้ายให้ข้อความ */
+.np-guest-row .form-control {
+  padding-left: 32px;
+  background-repeat: no-repeat;
+  background-position: 11px center;
+  background-size: 15px 15px;
+}
+
+/* supplier = ตึก/บริษัท */
+.np-guest-row .g-sup {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='2.5' width='9' height='11' rx='1'/%3E%3Cpath d='M6 5.3h1.2M8.8 5.3H10M6 7.8h1.2M8.8 7.8H10M6.8 13.5v-2.4h2.4v2.4'/%3E%3C/svg%3E");
+}
+
+/* first / last = คน */
+.np-guest-row .g-first,
+.np-guest-row .g-last {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='5.2' r='2.6'/%3E%3Cpath d='M3.4 13.2a4.8 4.8 0 0 1 9.2 0'/%3E%3C/svg%3E");
+}
+
+/* phone = โทรศัพท์ */
+.np-guest-row .g-phone {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.4 2.6 6.9 5.7 5.5 7a7.5 7.5 0 0 0 3.5 3.5l1.3-1.4 3.1 1.5v2.1c0 .6-.5 1.1-1.2 1A11.4 11.4 0 0 1 2.3 4.7C2.2 4 2.7 3.5 3.3 3.5z'/%3E%3C/svg%3E");
+}
+
+/* ข้อความ validation ใต้ช่อง: (i) ข้อความ สีแดง — ซ่อนไว้จนกว่าจะ .show */
+.np-field-err {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #d92d20;
+}
+
+.np-field-err.show {
+  display: flex;
+}
+
+/* ไอคอน (i) เล็ก หน้า ข้อความ — SVG ฝัง ไม่พึ่ง icon font / ไม่โดน textContent ทับ */
+.np-field-err::before {
+  content: "";
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  background: no-repeat center / contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23d92d20'/%3E%3Ccircle cx='8' cy='4.7' r='1' fill='white'/%3E%3Crect x='7.1' y='6.6' width='1.8' height='5.2' rx='.9' fill='white'/%3E%3C/svg%3E");
+}
+
+.np-guest-row .np-guest-no {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3b7ddd;
+  margin-bottom: 8px;
+}
+
+.np-guest-del {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  /* x แดงบนพื้นเทา */
+  background: #f1f3f5;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s;
+}
+
+.np-guest-del:hover {
+  background: #fde8e8;
+  color: #c92a2a;
+}
+
+.np-guest-add {
+  border: 1.5px dashed #adb5bd;
+  border-radius: 10px;
+  background: #fff;
+  color: #3b7ddd;
+  font-weight: 600;
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.np-guest-add:hover {
+  background: #f0f5ff;
+  border-color: #3b7ddd;
+}
+
+/* ───── บังคับการ์ดตั๋วเป็นแนวนอนตอน capture เป็นรูป (PNG) ─────
+   2 class ชนะ media query จอเล็ก เลยได้การ์ดแนวนอนเหมือนตอนพิมพ์เสมอ */
+/* ขอบรอบการ์ดเท่ากันทุกด้านตอน capture เป็นรูป */
+.np-capture .vm-ticket-wrap {
+  padding: 20px;
+}
+
+.np-capture .vm-ticket {
+  flex-direction: row;
+}
+
+.np-capture .vm-ticket-qr {
+  width: 150px;
+  border-left: 2px dashed #e4e6ee;
+  border-top: 0;
+  padding: 20px 14px;
+}
+
+/* รอยบาก (notch) อยู่บน/ล่างของเส้นปะซ้าย สีเทา var(--np-bg) เป็นรอยปรุของตั๋ว */
+.np-capture .vm-ticket-qr::before,
+.np-capture .vm-ticket-qr::after {
+  left: -10px;
+  right: auto;
+}
+
+.np-capture .vm-ticket-qr::before {
+  top: -10px;
+  bottom: auto;
+}
+
+.np-capture .vm-ticket-qr::after {
+  bottom: -10px;
+  top: auto;
+}
+
+/* ───── Tablet + มือถือ: rail พับเป็นแถบขั้นตอนแนวนอนด้านบน ───── */
+@media (max-width: 767.98px) {
+  /* ความสูง dialog คงที่ 85% ของจอ (ไม่ยืด/หดตามเนื้อหา) */
+  #requestModal .modal-content {
+    height: 85vh;
+    height: 85dvh;
+  }
+
+  /* rail บน + main เติมพื้นที่ที่เหลือ */
+  .np-rq {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* ชื่อขั้น (modal-title) เล็กลงบนมือถือ */
+  .np-rq-top #reqStepTitle {
+    font-size: 20px;
+  }
+
+  .np-rq-rail {
+    border-right: 0;
+    border-bottom: 1px solid #ecedf3;
+    padding: 16px 18px;
+  }
+
+  .np-rq-brand {
+    display: none;
+  }
+
+  /* ซ่อน brand แล้ว เหลือแต่ปุ่มปิด → ดันไปชิดขวา */
+  .np-rq-header {
+    justify-content: flex-end;
+  }
+
+  .np-steps {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .np-step {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    text-align: center;
+    flex: 1;
+  }
+
+  .np-step:not(:last-child)::before {
+    left: 50%;
+    top: 12px;
+    bottom: auto;
+    width: calc(100% - 26px);
+    height: 2px;
+    transform: translateX(13px);
+  }
+
+  .np-step-lbl {
+    padding-top: 0;
+    align-items: center;
+  }
+
+  .np-step-lbl .k {
+    display: none;
+  }
+
+  .np-step-lbl .t {
+    font-size: 11px;
+  }
+
+  /* main เติมเต็มความสูง row + body เป็น scroll เดียว (ไม่ใช้ max-height คงที่) */
+  #requestModal .np-rq-main {
+    min-height: 0;
+  }
+  #requestModal .np-rq-body {
+    flex: 1 1 auto;
+    max-height: none;
+    min-height: 0;
+  }
+}
+
+/* ───── Tablet แนวนอน (เช่น iPad mini ~1024px): ล็อกขนาด dialog ให้คงที่ + ลดความกว้าง rail ───── */
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  .np-rq {
+    grid-template-columns: 200px 1fr;
+  }
+
+  /* ลด padding ด้านข้าง rail ให้กระชับ */
+  .np-rq-rail {
+    padding: 24px 16px;
+  }
+
+  /* ขนาด dialog คงที่ ~940px แต่ไม่ล้นจอแคบ (min กันล้นแนวนอน) */
+  #requestModal .modal-dialog {
+    width: min(940px, calc(100vw - 2rem));
+    max-width: none;
+  }
+
+  /* ความสูงคงที่ ~640px แต่ไม่ทะลุจอเตี้ย */
+  #requestModal .modal-content {
+    height: min(640px, calc(100vh - 2rem));
+  }
+
+  /* np-rq เติมพื้นที่ที่เหลือใต้ header */
+  #requestModal .np-rq {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* คอลัมน์เนื้อหายืดเต็มความสูงของ np-rq */
+  #requestModal .np-rq-main {
+    height: 100%;
+    /* ยอมให้หดต่ำกว่าเนื้อหาได้ ไม่งั้น body จะ scroll ไม่ได้ */
+    min-height: 0;
+  }
+
+  /* body ยืดเต็มพื้นที่และเลื่อนเองได้ */
+  #requestModal .np-rq-body {
+    flex: 1 1 auto;
+    max-height: none;
+    /* min-height:0 = กุญแจให้ flex item หดแล้ว overflow-y:auto ทำงาน (terms scroll ได้) */
+    min-height: 0;
+  }
+}
+
+/* ───── เดสก์ท็อป: ล็อกขนาด dialog 1200x900 ─────
+   เปิดที่ ≥1280px กันล้นแนวนอน, มีเพดานความสูงกันจอเตี้ย */
+@media (min-width: 1280px) {
+  /* ความกว้าง dialog คงที่ 1200px */
+  #requestModal .modal-dialog {
+    width: 1200px;
+    max-width: 1200px;
+  }
+
+  /* ความสูงคงที่ 900px แต่ไม่เกินพื้นที่จอ (กันทะลุบนจอเตี้ย) */
+  #requestModal .modal-content {
+    height: 900px;
+    max-height: calc(100vh - 3.5rem);
+  }
+
+  /* np-rq เติมพื้นที่ที่เหลือใต้ header */
+  #requestModal .np-rq {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* คอลัมน์เนื้อหายืดเต็มความสูงของ np-rq (min-height:0 ให้ body หดแล้ว scroll ได้) */
+  #requestModal .np-rq-main {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* body ยืดเต็มพื้นที่และเลื่อนเองได้ */
+  #requestModal .np-rq-body {
+    flex: 1 1 auto;
+    max-height: none;
+    min-height: 0;
+  }
+}
+
+/* ───── ตอนพิมพ์: ซ่อนทุกอย่างบนหน้า (ตั๋วพิมพ์ผ่าน iframe แยก) ───── */
+@media print {
+  body > * {
+    display: none !important;
+  }
+}

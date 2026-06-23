@@ -1,0 +1,3463 @@
+/* ==========================================================================
+   NetPass — Custom Theme (override Bootstrap 5)
+   สารบัญ
+   ─────────────────────────────────────────────────────────────────────────
+   1. Design Tokens (:root)        ตัวแปรสี / ฟอนต์ / ระยะ / เงา
+   2. Base & Reset                 body, box-sizing, helper พื้นฐาน
+   3. Form Controls                input / select / switch ให้ใช้สีธีม
+   4. Layout — Shell               โครงหน้า (sidebar + main + content)
+   5. Sidebar                      แบรนด์ + เมนูซ้าย
+   6. Topbar                       หัวบน (title, lang, user)
+   7. Cards & Stats                การ์ด, การ์ดสถิติ, icon box
+   8. Badges / Chips / Pills       ป้ายสถานะ, จุดสี
+   9. Tables                       toolbar + ตาราง + footer
+   10. Buttons & Misc              ปุ่ม accent, dropdown, live dot, search
+   11. Scrollbar
+   12. Responsive                  ปรับตาม breakpoint (Bootstrap 5)
+   13. Login
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Design Tokens
+   ========================================================================== */
+:root {
+  --np-bg: #f5f7fb;
+  --np-surface: #ffffff;
+  --np-border: #ecedf3;
+  --np-border-2: #f2f3f8;
+  --np-line: #d6d9e4;
+
+  --np-text: #1b1e2b;
+  --np-text-2: #3c4255;
+  --np-muted: #7a7f92;
+  --np-muted-2: #9097ab;
+  --np-muted-3: #a2a7b8;
+
+  --np-side: #222e3c;
+  --np-side-sub: #8a90a6;
+  --np-side-label: #5c627a;
+  --np-side-nav: #9aa0b6;
+  --np-side-icon: #787e96;
+  --np-side-active-bg: rgba(59, 125, 221, 0.16);
+  --np-side-active-icon: #a9c5f0;
+  --np-side-hover: rgba(255, 255, 255, 0.07);
+  --np-side-bar: #5b92e0;
+
+  --np-primary: #3b7ddd;
+  --np-blue: #3b7ddd;
+  --np-blue-2: #5b92e0;
+  --np-green: #0ea66b;
+  --np-amber: #e0930b;
+  --np-purple: #8b5cf6;
+  --np-red: #e5484d;
+  --np-teal: #0e8fa6;
+
+  --np-ok-bg: #e6f6ef;
+  --np-ok-fg: #0b7a4f;
+  --np-ok-dot: #10b981;
+  --np-danger-bg: #fceeee;
+  --np-danger-fg: #c13a3f;
+
+  --np-radius: 12px;
+  --np-shadow:
+    0 1px 2px rgba(20, 22, 43, 0.04), 0 6px 18px -10px rgba(20, 22, 43, 0.14);
+  --np-shadow-pop: 0 12px 32px rgba(20, 22, 43, 0.14);
+  --np-shadow-lift:
+    0 2px 4px rgba(20, 22, 43, 0.05), 0 16px 32px -14px rgba(59, 125, 221, 0.26);
+  --np-sidebar-w: 255px;
+
+  --np-font:
+    "Poppins", "Prompt", "Segoe UI", "Leelawadee UI", Tahoma, system-ui,
+    -apple-system, sans-serif;
+  --np-font-mono:
+    "Google Sans Code", "IBM Plex Mono", Consolas, "Courier New", monospace;
+
+  --bs-body-font-family: var(--np-font);
+  --bs-body-color: var(--np-text);
+  --bs-body-bg: var(--np-bg);
+}
+
+/* ==========================================================================
+   2. Base & Reset
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  /* ล็อกความสูงเท่าจอ + ไม่ให้ body เลื่อนเอง — ให้ .np-content เป็น scroll เดียว (กัน scrollbar ซ้อน) */
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--bs-body-font-family);
+  color: var(--np-text);
+  background: var(--np-bg);
+}
+
+.font-mono {
+  font-family: var(--np-font-mono);
+}
+
+/* ==========================================================================
+   3. Form Controls — ให้ใช้สีธีม (toggle เปิด = ฟ้า NetPass)
+   ========================================================================== */
+.form-check-input:checked {
+  background-color: var(--np-primary);
+  border-color: var(--np-primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--np-blue-2);
+  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.18);
+}
+
+.form-control {
+  background-color: #ffff;
+}
+
+.form-select {
+  background-color: #ffff;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid var(--np-line);
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--np-text);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: var(--np-blue-2);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--np-blue-2);
+  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.12);
+}
+
+.modal-content{
+  background-color: #fff;
+}
+
+/* ==========================================================================
+   4. Layout — Shell
+   ========================================================================== */
+.np-shell {
+  display: flex;
+  /* 100dvh หัก address bar/toolbar ของ browser มือถือ — กัน body เลื่อนซ้อนกับ np-content (iOS 100vh bug) */
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.np-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* ยอมให้หดในแกนตั้ง เพื่อให้ .np-content เลื่อนในตัวเอง ไม่ดันความสูงทะลุ shell */
+  min-height: 0;
+}
+
+.np-content {
+  flex: 1;
+  /* เลื่อนแนวตั้งอย่างเดียว — ตั้ง x เป็น hidden กัน browser promote เป็น auto (scrollbar ซ้อน) */
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 26px 28px 40px;
+}
+
+.np-content-inner {
+  max-width: 2200px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   5. Sidebar
+   ========================================================================== */
+.np-sidebar {
+  width: var(--np-sidebar-w);
+  flex-shrink: 0;
+  background: var(--np-side);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 16px;
+  overflow: hidden;
+  transition:
+    width 0.22s ease,
+    transform 0.22s ease;
+}
+
+.np-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 22px;
+}
+
+.np-brand-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+}
+
+/* โลโก้เป็นรูปภาพ: เต็มกล่อง + clip มุมตามกล่อง */
+.np-brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.np-brand-name {
+  font-size: 24px;
+  font-weight: 550;
+  color: #fff;
+}
+
+.np-brand-sub {
+  font-size: 12px;
+
+  color: var(--np-side-sub);
+}
+
+.np-nav-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--np-side-label);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 6px 10px 8px;
+}
+
+.np-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.np-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--np-side-nav);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.np-nav-item i {
+  color: var(--np-side-icon);
+  font-size: 17px;
+  transition: color 0.15s;
+}
+
+.np-nav-item:hover {
+  background: var(--np-side-hover);
+  color: #fff;
+}
+
+.np-nav-item:hover i {
+  color: #fff;
+}
+
+.np-nav-item.active {
+  background: var(--np-side-active-bg);
+  color: #fff;
+}
+
+.np-nav-item.active i {
+  color: var(--np-side-active-icon);
+}
+
+.np-nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  border-radius: 0 4px 4px 0;
+  background: var(--np-side-bar);
+}
+
+.np-side-foot {
+  margin-top: auto;
+  padding: 14px 10px 4px;
+  font-size: 11px;
+  color: var(--np-side-label);
+  line-height: 1.5;
+}
+
+.np-sidebar-toggle {
+  display: none;
+}
+
+/* Sidebar ย่อเหลือไอคอน: toggle hide บน tablet/desktop (JS ใส่ .np-collapsed เฉพาะ >=768) */
+.np-shell.np-collapsed .np-sidebar {
+  width: 74px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.np-shell.np-collapsed .np-brand {
+  justify-content: center;
+  gap: 0;
+  padding: 4px 0 22px;
+}
+.np-shell.np-collapsed .np-brand-logo {
+  margin-right: 0;
+}
+/* ซ่อนข้อความ เหลือแต่ไอคอน */
+.np-shell.np-collapsed .np-brand-name,
+.np-shell.np-collapsed .np-brand-sub,
+.np-shell.np-collapsed .np-nav-label,
+.np-shell.np-collapsed .np-nav-item span,
+.np-shell.np-collapsed .np-side-foot {
+  display: none;
+}
+.np-shell.np-collapsed .np-nav-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+.np-shell.np-collapsed .np-nav-item.active::before {
+  left: -12px;
+}
+
+/* ==========================================================================
+   6. Topbar
+   ========================================================================== */
+.np-topbar {
+  height: 72px;
+  flex-shrink: 0;
+  background: var(--np-surface);
+  border-bottom: 1px solid var(--np-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 24px;
+}
+
+.np-icon-btn {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid var(--np-border);
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5a6072;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.np-icon-btn:hover {
+  background: #f5f6fb;
+  border-color: var(--np-line);
+}
+
+.np-crumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+}
+.np-crumb a {
+  color: var(--np-muted);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.np-crumb a:hover {
+  color: var(--np-primary);
+}
+.np-crumb i {
+  font-size: 11px;
+  color: var(--np-muted-3);
+}
+.np-crumb .cur {
+  min-width: 0;
+  color: var(--np-text);
+  font-weight: 600;
+}
+
+.np-page-head {
+  margin-bottom: 20px;
+}
+.np-page-h1 {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  line-height: 1.35;
+}
+.np-page-desc {
+  margin: 2px 0 0;
+  font-size: 13.5px;
+  color: var(--np-muted);
+}
+
+.np-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--np-border);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.np-pill-btn:hover {
+  background: var(--np-bg);
+  border-color: var(--np-line);
+}
+
+.np-topbar-divider {
+  width: 1px;
+  height: 34px;
+  background: var(--np-border);
+}
+
+.np-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px 5px 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.np-user-trigger:hover {
+  background: var(--np-bg);
+}
+
+.np-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--np-blue), #6a9ee6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.np-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-req {
+  color: var(--np-red);
+  font-weight: 600;
+}
+
+.np-pwd-meter {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 0;
+}
+
+.np-pwd-meter.show {
+  display: flex;
+}
+
+.np-pwd-meter-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--np-border);
+  overflow: hidden;
+}
+
+.np-pwd-meter-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 4px;
+  transition:
+    width 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.np-pwd-meter-label {
+  min-width: 52px;
+  text-align: right;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--np-muted-2);
+}
+
+.np-pwd-meter[data-lvl="1"] .np-pwd-meter-fill {
+  width: 25%;
+  background: var(--np-red);
+}
+.np-pwd-meter[data-lvl="2"] .np-pwd-meter-fill {
+  width: 50%;
+  background: var(--np-amber);
+}
+.np-pwd-meter[data-lvl="3"] .np-pwd-meter-fill {
+  width: 75%;
+  background: var(--np-blue);
+}
+.np-pwd-meter[data-lvl="4"] .np-pwd-meter-fill {
+  width: 100%;
+  background: var(--np-green);
+}
+.np-pwd-meter[data-lvl="1"] .np-pwd-meter-label {
+  color: var(--np-red);
+}
+.np-pwd-meter[data-lvl="2"] .np-pwd-meter-label {
+  color: var(--np-amber);
+}
+.np-pwd-meter[data-lvl="3"] .np-pwd-meter-label {
+  color: var(--np-blue);
+}
+.np-pwd-meter[data-lvl="4"] .np-pwd-meter-label {
+  color: var(--np-green);
+}
+
+.np-pwd-wrap {
+  position: relative;
+}
+
+.np-pwd-wrap input {
+  padding-right: 40px;
+}
+
+.np-pwd-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 38px;
+  border: 0;
+  background: transparent;
+  color: var(--np-muted-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.np-pwd-toggle:hover {
+  color: var(--np-blue);
+}
+
+.np-match-msg {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.np-match-msg.is-ok,
+.np-match-msg.is-bad {
+  display: flex;
+}
+
+.np-match-msg.is-ok {
+  color: var(--np-ok-fg);
+}
+.np-match-msg.is-bad {
+  color: var(--np-danger-fg);
+}
+
+.np-match-msg i {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.np-pwd-rules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.np-pwd-rules.show {
+  display: flex;
+  margin: 0 0 16px;
+}
+
+.np-pwd-rules li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--np-muted-2);
+  transition: color 0.15s;
+}
+
+.np-pwd-rules li i {
+  font-size: 13px;
+  color: var(--np-muted-3);
+  transition: color 0.15s;
+}
+
+.np-pwd-rules li.ok {
+  color: var(--np-ok-fg);
+}
+
+.np-pwd-rules li.ok i {
+  color: var(--np-ok-dot);
+}
+
+.np-user-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.np-user-role {
+  font-size: 11.5px;
+  color: var(--np-muted-2);
+}
+
+.np-flag {
+  width: 26px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: #f2f3f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #5a6072;
+}
+
+/* ==========================================================================
+   7. Cards & Stats
+   ========================================================================== */
+.np-card {
+  background: var(--np-surface);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius);
+  box-shadow: var(--np-shadow);
+  overflow: hidden;
+}
+
+.np-card-pad {
+  padding: 20px 22px;
+}
+
+.np-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+}
+
+.np-loc-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.np-stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 1;
+  font-feature-settings: "tnum";
+}
+
+.np-stat-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--np-text-2);
+  margin-top: 7px;
+}
+
+.np-stat-sub {
+  font-size: 12px;
+  color: var(--np-muted-2);
+  margin-top: 2px;
+}
+
+.np-section-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.np-section-sub {
+  font-size: 12.5px;
+  color: var(--np-muted-2);
+}
+
+/* ==========================================================================
+   8. Badges / Chips / Pills / Dots
+   ========================================================================== */
+
+.np-chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--np-muted-2);
+  background: var(--np-bg);
+  padding: 4px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.np-chip-ok {
+  color: var(--np-ok-fg);
+  background: var(--np-ok-bg);
+}
+
+.np-chip-danger {
+  color: var(--np-danger-fg);
+  background: var(--np-danger-bg);
+}
+
+.np-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: var(--np-bg);
+  color: var(--np-muted-2);
+}
+
+.np-badge-ok {
+  background: var(--np-ok-bg);
+  color: var(--np-ok-fg);
+}
+
+.np-badge-muted {
+  background: var(--np-bg);
+  color: var(--np-muted-2);
+}
+
+.np-badge-danger {
+  background: var(--np-danger-bg);
+  color: var(--np-danger-fg);
+}
+
+.np-badge-blue {
+  background: #e8f0fb;
+  color: var(--np-blue);
+}
+
+.np-pill {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.np-pill-blue {
+  color: var(--np-blue);
+  background: #e8f0fb;
+}
+
+.np-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+@keyframes np-livedot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.np-livedot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--np-ok-dot);
+  animation: np-livedot 1.6s infinite;
+}
+
+/* ==========================================================================
+   9. Tables — toolbar + table + footer
+   (header เทาอ่อน, แถวเส้นบาง, hover)
+   ========================================================================== */
+.np-table {
+  width: 100%;
+  font-size: 13.5px;
+  margin: 0;
+  color: #2a2a2a;
+}
+
+.np-table thead th {
+  padding: 11px 22px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  background: #fbfbfd;
+  border-bottom: 1px solid var(--np-border);
+}
+
+.np-table tbody td {
+  padding: 11px 22px;
+  vertical-align: middle;
+  border-top: 1px solid #f4f5f9;
+  border-bottom: 0;
+}
+
+.np-table tbody tr:hover > td {
+  background: #fafbfd;
+}
+
+.np-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--np-border);
+}
+
+.np-list-foot {
+  padding: 11px 22px;
+  border-top: 1px solid var(--np-border-2);
+  font-size: 12.5px;
+  color: var(--np-muted-2);
+}
+
+.np-perpage > span {
+  color: var(--np-muted);
+}
+
+.np-perpage select.form-select {
+  height: 32px;
+  width: auto;
+  padding: 0 32px 0 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--np-text-2);
+}
+
+.np-foot-range {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Voucher detail modal — การ์ดตั๋ว
+   ============================================================ */
+.vm-modal {
+  max-width: 700px;
+}
+
+.vm-content {
+  background: var(--np-bg);
+  border: 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.vm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 16px;
+}
+
+.vm-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 5px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--np-ok-bg);
+  color: var(--np-ok-fg);
+}
+
+.vm-status-pill i {
+  font-size: 15px;
+  color: var(--np-ok-dot);
+}
+
+.vm-status-pill.is-expired {
+  background: var(--np-danger-bg);
+  color: var(--np-danger-fg);
+}
+
+.vm-status-pill.is-expired i {
+  color: var(--np-red);
+}
+
+.vm-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--np-border);
+  background: #fff;
+  color: var(--np-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.vm-close:hover {
+  background: var(--np-bg);
+  color: var(--np-text);
+}
+
+.vm-ticket-wrap {
+  padding: 0 20px 22px;
+}
+
+.vm-ticket {
+  position: relative;
+  display: flex;
+  background: #fff;
+  border: 1px solid #e9eaf1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.vm-ticket-main {
+  flex: 1;
+  min-width: 0;
+  padding: 22px 22px 20px 26px;
+}
+
+.vm-ticket-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--np-text);
+}
+
+.vm-ticket-title i {
+  font-size: 17px;
+  color: var(--np-blue);
+}
+
+.vm-meta {
+  display: flex;
+  gap: 88px;
+  margin-top: 15px;
+}
+
+.vm-meta-col {
+  min-width: 0;
+}
+
+.vm-meta-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--np-muted-2);
+}
+
+.vm-meta-val {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--np-text-2);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vm-creds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.vm-cred {
+  background: #f7f8fc;
+  border-radius: 6px;
+  padding: 11px 13px;
+}
+
+.vm-cred-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.vm-cred-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--np-muted-2);
+}
+
+.vm-copy {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  border: 1px solid #e5e7ef;
+  background: #fff;
+  color: #5a6072;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.vm-copy:hover {
+  border-color: var(--np-blue);
+  background: #edf3fc;
+  color: var(--np-blue);
+}
+
+.vm-copy.is-copied {
+  border-color: var(--np-green);
+  background: var(--np-ok-bg);
+  color: var(--np-ok-fg);
+}
+
+.vm-copy i {
+  display: block;
+  line-height: 1;
+}
+
+.vm-cred-val {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--np-text);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#vmPass {
+  letter-spacing: 1px;
+}
+
+.vm-foot {
+  display: flex;
+  gap: 84px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--np-muted-2);
+}
+
+.vm-foot b {
+  color: var(--np-text-2);
+  font-weight: 600;
+}
+
+.vm-ticket-qr {
+  position: relative;
+  width: 150px;
+  flex-shrink: 0;
+  border-left: 2px dashed #e4e6ee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 14px;
+}
+
+.vm-ticket-qr::before,
+.vm-ticket-qr::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--np-bg);
+}
+
+.vm-ticket-qr::before {
+  top: -10px;
+}
+.vm-ticket-qr::after {
+  bottom: -10px;
+}
+
+.vm-qr-name {
+  max-width: 100%;
+  margin-bottom: 10px;
+  font-size: 10px;
+
+  color: var(--np-text-2);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vm-qr {
+  width: 100px;
+  height: 100px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.vm-qr svg {
+  display: block;
+  width: 100px;
+  height: 100px;
+}
+
+.vm-qr-cap {
+  font-size: 10.5px;
+  color: var(--np-muted-2);
+  margin-top: 9px;
+  text-align: center;
+}
+
+.np-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.np-page-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.np-page-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--np-muted);
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+
+.np-page-btn:hover {
+  color: var(--np-blue);
+  background: rgba(59, 125, 221, 0.1);
+}
+
+.np-page-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.18);
+}
+
+.np-page-btn.is-disabled {
+  color: var(--np-muted-3);
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
+.np-page-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  color: var(--np-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.np-page-stat strong {
+  color: var(--np-blue);
+  font-weight: 700;
+}
+
+.np-page-of {
+  margin: 0 1px;
+  color: var(--np-muted-3);
+}
+
+.np-search {
+  position: relative;
+}
+
+.np-search input {
+  padding-left: 38px;
+}
+
+.np-search i {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--np-muted-2);
+}
+
+/* ==========================================================================
+   10. Buttons & Misc
+   ========================================================================== */
+
+.btn {
+  --bs-btn-font-size: 14px;
+  --bs-btn-font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-sm {
+  --bs-btn-font-size: 13px;
+}
+
+.btn > i.bi {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.btn-np {
+  background: var(--np-blue);
+  border-color: var(--np-blue);
+  color: #fff;
+}
+
+.btn-np:hover {
+  background: #336fc4;
+  border-color: #336fc4;
+  color: #fff;
+}
+
+.btn-np:disabled,
+.btn-np.disabled {
+  background: var(--np-blue);
+  border-color: var(--np-blue);
+  color: #fff;
+}
+
+.btn-np-warning {
+  background: var(--np-amber);
+  border-color: var(--np-amber);
+  color: #fff;
+}
+
+.btn-np-warning:hover {
+  background: #c47f08;
+  border-color: #c47f08;
+  color: #fff;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--np-blue);
+  --bs-btn-border-color: var(--np-blue);
+  --bs-btn-hover-bg: #336fc4;
+  --bs-btn-hover-border-color: #336fc4;
+  --bs-btn-active-bg: #336fc4;
+  --bs-btn-active-border-color: #336fc4;
+  --bs-btn-focus-shadow-rgb: 59, 125, 221;
+}
+
+.btn-np-outline {
+  background: #fff;
+  border: 1px solid var(--np-line);
+  color: var(--np-text-2);
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.btn-np-outline i {
+  color: var(--np-blue);
+}
+
+.btn-np-outline:hover {
+  background: rgba(59, 125, 221, 0.06);
+  border-color: var(--np-blue-2);
+  color: var(--np-blue);
+}
+
+.btn-np-outline:hover i {
+  color: var(--np-blue);
+}
+
+.np-icon-sm {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--np-border);
+  border-radius: 8px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a7f92;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.np-icon-sm:hover {
+  border-color: var(--np-blue);
+  background: #edf3fc;
+  color: var(--np-blue);
+}
+
+.np-icon-sm.np-danger:hover {
+  border-color: var(--np-red);
+  background: var(--np-danger-bg);
+  color: var(--np-danger-fg);
+}
+
+.np-menu {
+  padding: 7px;
+  min-width: 224px;
+  border: 1px solid var(--np-border);
+  border-radius: 12px;
+  box-shadow: var(--np-shadow-pop);
+}
+
+/* หัวเมนูบัญชี: avatar + ชื่อ + email */
+.np-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 11px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--np-border);
+}
+
+/* รายการในเมนู: มุมโค้ง + icon จัดแนว */
+.np-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--np-text-2);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.np-menu .dropdown-item i {
+  width: 18px;
+  font-size: 15px;
+  text-align: center;
+  color: var(--np-muted-2);
+}
+
+/* hover ปกติ = โทนฟ้า */
+.np-menu .dropdown-item:hover,
+.np-menu .dropdown-item:focus {
+  background: #eef4fd;
+  color: var(--np-blue);
+}
+
+.np-menu .dropdown-item:hover i,
+.np-menu .dropdown-item:focus i {
+  color: var(--np-blue);
+}
+
+/* Sign out = โทนแดง */
+.np-menu .dropdown-item.text-danger i {
+  color: #e0716a;
+}
+
+.np-menu .dropdown-item.text-danger:hover,
+.np-menu .dropdown-item.text-danger:focus {
+  background: #fdecec;
+  color: #d92d20;
+}
+
+.np-menu .dropdown-item.text-danger:hover i,
+.np-menu .dropdown-item.text-danger:focus i {
+  color: #d92d20;
+}
+
+/* เปิดเมนูแบบจางขึ้นเล็กน้อย — animate เฉพาะ opacity เพื่อไม่ทับ transform ที่ Popper ใช้วางตำแหน่ง */
+.np-menu.show {
+  animation: npMenuIn 0.14s ease;
+}
+
+@keyframes npMenuIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.np-card-hover {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.np-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--np-shadow-lift);
+}
+
+.np-bar-col {
+  position: relative;
+}
+.np-bar-gl {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--np-border-2);
+}
+
+.np-bar-val {
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--np-text-2);
+  text-align: center;
+  font-feature-settings: "tnum";
+}
+.np-bar-col:hover .np-bar {
+  filter: brightness(1.06);
+}
+
+.np-recent-item {
+  margin: 0 -10px;
+  padding: 11px 10px;
+  border-radius: 10px;
+  border-top: 1px solid var(--np-border-2);
+  transition: background 0.15s ease;
+}
+.np-recent-item:first-child {
+  border-top: none;
+}
+.np-recent-item:hover {
+  background: #fafbfd;
+}
+
+/* ==========================================================================
+   10b. My Profile — การ์ดตัวตน + การ์ดตั้งค่า
+   ========================================================================== */
+.np-prof-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.np-prof-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--np-border);
+}
+
+.np-prof-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.np-prof-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--np-blue), var(--np-blue-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 29px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px -8px rgba(59, 125, 221, 0.55);
+}
+
+.np-prof-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-prof-cam {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--np-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    transform 0.15s;
+}
+
+.np-prof-cam:hover {
+  background: #336fc4;
+  transform: scale(1.06);
+}
+
+.np-prof-headtext {
+  flex: 1;
+  min-width: 0;
+}
+
+.np-prof-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--np-text);
+  line-height: 1.4;
+}
+
+.np-prof-headmeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 0;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--np-muted);
+}
+
+.np-prof-headmeta > span + span::before {
+  content: "·";
+  margin: 0 8px;
+  color: var(--np-muted-3);
+}
+
+.np-prof-role {
+  gap: 5px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.np-prof-role i {
+  font-size: 12px;
+}
+
+.np-prof-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.np-prof-sec {
+  padding: 24px 28px;
+}
+
+.np-prof-cols .np-prof-sec + .np-prof-sec {
+  border-left: 1px solid var(--np-border);
+}
+
+.np-prof-sechead {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 20px;
+}
+
+.np-prof-secicon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #e8f0fb;
+  color: var(--np-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+}
+
+.np-prof-sechead h6 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+
+.np-prof-sechead p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--np-muted);
+}
+
+.np-field {
+  margin-bottom: 16px;
+}
+
+.np-prof-set .form-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--np-text-2);
+  margin-bottom: 5px;
+}
+
+.np-field-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 16px;
+  font-size: 12px;
+  color: var(--np-muted-2);
+}
+
+.np-field-hint.is-error {
+  color: var(--np-danger-fg);
+}
+
+.np-prof-photohint {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+}
+
+.np-toast-wrap {
+  z-index: 1090;
+}
+
+.np-toast {
+  min-width: 280px;
+  border: 0;
+  border-left: 3px solid var(--np-ok-dot);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: var(--np-shadow-pop);
+}
+
+.np-toast.np-toast-err {
+  border-left-color: var(--np-red);
+}
+
+.np-toast .toast-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  font-size: 13.5px;
+  color: var(--np-text);
+}
+
+.np-toast .toast-body i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.np-toast-ok .toast-body i {
+  color: var(--np-ok-dot);
+}
+.np-toast-err .toast-body i {
+  color: var(--np-red);
+}
+
+.np-toast .btn-close {
+  font-size: 0.65rem;
+}
+
+.np-avatar-view {
+  width: 160px;
+  height: 160px;
+  margin: 4px auto 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--np-blue), var(--np-blue-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 60px;
+  font-weight: 600;
+  box-shadow: 0 10px 26px -10px rgba(59, 125, 221, 0.6);
+}
+
+.np-avatar-view img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* กรอบครอปรูปโปรไฟล์: ทำ view-box/face เป็นวงกลมให้ตรงกับ avatar */
+#avatarCropModal .cropper-view-box,
+#avatarCropModal .cropper-face {
+  border-radius: 50%;
+}
+
+/* พื้นที่แสดงรูปก่อนครอป */
+#avatarCropStage {
+  max-height: 320px;
+  background: var(--np-bg);
+  border-radius: 8px;
+}
+
+#avatarCropStage img {
+  display: block;
+  max-width: 100%;
+}
+
+.np-field-err {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--np-danger-fg);
+}
+
+.np-field-err i {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.form-control.np-invalid,
+.form-select.np-invalid {
+  border-color: var(--np-red);
+}
+
+.form-control.np-invalid:focus,
+.form-select.np-invalid:focus {
+  border-color: var(--np-red);
+  box-shadow: 0 0 0 0.2rem rgba(229, 72, 77, 0.15);
+}
+
+/* ==========================================================================
+   11. Scrollbar (WebKit)
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--np-line);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   12. Responsive — ปรับ spacing/ขนาด ตาม breakpoint (อิง Bootstrap 5)
+   ลดหลั่น padding/ฟอนต์เมื่อจอเล็กลง (เรียงจาก breakpoint ใหญ่ → เล็ก)
+   ========================================================================== */
+
+/* ==========================================================================
+   13. Login
+   ========================================================================== */
+.np-login-body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: linear-gradient(135deg, #222e3c, #2e3d4f);
+}
+
+.np-login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 34px 32px;
+  background: #fff;
+}
+
+.np-login-foot {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ==========================================================================
+   14. DataTables (server-side) — จัด toolbar/footer ให้เหมือนตารางเดิมของ NetPass
+   โครง DT2: row[0]=toolbar (search+filters | action), row กลาง=table, row[สุดท้าย]=footer
+   ========================================================================== */
+
+.np-card.np-dt {
+  overflow: visible;
+}
+
+.np-dt .dt-container > .row {
+  --bs-gutter-x: 0;
+  margin: 0;
+  align-items: center;
+}
+
+.np-dt .dt-container > .row:first-child {
+  padding: 13px 22px;
+  border-bottom: 1px solid var(--np-border);
+  gap: 10px 12px;
+}
+
+.np-dt .dt-container > .row:last-child {
+  padding: 11px 22px;
+  border-top: 1px solid var(--np-border-2);
+}
+
+.np-dt .dt-layout-start,
+.np-dt .dt-layout-end {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.np-dt .dt-search {
+  position: relative;
+  margin-right: 0 !important;
+}
+
+.np-dt .dt-search input.form-control {
+  height: 38px;
+}
+
+.np-dt .dt-container > .row:first-child .btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.np-dt .dt-search input.form-control {
+  width: 260px;
+  max-width: 100%;
+  padding-left: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='M15 15l-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+}
+
+.np-dt .dt-length,
+.np-dt .dt-info {
+  font-size: 12.5px;
+  color: var(--np-muted-2);
+}
+
+.np-info-n {
+  font-weight: 600;
+  color: var(--np-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.np-info-filtered {
+  margin-left: 2px;
+  color: var(--np-muted-3);
+}
+
+.np-dt .dt-length select.form-select {
+  width: auto;
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.np-dt #vfToolbar,
+.np-dt #stToolbar {
+  gap: 8px;
+  margin: 0;
+}
+
+#vfToolbar .ts-wrapper,
+#stToolbar .ts-wrapper {
+  width: 200px;
+  min-width: 200px;
+}
+
+#vfToolbar .vf-loc .ts-control,
+#vfToolbar .vf-status .ts-control {
+  padding-left: 34px;
+}
+
+#vfToolbar .vf-loc .ts-control::before,
+#vfToolbar .vf-status .ts-control::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  background: no-repeat center / 14px;
+  pointer-events: none;
+}
+
+#vfToolbar .vf-loc .ts-control::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1.7c2.3 0 4.1 1.8 4.1 4.1 0 3-4.1 8.5-4.1 8.5S3.9 8.8 3.9 5.8C3.9 3.5 5.7 1.7 8 1.7z'/%3E%3Ccircle cx='8' cy='5.8' r='1.6'/%3E%3C/svg%3E");
+}
+
+#vfToolbar .vf-status .ts-control::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='1.5'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Ccircle cx='8' cy='8' r='2.4' fill='%237A7F92' stroke='none'/%3E%3C/svg%3E");
+}
+
+.np-dtpager {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.np-pg-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--np-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.np-pg-btn:hover {
+  background: rgba(59, 125, 221, 0.1);
+  color: var(--np-blue);
+}
+
+.np-pg-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.2);
+}
+
+.np-pg-btn.active {
+  background: var(--np-blue);
+  color: #fff;
+}
+
+.np-pg-btn.is-disabled {
+  color: var(--np-muted-3);
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+table.np-table.dataTable > tbody tr:last-child > td {
+  border-bottom: 0;
+}
+
+/* ==========================================================================
+   15. Tom Select — dropdown ที่ style ได้ (option list เข้าธีม NetPass)
+   ========================================================================== */
+.ts-wrapper {
+  font-size: 13.5px;
+  min-width: 96px;
+}
+
+.np-dt .dt-length {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.np-dt .dt-length label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.np-dt .dt-length .ts-wrapper {
+  min-width: 74px;
+}
+
+.ts-wrapper .ts-control {
+  border: 1px solid var(--np-line);
+  border-radius: 8px;
+  min-height: 38px;
+  padding: 6px 34px 6px 13px;
+  background: #fff;
+  color: var(--np-text);
+  box-shadow: none;
+}
+
+.ts-wrapper.single.input-active .ts-control,
+.ts-wrapper .ts-control:hover {
+  border-color: var(--np-blue-2);
+}
+
+.ts-wrapper.focus .ts-control {
+  border-color: var(--np-blue-2);
+  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.12);
+}
+
+.ts-wrapper.single .ts-control::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border: 0;
+  pointer-events: none;
+  background: no-repeat center / 12px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+.ts-dropdown {
+  margin-top: 5px;
+  border: 1px solid var(--np-border);
+  border-radius: 10px;
+  box-shadow: var(--np-shadow-pop);
+  overflow: hidden;
+  font-size: 13.5px;
+}
+
+.ts-dropdown .option {
+  padding: 8px 12px;
+  color: var(--np-text-2);
+  border-radius: 6px;
+  margin: 1px 4px;
+}
+
+.ts-dropdown .option:first-child {
+  margin-top: 4px;
+}
+.ts-dropdown .option:last-child {
+  margin-bottom: 4px;
+}
+
+.ts-dropdown .option.active {
+  background: rgba(59, 125, 221, 0.1);
+  color: var(--np-blue);
+}
+
+.ts-dropdown .option[aria-selected="true"] {
+  background: var(--np-blue);
+  color: #fff;
+}
+
+.ts-dropdown {
+  z-index: 1060;
+}
+
+.np-dt .dt-length .ts-dropdown {
+  top: auto;
+  bottom: 100%;
+  margin: 0 0 5px;
+}
+
+/* ==========================================================================
+   16. Loading UX — skeleton shimmer (ตาราง) + top progress bar (เปลี่ยนหน้า)
+   ========================================================================== */
+
+.np-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  z-index: 2000;
+  background: linear-gradient(90deg, var(--np-blue), var(--np-blue-2));
+  box-shadow: 0 0 10px rgba(59, 125, 221, 0.55);
+  opacity: 0;
+  transition:
+    width 0.35s ease,
+    opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.np-progress.active {
+  opacity: 1;
+}
+
+.np-dt-skel {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  background: #fff;
+  z-index: 3;
+}
+
+.np-dt-skel.show {
+  display: flex;
+}
+
+.np-skel-row {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 15.5px 22px;
+  border-top: 1px solid #f4f5f9;
+}
+
+.np-skel-row:first-child {
+  border-top: 0;
+}
+
+.np-skel-bar {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--np-border) 25%,
+    var(--np-bg) 37%,
+    var(--np-border) 63%
+  );
+  background-size: 400% 100%;
+  animation: npShimmer 1.4s ease infinite;
+}
+
+@keyframes npShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.np-dt .dt-processing {
+  display: none !important;
+}
+
+/* ==========================================================================
+   17. Responsive — DataTables เลื่อนแนวนอน "ในตาราง" ไม่ดันทั้งหน้าทะลุจอ
+   (.dt-layout-table = row ที่ DataTables ใส่ตารางไว้)
+   ========================================================================== */
+.np-dt .dt-layout-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.btn-np {
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* Mobile + Tablet แนวตั้ง (≤991.98px): toolbar เรียงเป็นแถว
+   ค้นหาเต็มแถวบน / Location+Status / ปุ่ม Request — กันห่อบรรทัดมั่วบนพื้นที่แคบ */
+
+/* Tablet แนวนอน (992–1199px เช่น iPad mini/Air แนวนอน): toolbar เป็น inline แบบกระชับ
+   ช่องค้นหา + ฟิลเตอร์ขนาดพอดี (ไม่ยืดเต็มแถว) ปุ่ม Request ชิดขวา — พอดีแถวเดียว */
+
+.np-dt .dt-layout-table::-webkit-scrollbar {
+  height: 8px;
+}
+.np-dt .dt-layout-table::-webkit-scrollbar-thumb {
+  background: var(--np-line);
+  border-radius: 8px;
+}
+.np-dt .dt-layout-table::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   18. Branded modal (.np-modal) — ฟอร์มสร้าง/แก้ไข เข้าธีม NetPass
+   หัวมี icon chip + ชื่อ + คำอธิบาย, ฟิลด์สไตล์เดียวกับ My Profile
+   ========================================================================== */
+.np-modal .modal-content {
+  border: 0;
+  border-radius: 16px;
+  box-shadow: var(--np-shadow-pop);
+  overflow: hidden;
+  width: 100%;
+}
+
+.np-modal .modal-header {
+  align-items: flex-start;
+  gap: 13px;
+  padding: 20px 22px 15px;
+  border-bottom: 1px solid var(--np-border);
+}
+
+.np-modal-ico {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #e8f0fb;
+  color: var(--np-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.np-modal-ico.is-danger {
+  background: #fdecec;
+  color: var(--np-red);
+}
+.np-modal-ico.is-warning {
+  background: #fbefd7;
+  color: #e0930b;
+}
+.np-modal-ico.is-confirm {
+  background: #e8f0fb;
+  color: var(--np-blue);
+}
+
+.np-modal-confirm .modal-dialog {
+  max-width: 480px;
+}
+
+.np-modal-confirm .modal-header {
+  flex-wrap: wrap;
+}
+
+.np-modal-confirm .modal-header .np-callout {
+  flex: 0 0 100%;
+  align-items: center;
+}
+
+.np-modal-confirm .modal-header .np-callout i {
+  margin-top: 0;
+}
+
+.np-callout {
+  /* margin-top: 14px; */
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.np-callout i {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.np-callout.is-danger {
+  background: #fdecec;
+  color: #9b3438;
+}
+.np-callout.is-warning {
+  background: #fbefd7;
+  color: #8a5d06;
+}
+
+.np-modal-htext {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.np-modal-htext h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+
+.np-modal-htext p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--np-muted);
+}
+
+.np-modal .modal-header .btn-close {
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  flex-shrink: 0;
+}
+
+.np-modal .modal-body {
+  padding: 20px 22px;
+}
+
+.np-modal .form-control,
+.np-modal .form-select,
+.np-modal .ts-control,
+.np-prof-card .form-control,
+.np-prof-card .form-select,
+.np-prof-card .ts-control {
+  min-height: 38px;
+}
+
+.np-modal .form-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--np-text-2);
+  margin-bottom: 5px;
+}
+
+.np-modal .modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--np-border);
+  gap: 8px;
+}
+
+.np-modal.fade .modal-dialog {
+  transition:
+    transform 0.04s ease-out,
+    opacity 0.04s ease-out;
+  transform: scale(0.98);
+  opacity: 0;
+}
+.np-modal.show .modal-dialog {
+  transform: none;
+  opacity: 1;
+}
+
+.np-icon-sm {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+.np-icon-sm:hover {
+  border-color: var(--np-blue-2);
+  color: var(--np-blue);
+  background: rgba(59, 125, 221, 0.06);
+}
+.np-icon-sm.np-danger:hover {
+  border-color: var(--np-red);
+  color: var(--np-red);
+  background: rgba(229, 72, 77, 0.07);
+}
+.np-icon-sm.np-warning:hover {
+  border-color: var(--np-amber);
+  color: var(--np-amber);
+  background: rgba(224, 147, 11, 0.08);
+}
+.np-icon-sm:active {
+  transform: scale(0.9);
+}
+
+.np-pwd-meter-fill {
+  transition:
+    width 0.28s ease,
+    background-color 0.28s ease;
+}
+.np-toast {
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.np-mb-avatarrow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--np-border);
+}
+
+.np-mb-avatar {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--np-blue), var(--np-blue-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.np-mb-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-mb-sec + .np-mb-sec {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--np-border);
+}
+.np-mb-sechead {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+}
+.np-mb-secicon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #e8f0fb;
+  color: var(--np-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.np-mb-sechead h6 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+.np-mb-sechead p {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--np-muted);
+}
+
+.np-modal-member .np-pwd-rules.show {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#mbCropStage {
+  max-height: 320px;
+  background: var(--np-bg);
+  border-radius: 8px;
+}
+#mbCropStage img {
+  display: block;
+  max-width: 100%;
+}
+#mbCropModal .cropper-view-box,
+#mbCropModal .cropper-face {
+  border-radius: 50%;
+}
+
+.np-linkbtn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--np-blue);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.np-linkbtn:hover {
+  color: var(--np-blue-2);
+  text-decoration: underline;
+}
+
+.np-sum-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-top: 1px solid var(--np-border);
+  font-size: 13.5px;
+}
+
+.np-sum-row:first-child {
+  border-top: 0;
+}
+.np-sum-row .np-sum-k {
+  color: var(--np-muted);
+  flex-shrink: 0;
+}
+.np-sum-row .np-sum-v {
+  color: var(--np-text);
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+.np-cred-box {
+  margin-top: 14px;
+  border: 1px solid var(--np-border);
+  border-radius: 12px;
+  background: var(--np-bg);
+  padding: 14px 16px;
+}
+
+.np-cred-box .np-cred-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.np-cred-box .np-cred-line + .np-cred-line {
+  margin-top: 10px;
+}
+.np-cred-box .np-cred-k {
+  font-size: 11.5px;
+  color: var(--np-muted-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.np-cred-box .np-cred-v {
+  font-size: 14px;
+  color: var(--np-text);
+}
+
+.np-chg-old {
+  color: var(--np-muted-2);
+  text-decoration: line-through;
+}
+.np-chg-new {
+  color: var(--np-blue);
+  font-weight: 600;
+}
+.np-chg-arrow {
+  color: var(--np-muted-3);
+  font-size: 11px;
+  margin: 0 3px;
+  vertical-align: middle;
+}
+
+.np-force-card {
+  max-width: 440px;
+}
+
+.np-force-ico {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #e8f0fb;
+  color: var(--np-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+}
+
+.np-login-card {
+  position: relative;
+  overflow: visible;
+}
+
+.np-login-lang {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.np-import-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(
+    var(--np-blue) calc(var(--pct, 0) * 1%),
+    #eef1f6 0
+  );
+}
+.np-import-ring::before {
+  content: "";
+  grid-area: 1 / 1;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #fff;
+}
+.np-import-ring > span {
+  grid-area: 1 / 1;
+  z-index: 1;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--np-text-2);
+}
+
+/* ============================================================
+   Import dropzone — โมเดิร์น import dialog (ลากวาง) สำหรับหน้า Member
+   ============================================================ */
+.np-drop {
+  position: relative;
+  border: 1.5px dashed var(--np-line);
+  border-radius: var(--np-radius);
+  background: var(--np-bg);
+  padding: 26px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.np-drop:hover {
+  border-color: var(--np-blue-2);
+  background: rgba(59, 125, 221, 0.04);
+}
+.np-drop.is-drag {
+  border-color: var(--np-blue);
+  background: rgba(59, 125, 221, 0.09);
+  border-style: solid;
+}
+.np-drop:focus-visible {
+  outline: 2px solid var(--np-blue);
+  outline-offset: 2px;
+}
+
+.np-drop input[type="file"] {
+  display: none;
+}
+.np-drop-ico {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 10px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #e8f0fb;
+  color: var(--np-blue);
+  font-size: 22px;
+}
+.np-drop-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--np-text-2);
+}
+.np-drop-title .np-drop-browse {
+  color: var(--np-blue);
+}
+.np-drop-meta {
+  font-size: 11.5px;
+  color: var(--np-muted-2);
+  margin-top: 6px;
+  font-family: var(--np-font-mono);
+  letter-spacing: 0.2px;
+}
+
+.np-drop-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius);
+  background: var(--np-surface);
+  padding: 11px 13px;
+}
+.np-drop-file .fico {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--np-ok-bg);
+  color: var(--np-ok-fg);
+  font-size: 18px;
+}
+.np-drop-file .meta {
+  min-width: 0;
+  flex: 1 1 auto;
+  text-align: left;
+}
+.np-drop-file .name {
+  font-family: var(--np-font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.np-drop-file .size {
+  font-family: var(--np-font-mono);
+  font-size: 11.5px;
+  color: var(--np-muted);
+}
+.np-drop-remove {
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  color: var(--np-muted-2);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.np-drop-remove:hover {
+  background: #fdecec;
+  color: var(--np-red);
+}
+
+.np-tpl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--np-blue);
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(59, 125, 221, 0.07);
+  transition: background-color 0.15s;
+}
+.np-tpl-chip:hover {
+  background: rgba(59, 125, 221, 0.14);
+  color: var(--np-blue);
+}
+
+#resFailWrap .dt-container {
+  font-size: 12.5px;
+}
+#resFailWrap table.np-table {
+  margin: 0;
+}
+
+.np-drop-ico,
+.np-drop-title,
+.np-drop-meta {
+  pointer-events: none;
+}
+
+#resultModal .modal-dialog {
+  transition: max-width 0.2s ease;
+}
+#resultModal .modal-dialog.is-wide {
+  max-width: 620px;
+}
+
+#resFailWrap table.np-table thead th,
+#resFailWrap table.np-table tbody td {
+  padding: 9px 14px;
+  white-space: normal;
+}
+#resFailWrap td.np-fail-row {
+  font-variant-numeric: tabular-nums;
+  color: var(--np-muted);
+}
+#resFailWrap td.np-fail-user {
+  font-family: var(--np-font-mono);
+  font-size: 12.5px;
+  color: var(--np-text-2);
+  word-break: break-all;
+}
+#resFailWrap td.np-fail-reason {
+  color: #9b3438;
+}
+#resFailWrap .dt-layout-row {
+  align-items: center;
+  margin-top: 8px;
+}
+#resFailWrap .dt-info {
+  font-size: 12px;
+  color: var(--np-muted);
+}
+#resFailWrap .dt-paging .pagination {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Responsive card table (.np-dt-cards) — มือถือพับแต่ละแถวเป็น "การ์ดสมาชิก"
+   แทนการเลื่อนแนวนอน: หัวการ์ด = รูป+ชื่อ, เนื้อ = label/ค่า, ท้าย = ปุ่มจัดการ
+   label ของแต่ละค่าอ่านจาก data-label (เติมโดย NetPass.dataTable ตอน draw)
+   ต้องอยู่ท้ายไฟล์เพื่อ override .np-dt .np-table {white-space:nowrap} ด้านบน
+   ========================================================================== */
+
+/* ตาราง Voucher โหมดการ์ด (มือถือ): คอลัมน์แรกเป็น checkbox จึงซ่อน
+   เนื้อการ์ดเป็น label:value ทุกแถว — checkbox/พิมพ์หลายใบยังใช้บนจอใหญ่ */
+
+/* ==========================================================================
+   Tablet (768–1199px)
+   ========================================================================== */
+
+/* ==========================================================================
+   List tables — เส้นนำสายตาแนวตั้งระหว่างคอลัมน์ (minimal) ทุกหน้า
+   ========================================================================== */
+.np-dt .np-table thead th + th,
+.np-dt .np-table tbody td + td {
+  border-left: 1px solid var(--np-border-2);
+}
+
+#poolTable thead th:not(:last-child) {
+  text-align: left;
+}
+
+#poolTable tbody td:nth-child(n + 2) {
+  text-align: right;
+}
+
+/* ==========================================================================
+   Data table — badge/pill จัดกึ่งกลางคอลัมน์
+   ========================================================================== */
+.np-dt .np-table tbody td:has(.np-badge),
+.np-dt .np-table tbody td:has(.np-pill) {
+  text-align: center;
+}
+
+/* ==========================================================================
+   Data table — switch (active toggle) จัดกึ่งกลางคอลัมน์
+   ========================================================================== */
+.np-dt .np-table tbody td:has(.form-switch) {
+  text-align: center;
+}
+.np-dt .np-table tbody td .form-check.form-switch {
+  display: inline-block;
+  min-height: 0;
+  margin: 0;
+  padding-left: 0;
+}
+.np-dt .np-table tbody td .form-check.form-switch .form-check-input {
+  float: none;
+  margin-left: 0;
+}
+
+/* ==========================================================================
+   List tables — column widths (คุมที่ CSS แทน DataTables columns config)
+   ลำดับ nth-child = ลำดับคอลัมน์ในหัวตารางของแต่ละหน้า
+   ========================================================================== */
+#memberTable thead th:nth-child(1) { width: 20%; }
+#memberTable thead th:nth-child(2) { width: 15%; }
+#memberTable thead th:nth-child(3) { width: 18%; }
+#memberTable thead th:nth-child(4) { width: 14%; }
+#memberTable thead th:nth-child(5) { width: 10%; }
+#memberTable thead th:nth-child(6) { width: 10%; }
+#memberTable thead th:nth-child(7) { width: 13%; }
+
+/* ข้อมูลในแถว Member ใช้สีเข้มเดียวกันทั้งหมด (รวมตำแหน่ง/“—” ที่ปกติเป็นสีจาง) */
+#memberTable tbody td,
+#memberTable tbody td .np-stat-sub {
+  color: #2a2a2a;
+}
+
+#locTable thead th:nth-child(1) { width: 35%; }
+#locTable thead th:nth-child(2) { width: 35%; }
+#locTable thead th:nth-child(3) { width: 30%; }
+
+#poolTable thead th:nth-child(1) { width: 30%; }
+#poolTable thead th:nth-child(2) { width: 16%; }
+#poolTable thead th:nth-child(3) { width: 16%; }
+#poolTable thead th:nth-child(4) { width: 16%; }
+#poolTable thead th:nth-child(5) { width: 22%; }
+
+#poolDetailTable thead th:nth-child(1) { width: 1%; }
+#poolDetailTable thead th:nth-child(2) { width: 20%; }
+#poolDetailTable thead th:nth-child(3) { width: 20%; }
+#poolDetailTable thead th:nth-child(4) { width: 12%; }
+#poolDetailTable thead th:nth-child(5) { width: 12%; }
+#poolDetailTable thead th:nth-child(6) { width: 15%; }
+#poolDetailTable thead th:nth-child(7) { width: 20%; }
+
+/* ==========================================================================
+   Voucher View Details — section ข้อมูลผู้ขอ (แสดงบนจอ ไม่ติดตอนพิมพ์)
+   ========================================================================== */
+.vm-info {
+  margin: 0 20px 22px;
+  background: #fff;
+  border: 1px solid #e9eaf1;
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.vm-info-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--np-text);
+  margin-bottom: 14px;
+}
+.vm-info-title i {
+  font-size: 16px;
+  color: var(--np-blue);
+}
+.vm-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px 22px;
+}
+.vm-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.vm-info-k {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--np-muted-2);
+}
+.vm-info-v {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--np-text);
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   Responsive — รวม media query ตาม breakpoint (desktop-first)
+   ========================================================================== */
+
+@media (max-width: 1199.98px) {
+  .np-content {
+    padding: 24px 24px 36px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  /* ช่องค้นหาสั้นลง */
+  .np-dt .dt-search input.form-control {
+    width: 200px;
+  }
+
+  /* ฟิลเตอร์ Location/Status กว้าง 158px */
+  #vfToolbar .ts-wrapper,
+  #mbToolbar .ts-wrapper,
+  #stToolbar .ts-wrapper {
+    width: 158px;
+    min-width: 158px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .np-dt-cards .np-table th,
+  .np-dt-cards .np-table td {
+    white-space: nowrap;
+  }
+
+  .np-dt-cards .np-table {
+    min-width: 940px;
+  }
+
+  .np-dt-cards .np-table thead th:first-child,
+  .np-dt-cards .np-table tbody td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+
+  .np-dt-cards .np-table thead th:first-child {
+    background: #fbfbfd;
+  }
+  .np-dt-cards .np-table tbody td:first-child {
+    background: var(--np-surface);
+    box-shadow:
+      1px 0 0 var(--np-border),
+      6px 0 8px -6px rgba(20, 22, 43, 0.12);
+  }
+
+  .np-dt-cards .np-table tbody tr:hover > td:first-child {
+    background: #fafbfd;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .np-content {
+    padding: 20px 20px 32px;
+  }
+
+  .np-topbar {
+    padding: 0 18px;
+    gap: 12px;
+  }
+  .np-dt .np-table th,
+  .np-dt .np-table td {
+    white-space: nowrap;
+  }
+
+  .np-dt .dt-container > .row:first-child,
+  .np-dt .dt-container > .row:last-child {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .np-dt .dt-container > .row:first-child {
+    gap: 8px;
+  }
+
+  .np-dt .dt-search {
+    flex: 1 1 100%;
+  }
+  .np-dt .dt-search input.form-control {
+    width: 100%;
+    height: 42px;
+    margin: 0;
+  }
+
+  .np-dt .dt-container > .row:first-child .dt-layout-start,
+  .np-dt .dt-container > .row:first-child .dt-layout-end {
+    width: 100%;
+  }
+
+  #vfToolbar,
+  #mbToolbar,
+  #stToolbar {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  #vfToolbar .ts-wrapper,
+  #mbToolbar .ts-wrapper,
+  #stToolbar .ts-wrapper {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+  #vfToolbar .ts-control,
+  #mbToolbar .ts-control,
+  #stToolbar .ts-control {
+    min-height: 42px;
+  }
+
+  .np-dt .dt-container > .row:first-child .dt-layout-end > * {
+    width: 100%;
+  }
+  .np-dt .dt-container > .row:first-child .dt-layout-end .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+  }
+
+  .np-dt .dt-container > .row:last-child .dt-layout-end {
+    flex: 1 1 100%;
+    justify-content: center !important;
+    margin-left: 0 !important;
+  }
+  .np-dtpager {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767.98px) {
+  /* Mobile: sidebar เลื่อนเข้า/ออกแบบ off-canvas + ฉากหลังทึบ */
+  .np-sidebar {
+    position: fixed;
+    z-index: 1050;
+    height: 100vh;
+    transform: translateX(-100%);
+  }
+  .np-shell.np-open .np-sidebar {
+    transform: translateX(0);
+  }
+  .np-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .np-shell.np-open .np-backdrop {
+    display: block;
+  }
+
+  .np-content {
+    padding: 16px 14px 28px;
+  }
+
+  .np-topbar {
+    height: 64px;
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  .np-crumb {
+    display: none;
+  }
+
+  .np-page-h1 {
+    font-size: 20px;
+  }
+
+  .np-card-pad {
+    padding: 16px 16px;
+  }
+
+  .np-table thead th {
+    padding: 10px 14px;
+  }
+
+  .np-table tbody td {
+    padding: 11px 14px;
+  }
+
+  .np-toolbar {
+    padding: 12px 14px;
+  }
+
+  .np-list-foot {
+    padding: 11px 14px;
+  }
+  /* โหมดการ์ดเรียงแนวตั้ง ไม่ต้องเลื่อนแนวนอน — ปิด overflow ทั้ง 2 แกน กัน scrollbar ซ้อน */
+  .np-dt-cards .dt-layout-table {
+    overflow: visible !important;
+  }
+
+  .np-dt-cards .np-table th,
+  .np-dt-cards .np-table td {
+    white-space: normal;
+  }
+
+  .np-dt-cards .np-table thead {
+    display: none;
+  }
+
+  .np-dt-cards .np-table,
+  .np-dt-cards .np-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .np-dt-cards .np-table {
+    padding: 12px 14px 2px;
+  }
+
+  .np-dt-cards .np-table tbody tr {
+    display: block;
+    overflow: hidden;
+    background: var(--np-surface);
+    border: 1px solid var(--np-border);
+    border-radius: var(--np-radius);
+    box-shadow: var(--np-shadow);
+    padding: 0 14px 10px;
+    margin-bottom: 10px;
+  }
+  .np-dt-cards .np-table tbody tr:hover > td {
+    background: transparent;
+  }
+
+  .np-dt-cards .np-table tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0;
+    border: 0;
+    text-align: right;
+    min-height: 0;
+    font-size: 13px;
+  }
+
+  .np-dt-cards .np-table tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: #2a2a2a;
+    text-align: left;
+  }
+
+  .np-dt-cards .np-table tbody td:first-child {
+    justify-content: flex-start;
+    text-align: left;
+    gap: 10px;
+    margin: 0 -14px 10px;
+    padding: 9px 14px;
+    background: #fbfbfd;
+    border-bottom: 1px solid var(--np-border);
+  }
+  .np-dt-cards .np-table tbody td:first-child::before {
+    display: none;
+  }
+
+  .np-dt-cards .np-table tbody td:first-child .text-truncate {
+    max-width: 100% !important;
+  }
+  .np-dt-cards .np-table tbody td:first-child .np-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 13px !important;
+  }
+
+  .np-dt-cards .np-table tbody td:last-child {
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 9px 0 0;
+    margin-top: 4px;
+    border-top: 1px solid var(--np-border-2);
+  }
+  .np-dt-cards .np-table tbody td:last-child::before {
+    display: none;
+  }
+  .np-dt-cards .np-table tbody td:last-child .np-icon-sm {
+    width: 36px;
+    height: 36px;
+  }
+
+  .np-dt-cards .np-table tbody td .font-mono,
+  .np-dt-cards .np-table tbody td > span:last-child {
+    word-break: break-word;
+  }
+
+  .np-dt-cards .np-table tbody td.dt-empty {
+    display: block;
+    text-align: center;
+    padding: 24px 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+  }
+  .np-dt-cards .np-table tbody td.dt-empty::before {
+    display: none;
+  }
+  .np-dt-cards #voucherTable thead th:first-child,
+  .np-dt-cards #voucherTable tbody td:first-child:not(.dt-empty) {
+    display: none;
+  }
+  .np-dt-cards .np-table thead th + th,
+  .np-dt-cards .np-table tbody td + td {
+    border-left: 0;
+  }
+
+  /* Profile: ยุบเป็นคอลัมน์เดียว */
+  .np-prof-cols {
+    grid-template-columns: 1fr;
+  }
+  .np-prof-cols .np-prof-sec + .np-prof-sec {
+    border-left: 0;
+    border-top: 1px solid var(--np-border);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .np-content {
+    padding: 14px 12px 24px;
+  }
+
+  .np-topbar {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .np-stat-value {
+    font-size: 26px;
+  }
+
+  .np-stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .np-card-pad {
+    padding: 14px 14px;
+  }
+  .np-modal-member .np-pwd-rules.show {
+    grid-template-columns: 1fr;
+  }
+
+  /* Profile: header ห่อบรรทัดบนจอเล็ก */
+  .np-prof-head {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .np-prof-role {
+    order: 3;
+    width: 100%;
+  }
+
+  /* Voucher detail modal: เลย์เอาต์มือถือ (ตั๋วเรียงแนวตั้ง + ฟอนต์เล็กลง) */
+  .vm-info .vm-info-title {
+    margin-bottom: 5px;
+  }
+  .vm-info .vm-info-grid {
+    gap: 12px 16px;
+  }
+
+  .vm-ticket {
+    flex-direction: column;
+  }
+  .vm-ticket-qr {
+    width: 100%;
+    border-left: 0;
+    border-top: 2px dashed #e4e6ee;
+    padding: 14px;
+  }
+  .vm-ticket-qr::before {
+    top: -10px;
+    left: -10px;
+  }
+  .vm-ticket-qr::after {
+    top: -10px;
+    bottom: auto;
+    left: auto;
+    right: -10px;
+  }
+
+  /* ── ย่อ View modal ให้พอดี iPhone SE + เลื่อนในตัวถ้ายังยาว ── */
+  .vm-content {
+    max-height: calc(100dvh - 1.5rem);
+    overflow-y: auto;
+  }
+  .vm-head {
+    padding: 14px 16px 8px;
+  }
+  .vm-ticket-wrap {
+    padding: 0 14px 14px;
+  }
+  .vm-ticket-main {
+    padding: 16px;
+  }
+  .vm-meta {
+    gap: 16px;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+  .vm-creds {
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .vm-cred {
+    padding: 9px 11px;
+  }
+  .vm-cred-val {
+    font-size: 13px;
+  }
+  .vm-foot {
+    gap: 12px;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 10px;
+  }
+  .vm-qr,
+  .vm-qr svg {
+    width: 88px;
+    height: 88px;
+  }
+  .vm-info {
+    margin: 0 14px 14px;
+    padding: 13px 14px;
+  }
+  .vm-info-title {
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+
+  /* ลดขนาดตัวอักษรในตั๋วลง ~2-3px ให้พอดีจอแคบ */
+  .vm-ticket-title {
+    font-size: 12px;
+  }
+  .vm-meta-label {
+    font-size: 9px;
+  }
+  .vm-meta-val {
+    font-size: 12px;
+  }
+  .vm-cred-label {
+    font-size: 9px;
+  }
+  .vm-qr-name {
+    font-size: 9px;
+  }
+  .vm-qr-cap {
+    font-size: 9px;
+  }
+  .vm-info-k {
+    font-size: 9px;
+  }
+  .vm-info-v {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .np-page-btn {
+    transition: none;
+  }
+  .np-menu.show {
+    animation: none;
+  }
+  .np-skel-bar {
+    animation: none;
+  }
+  .np-progress {
+    transition: opacity 0.2s;
+  }
+  .np-modal.fade .modal-dialog {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+  .np-icon-sm,
+  .np-pwd-meter-fill,
+  .np-toast {
+    transition: none;
+  }
+}
