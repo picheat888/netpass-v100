@@ -9,6 +9,7 @@ return [
     'pool'     => 'Voucher Pool',
     'locations' => 'Locations',
     'members'   => 'Members',
+    'logs'      => 'Activity Log',
     'profile'   => 'Profile',
     'request'   => 'Request',
     'signOut'   => 'Sign out',

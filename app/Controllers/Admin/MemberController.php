@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\UserModel;
+use App\Services\ActivityLog;
 use CodeIgniter\Shield\Entities\User;
 
 /**
@@ -21,13 +22,15 @@ class MemberController extends BaseController
         ]);
     }
 
-    // base query ของสมาชิก (users + กลุ่ม) — ใช้ร่วม count/list
+    // base query ของสมาชิก (users + role) — ใช้ร่วม count/list
+    // role คิดจาก "อยู่กลุ่ม admin ไหม" ผ่าน subquery → 1 user = 1 แถวเสมอ (กันรายชื่อซ้ำเมื่อ user อยู่หลายกลุ่ม)
     private function memberQuery()
     {
         return db_connect()->table('users u')
-            ->select('u.id, u.username, u.firstname, u.lastname, u.position, u.img, u.active,
-                      COALESCE(agu.group, "user") AS role, ai.secret AS email')
-            ->join('auth_groups_users agu', 'agu.user_id = u.id', 'left')
+            ->select("u.id, u.username, u.firstname, u.lastname, u.position, u.img, u.active,
+                      CASE WHEN EXISTS (SELECT 1 FROM auth_groups_users agx WHERE agx.user_id = u.id AND agx.`group` = 'admin')
+                           THEN 'admin' ELSE 'user' END AS role,
+                      ai.secret AS email", false)
             ->join('auth_identities ai', "ai.user_id = u.id AND ai.type = 'email_password'", 'left');
     }
 
@@ -43,7 +46,7 @@ class MemberController extends BaseController
         $group  = (string) $req->getGet('group');
 
         // ลำดับคอลัมน์: 0 ชื่อ-สกุล / 1 ตำแหน่ง / 2 email / 3 username / 4 role / 5 สถานะ
-        $orderCols = [0 => 'u.firstname', 1 => 'u.position', 2 => 'ai.secret', 3 => 'u.username', 4 => 'agu.group', 5 => 'u.active'];
+        $orderCols = [0 => 'u.firstname', 1 => 'u.position', 2 => 'ai.secret', 3 => 'u.username', 4 => 'role', 5 => 'u.active'];
         $orderIdx  = (int) ($req->getGet('order')[0]['column'] ?? 0);
         $orderDir  = strtolower((string) ($req->getGet('order')[0]['dir'] ?? 'asc')) === 'desc' ? 'DESC' : 'ASC';
         $orderBy   = $orderCols[$orderIdx] ?? 'u.firstname';
@@ -51,8 +54,11 @@ class MemberController extends BaseController
         $recordsTotal = db_connect()->table('users')->countAllResults();
 
         $builder = $this->memberQuery();
-        if (in_array($group, ['admin', 'user'], true)) {
-            $builder->where('agu.group', $group);
+        // กรองตามแท็บ role: admin = อยู่กลุ่ม admin / user = ไม่อยู่กลุ่ม admin (ตรงกับ role ใน memberQuery)
+        if ($group === 'admin') {
+            $builder->where("EXISTS (SELECT 1 FROM auth_groups_users agx WHERE agx.user_id = u.id AND agx.`group` = 'admin')", null, false);
+        } elseif ($group === 'user') {
+            $builder->where("NOT EXISTS (SELECT 1 FROM auth_groups_users agx WHERE agx.user_id = u.id AND agx.`group` = 'admin')", null, false);
         }
         if ($search !== '') {
             $builder->groupStart()
@@ -281,6 +287,20 @@ class MemberController extends BaseController
             (new UserModel())->update($id, ['img' => $img]);
         }
 
+        $fullName = trim((string) $this->request->getPost('firstname') . ' ' . (string) $this->request->getPost('lastname'));
+        ActivityLog::record('member.create', [
+            'target_type'  => 'member',
+            'target_id'    => $id,
+            'target_label' => $fullName ?: $username,
+            'details'      => [
+                'name'     => $fullName,
+                'username' => $username,
+                'email'    => $email,
+                'position' => $this->request->getPost('position'),
+                'role'     => $role,
+            ],
+        ]);
+
         return redirect()->to(site_url('admin/members'))->with('message', lang('Member.created'));
     }
 
@@ -349,14 +369,35 @@ class MemberController extends BaseController
 
         // เปลี่ยนกลุ่ม — ลบกลุ่มเดิมออก แล้วใส่กลุ่มใหม่ (role ไม่บังคับ → default user)
         $role       = $this->request->getPost('role') ?: 'user';
+        $oldRole    = null;
         $shieldUser = auth()->getProvider()->findById($id);
         if ($shieldUser) {
             $currentGroups = $shieldUser->getGroups();
+            $oldRole       = $currentGroups[0] ?? null;
             foreach ($currentGroups as $group) {
                 $shieldUser->removeGroup($group);
             }
             $shieldUser->addGroup($role);
         }
+
+        ActivityLog::record('member.update', [
+            'target_type'  => 'member',
+            'target_id'    => $id,
+            'target_label' => trim((string) $data['firstname'] . ' ' . (string) $data['lastname']) ?: ($member->username ?? ''),
+            'details'      => [
+                'before' => [
+                    'name'     => trim((string) ($member->firstname ?? '') . ' ' . (string) ($member->lastname ?? '')),
+                    'position' => $member->position ?? '',
+                    'role'     => $oldRole,
+                ],
+                'after' => [
+                    'name'     => trim((string) $data['firstname'] . ' ' . (string) $data['lastname']),
+                    'position' => $data['position'],
+                    'role'     => $role,
+                ],
+                'email_changed' => $email !== '',
+            ],
+        ]);
 
         return redirect()->to(site_url('admin/members'))->with('message', lang('Member.updated'));
     }
@@ -387,7 +428,15 @@ class MemberController extends BaseController
             @unlink(FCPATH . $img);
         }
 
+        $delName = trim((string) ($member->firstname ?? '') . ' ' . (string) ($member->lastname ?? ''));
         $userModel->delete($id, true);   // ลบจริง (purge) ให้ username/email ว่างไว้ใช้ใหม่ได้
+
+        ActivityLog::record('member.delete', [
+            'target_type'  => 'member',
+            'target_id'    => $id,
+            'target_label' => $delName ?: ($member->username ?? ''),
+            'details'      => ['name' => $delName, 'username' => $member->username ?? ''],
+        ]);
 
         return redirect()->to(site_url('admin/members'))->with('message_danger', lang('Member.deleted'));
     }
@@ -423,6 +472,13 @@ class MemberController extends BaseController
             ->where('user_id', $id)->where('type', 'email_password')
             ->update(['force_reset' => $force]);
 
+        ActivityLog::record('member.reset_password', [
+            'target_type'  => 'member',
+            'target_id'    => $id,
+            'target_label' => trim((string) ($member->firstname ?? '') . ' ' . (string) ($member->lastname ?? '')) ?: ($member->username ?? ''),
+            'details'      => ['force_change' => (bool) $force],
+        ]);
+
         return redirect()->to(site_url('admin/members'))->with('message', lang('Member.resetDone'));
     }
 
@@ -443,6 +499,13 @@ class MemberController extends BaseController
         $isActive = (int) $member->active === 1;
         $userModel->update($id, ['active' => $isActive ? 0 : 1]);
 
+        ActivityLog::record('member.toggle', [
+            'target_type'  => 'member',
+            'target_id'    => $id,
+            'target_label' => trim((string) ($member->firstname ?? '') . ' ' . (string) ($member->lastname ?? '')) ?: ($member->username ?? ''),
+            'details'      => ['from' => $isActive ? 'active' : 'inactive', 'to' => $isActive ? 'inactive' : 'active'],
+        ]);
+
         // ปิดใช้งาน = toast แดง (เชิงลบ), เปิดใช้งาน = toast เขียว (ปกติ)
         if ($isActive) {
             return redirect()->to(site_url('admin/members'))->with('message_danger', lang('Member.deactivated'));
@@ -452,17 +515,23 @@ class MemberController extends BaseController
     }
 
     // สร้างไฟล์ .csv template (header + แถวตัวอย่าง) ให้ดาวน์โหลด — มี UTF-8 BOM ให้ Excel อ่านถูก
+    // ค่าตัวอย่างผ่าน csv_safe() ทุก cell เพื่อกัน formula injection (template ปลอดภัย)
     public function importTemplate()
     {
-        $bom    = "\xEF\xBB\xBF";
-        $header = "Firstname,lastname,email,position,username,password\r\n";
-        $sample = "John,Doe,john@example.com,Staff,jdoe,pass1234\r\n";
+        $bom = "\xEF\xBB\xBF";
+
+        $out = fopen('php://temp', 'r+');
+        fputcsv($out, ['Firstname', 'lastname', 'email', 'position', 'username', 'password']);
+        fputcsv($out, array_map('csv_safe', ['John', 'Doe', 'john@example.com', 'Staff', 'jdoe', 'pass1234']));
+        rewind($out);
+        $csv = stream_get_contents($out);
+        fclose($out);
 
         return $this->response
             ->setHeader('Content-Type', 'text/csv; charset=UTF-8')
             ->setHeader('Content-Disposition', 'attachment; filename="member_import_template.csv"')
             ->setHeader('Cache-Control', 'max-age=0')
-            ->setBody($bom . $header . $sample);
+            ->setBody($bom . $csv);
     }
 
     // นำเข้าสมาชิกจากไฟล์ csv/xlsx — ตรวจทีละแถว, สร้างแถวที่ผ่าน, คืน JSON สรุป (% สำเร็จ + แถวพลาด)
@@ -541,9 +610,12 @@ class MemberController extends BaseController
                 continue;
             }
 
-            // password
-            if ($password === '')        { $reject(lang('Member.importErrPwdReq')); continue; }
-            if (strlen($password) < 4)   { $reject(lang('Member.importErrPwdMin')); continue; }
+            // password: ต้องไม่ว่าง และต้องเข้มเท่ากฎตอนสร้างปกติ (≥8 + upper+lower+digit+special)
+            if ($password === '') { $reject(lang('Member.importErrPwdReq')); continue; }
+            if (! preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
+                $reject(lang('Member.errPwdWeak'));
+                continue;
+            }
 
             // email (ว่าง → default username@netpass.local)
             if ($email === '') {

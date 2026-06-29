@@ -1,84 +1,39 @@
+<?php
+
+/**
+ * หน้า 404 Not Found — ดีไซน์ minimal (ตัวเลขใหญ่ไล่สีโทน info)
+ * standalone page: โหลด url helper เอง (base_url/site_url ต้องใช้ได้)
+ * ข้อความ 2 ภาษาตาม locale, ไม่โชว์รายละเอียด route ที่ไม่พบ (กัน info-leak)
+ */
+helper('url');
+$locale = service('request')->getLocale();
+$isEn   = $locale === 'en';
+$sub    = $isEn ? 'Page not found' : 'ไม่พบหน้าที่คุณค้นหา';
+$text   = $isEn
+    ? 'The page may have been moved or removed, or the address was typed incorrectly.'
+    : 'หน้านี้อาจถูกย้าย ถูกลบ หรือ URL พิมพ์ไม่ถูกต้อง';
+$btn    = $isEn ? 'Back to home' : 'กลับหน้าหลัก';
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= esc($locale) ?>">
 <head>
-    <meta charset="utf-8">
-    <title><?= lang('Errors.pageNotFound') ?></title>
-
-    <style>
-        div.logo {
-            height: 200px;
-            width: 155px;
-            display: inline-block;
-            opacity: 0.08;
-            position: absolute;
-            top: 2rem;
-            left: 50%;
-            margin-left: -73px;
-        }
-        body {
-            height: 100%;
-            background: #fafafa;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #777;
-            font-weight: 300;
-        }
-        h1 {
-            font-weight: lighter;
-            letter-spacing: normal;
-            font-size: 3rem;
-            margin-top: 0;
-            margin-bottom: 0;
-            color: #222;
-        }
-        .wrap {
-            max-width: 1024px;
-            margin: 5rem auto;
-            padding: 2rem;
-            background: #fff;
-            text-align: center;
-            border: 1px solid #efefef;
-            border-radius: 0.5rem;
-            position: relative;
-        }
-        pre {
-            white-space: normal;
-            margin-top: 1.5rem;
-        }
-        code {
-            background: #fafafa;
-            border: 1px solid #efefef;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            display: block;
-        }
-        p {
-            margin-top: 1.5rem;
-        }
-        .footer {
-            margin-top: 2rem;
-            border-top: 1px solid #efefef;
-            padding: 1em 2em 0 2em;
-            font-size: 85%;
-            color: #999;
-        }
-        a:active,
-        a:link,
-        a:visited {
-            color: #dd4814;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>404 · NetPass</title>
+    <link href="<?= base_url('assets/fonts/fonts.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/error.css') ?>" rel="stylesheet">
 </head>
-<body>
-    <div class="wrap">
-        <h1>404</h1>
+<body class="np-err-body is-info">
+    <main class="np-err">
+        <!-- icon minimal: สัญญาณหลุด -->
+        <div class="np-err-icon">
+            <svg viewBox="0 0 24 24"><line x1="2" x2="22" y1="2" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76"/><path d="M16.85 11.25a10 10 0 0 1 2.22 1.68"/><path d="M5 13a10 10 0 0 1 5.24-2.76"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
+        </div>
 
-        <p>
-            <?php if (ENVIRONMENT !== 'production') : ?>
-                <?= nl2br(esc($message)) ?>
-            <?php else : ?>
-                <?= lang('Errors.sorryCannotFind') ?>
-            <?php endif; ?>
-        </p>
-    </div>
+        <h1 class="np-err-num">404</h1>
+        <h2 class="np-err-sub"><?= esc($sub) ?></h2>
+        <p class="np-err-text"><?= esc($text) ?></p>
+        <a class="np-err-link" href="<?= site_url('/') ?>"><?= esc($btn) ?></a>
+    </main>
 </body>
 </html>

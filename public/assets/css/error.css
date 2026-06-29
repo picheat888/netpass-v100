@@ -1,0 +1,156 @@
+/* ==========================================================================
+   NetPass — Error pages (404 / 403 / 400 / 500 / production)
+   ดีไซน์ minimal อิง colorlib-19: ตัวเลข code ใหญ่บางๆ ไล่สี (gradient clipped text)
+   ฟอนต์ Kanit + ลิงก์เส้นประ — โหลดคู่กับ fonts.css เท่านั้น (ไม่พึ่ง bootstrap/style.css)
+   tone เปลี่ยนตาม class ที่ <body>: is-info / is-warning / is-danger
+   ========================================================================== */
+
+.np-err-body {
+  --bg: #ffffff;
+  --text: #2d2d2d;
+  --muted: #9aa0a8;
+  --link: #3b7ddd;
+  --accent: #3b7ddd;
+  --grad: linear-gradient(130deg, #6db3ff, #3b7ddd);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Kanit", "Prompt", system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* โทน gradient + icon ตามชนิด error (ปุ่มกลับใช้สีแบรนด์คงที่ --link) */
+.np-err-body.is-info {
+  --accent: #3b7ddd;
+  --grad: linear-gradient(130deg, #6db3ff, #3b7ddd);
+}
+.np-err-body.is-warning {
+  --accent: #e0930b;
+  --grad: linear-gradient(130deg, #f6bf4a, #e0930b);
+}
+.np-err-body.is-danger {
+  --accent: #e5484d;
+  --grad: linear-gradient(130deg, #ff8079, #e5484d);
+}
+
+/* คอลัมน์เนื้อหากึ่งกลาง */
+.np-err {
+  width: 100%;
+  max-width: 767px;
+  padding: 15px;
+  text-align: center;
+  animation: np-err-rise 0.5s ease both;
+}
+
+/* icon minimal เส้นบาง */
+.np-err-icon {
+  margin: 0 auto 2px;
+  color: var(--accent);
+  line-height: 0;
+}
+
+.np-err-icon svg {
+  width: 46px;
+  height: 46px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* ตัวเลข code — ใหญ่ บาง ไล่สี (หัวใจของสไตล์นี้) */
+.np-err-num {
+  margin: 0;
+  font-size: clamp(120px, 22vw, 200px);
+  font-weight: 200;
+  line-height: 1.05;
+  letter-spacing: 2px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* hero แบบไอคอนใหญ่ (production ที่ไม่โชว์เลข code) */
+.np-err-glyph {
+  margin: 8px auto 4px;
+  width: clamp(120px, 20vw, 168px);
+  color: var(--accent);
+  line-height: 0;
+}
+
+.np-err-glyph svg {
+  width: 100%;
+  height: auto;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* subtitle — ตัวบาง เว้นวรรคตัวอักษร */
+.np-err-sub {
+  margin: 6px 0 0;
+  font-size: clamp(20px, 4.5vw, 33px);
+  font-weight: 200;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #3a3a3a;
+}
+
+.np-err-text {
+  margin: 14px auto 0;
+  max-width: 480px;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+/* ลิงก์กลับหน้าหลัก — เส้นใต้ประ สีแบรนด์ อยู่บรรทัดของตัวเอง */
+.np-err-link {
+  display: inline-block;
+  margin-top: 28px;
+  padding-bottom: 3px;
+  color: var(--link);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px dashed var(--link);
+  transition: opacity 0.15s ease;
+}
+
+.np-err-link:hover {
+  opacity: 0.65;
+}
+
+.np-err-link:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+
+@keyframes np-err-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .np-err {
+    animation: none;
+  }
+}

@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Services\ActivityLog;
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
 use CodeIgniter\HotReloader\HotReloader;
@@ -22,6 +23,30 @@ use CodeIgniter\HotReloader\HotReloader;
  * Example:
  *      Events::on('create', [$myInstance, 'myMethod']);
  */
+
+// บันทึกเวลา Sign in / Sign out (Shield ยิง event พร้อม user)
+Events::on('login', static function ($user): void {
+    ActivityLog::record('auth.login', [
+        'actor_id'       => (int) $user->id,
+        'actor_name'     => ActivityLog::displayName($user),
+        'actor_username' => $user->username,
+        'actor_role'     => $user->inGroup('admin') ? 'admin' : 'user',
+        'target_type'    => 'member',
+        'target_id'      => (int) $user->id,
+        'target_label'   => ActivityLog::displayName($user),
+    ]);
+});
+Events::on('logout', static function ($user): void {
+    ActivityLog::record('auth.logout', [
+        'actor_id'       => (int) $user->id,
+        'actor_name'     => ActivityLog::displayName($user),
+        'actor_username' => $user->username,
+        'actor_role'     => $user->inGroup('admin') ? 'admin' : 'user',
+        'target_type'    => 'member',
+        'target_id'      => (int) $user->id,
+        'target_label'   => ActivityLog::displayName($user),
+    ]);
+});
 
 Events::on('pre_system', static function (): void {
     if (ENVIRONMENT !== 'testing') {

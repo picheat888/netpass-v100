@@ -109,6 +109,54 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
     </div>
 </div>
 
+<!-- Modal: สรุปผลนำเข้า voucher (สำเร็จ — all-or-nothing) -->
+<div class="modal fade np-modal np-modal-confirm" id="poolResultModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="np-modal-ico is-confirm"><i class="bi bi-clipboard-check"></i></span>
+                <div class="np-modal-htext">
+                    <h5><?= lang('Pool.imported') ?></h5>
+                    <p><?= lang('Pool.importSub') ?></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div style="width:56px;height:56px;border-radius:50%;background:#e6f6ef;color:#0EA66B;display:inline-flex;align-items:center;justify-content:center;font-size:28px"><i class="bi bi-check-lg"></i></div>
+                    <p class="fw-bold mt-2 mb-0" id="poolResCount">—</p>
+                </div>
+                <div class="np-confirm-box">
+                    <div class="np-confirm-row">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div>
+                            <div class="np-confirm-lbl"><?= lang('Pool.colLocation') ?></div>
+                            <div class="np-confirm-val" id="poolResLoc">—</div>
+                        </div>
+                    </div>
+                    <div class="np-confirm-row">
+                        <i class="bi bi-clock-fill"></i>
+                        <div>
+                            <div class="np-confirm-lbl"><?= lang('Voucher.duration') ?></div>
+                            <div class="np-confirm-val" id="poolResDur">—</div>
+                        </div>
+                    </div>
+                    <div class="np-confirm-row">
+                        <i class="bi bi-router"></i>
+                        <div>
+                            <div class="np-confirm-lbl">SSID</div>
+                            <div class="np-confirm-val font-mono" id="poolResSsid">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-np" data-bs-dismiss="modal"><?= lang('Voucher.btnClose') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal: เพิ่มพื้นที่ -->
 <div class="modal fade np-modal" id="addModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -201,33 +249,61 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
     </div>
 </div>
 
-<!-- Modal: ยืนยันลบพื้นที่ -->
-<div class="modal fade np-modal np-modal-confirm" id="deleteModal" tabindex="-1">
+<!-- ยืนยันการแก้ไขพื้นที่ (confirm) — เด้งทับ edit modal ก่อน submit, โชว์ค่าเดิม → ค่าใหม่ -->
+<div class="modal fade np-dialog-modal" id="locEditConfirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <form class="modal-content" method="post" id="deleteForm" action="">
+        <div class="modal-content np-dialog">
+            <div class="dlg-head">
+                <span class="dlg-ico is-confirm"><i class="bi bi-pencil-square"></i></span>
+                <div class="dlg-htext">
+                    <h5><?= lang('Pool.editConfirmTitle') ?></h5>
+                    <p><?= lang('Pool.editConfirmSub') ?></p>
+                </div>
+                <button type="button" class="dlg-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="dlg-body">
+                <p><?= lang('Pool.editConfirmBody') ?></p>
+                <!-- ตารางเทียบค่าเดิม → ค่าใหม่ (เติมด้วย JS เฉพาะช่องที่เปลี่ยน) -->
+                <table class="dlg-cmp-table">
+                    <thead>
+                        <tr><th><?= lang('Common.changeField') ?></th><th><?= lang('Common.changeOld') ?></th><th><?= lang('Common.changeNew') ?></th></tr>
+                    </thead>
+                    <tbody id="locEditDiffBody"></tbody>
+                </table>
+            </div>
+            <div class="dlg-foot">
+                <button type="button" class="dlg-btn dlg-btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
+                <button type="button" class="dlg-btn dlg-btn-confirm" id="locEditConfirmBtn"><i class="bi bi-check-lg"></i> <?= lang('Pool.editSaveChanges') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: ยืนยันลบพื้นที่ (delete) -->
+<div class="modal fade np-dialog-modal" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content np-dialog" method="post" id="deleteForm" action="">
             <?= csrf_field() ?>
-            <div class="modal-header">
-                <span class="np-modal-ico is-danger"><i class="bi bi-trash3-fill"></i></span>
-                <div class="np-modal-htext">
+            <div class="dlg-head">
+                <span class="dlg-ico is-delete"><i class="bi bi-trash3-fill"></i></span>
+                <div class="dlg-htext">
                     <h5><?= lang('Location.deleteTitle') ?></h5>
                     <p><?= lang('Location.deleteSub') ?></p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                <div class="np-callout is-danger">
+                <button type="button" class="dlg-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+                <div class="dlg-callout is-delete">
                     <i class="bi bi-exclamation-octagon-fill"></i>
                     <span><?= lang('Location.deleteImpact') ?></span>
                 </div>
             </div>
-            <div class="modal-body">
-                <div class="text-center mb-2">
-                    <i class="bi bi-exclamation-triangle-fill" style="font-size:2.75rem;color:var(--np-red)"></i>
-                </div>
-                <p class="mb-0 text-center"><?= lang('Location.confirmDelete') ?></p>
-                <p class="fw-semibold mt-1 mb-0 text-center" id="deleteLocName"></p>
+            <div class="dlg-body is-centered">
+                <div class="dlg-warn-ico is-delete"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <p><?= lang('Location.confirmDelete') ?></p>
+                <p class="dlg-target" id="deleteLocName"></p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
-                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i><?= lang('Common.delete') ?></button>
+            <div class="dlg-foot">
+                <button type="button" class="dlg-btn dlg-btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
+                <button type="submit" class="dlg-btn dlg-btn-delete"><i class="bi bi-trash"></i> <?= lang('Common.delete') ?></button>
             </div>
         </form>
     </div>
@@ -237,185 +313,19 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
 
 <?= $this->section('scripts') ?>
 <script>
-// ตาราง DataTables server-side (สรุปสต็อกแยกพื้นที่)
-document.addEventListener('DOMContentLoaded', function () {
-    NetPass.dataTable('#poolTable', {
-        action: '#poolAction',
-        ajax: { url: '<?= site_url('admin/pool/data') ?>' },
-        order: [[0, 'asc']],
-        columns: [
-            { orderable: true },  // พื้นที่
-            { orderable: true },  // คงเหลือ
-            { orderable: true },  // จ่ายแล้ว
-            { orderable: true },  // รวม
-            { orderable: false }  // ดู
-        ]
-    });
-
-    // นำเข้า CSV: dropzone + ส่ง AJAX (all-or-nothing) สำเร็จ → reload หน้า, ผิด → โชว์ error inline
-    const impForm = document.getElementById('poolImportForm');
-    if (impForm) {
-        const drop   = document.getElementById('poolImportDrop');
-        const input  = document.getElementById('poolImportFile');
-        const chip   = document.getElementById('poolImportChip');
-        const nameEl = document.getElementById('poolImportName');
-        const sizeEl = document.getElementById('poolImportSize');
-        const remove = document.getElementById('poolImportRemove');
-        const errBox = document.getElementById('poolImportErr');
-        const submit = document.getElementById('poolImportSubmit');
-        const csrfField = impForm.querySelector('input[name="<?= csrf_token() ?>"]');
-        const BAD    = <?= json_encode(lang('Pool.importBadFile')) ?>;
-
-        const showErr = function (msg) { errBox.querySelector('span').textContent = msg; errBox.classList.remove('d-none'); };
-        const clearErr = function () { errBox.classList.add('d-none'); };
-        const fmtSize = function (b) { return b < 1024 ? b + ' B' : (b / 1024).toFixed(1) + ' KB'; };
-
-        const setFile = function (file) {
-            if (! file) { return; }
-            if (! file.name.toLowerCase().endsWith('.csv') || file.size > 2 * 1024 * 1024) {
-                input.value = ''; showErr(BAD); return;
-            }
-            clearErr();
-            nameEl.textContent = file.name;
-            sizeEl.textContent = fmtSize(file.size);
-            drop.classList.add('d-none');
-            chip.classList.remove('d-none');
-        };
-
-        input.addEventListener('change', function () { setFile(input.files[0]); });
-        drop.addEventListener('click', function () { input.click(); });
-        drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
-        ['dragover', 'dragenter'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('is-drag'); }); });
-        ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('is-drag'); }); });
-        drop.addEventListener('drop', function (e) { const f = e.dataTransfer.files[0]; if (f) { input.files = e.dataTransfer.files; setFile(f); } });
-        remove.addEventListener('click', function () { input.value = ''; chip.classList.add('d-none'); drop.classList.remove('d-none'); clearErr(); });
-
-        impForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            clearErr();
-            if (! input.files[0]) { showErr(BAD); return; }
-            submit.querySelector('.np-btn-label').classList.add('d-none');
-            submit.querySelector('.spinner-border').classList.remove('d-none');
-            submit.disabled = true;
-            try {
-                const res  = await fetch(impForm.action, { method: 'POST', body: new FormData(impForm), headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                const data = await res.json();
-                if (data.csrf && csrfField) { csrfField.value = data.csrf; }
-                if (data.ok) { window.location.reload(); return; }
-                showErr(data.error || BAD);
-            } catch (_) {
-                showErr(BAD);
-            } finally {
-                submit.querySelector('.np-btn-label').classList.remove('d-none');
-                submit.querySelector('.spinner-border').classList.add('d-none');
-                submit.disabled = false;
-            }
-        });
-    }
-});
-
-// ───────── จัดการ Location (add / edit / delete) ในหน้า Pool ─────────
-// เติมข้อมูลใน edit modal จาก data attribute ของปุ่ม
-document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
-    const btn = e.relatedTarget;
-    if (!btn) return;   // เปิดเองตอน validation error → ใช้ค่าที่ server เติมไว้
-    document.getElementById('editForm').action   = '/admin/locations/' + btn.dataset.id + '/update';
-    document.getElementById('editName').value    = btn.dataset.name;
-    document.getElementById('editNameEn').value  = btn.dataset.nameEn;
-    document.getElementById('editSsid').value    = btn.dataset.ssid;
-});
-
-// ปุ่ม Save ของ edit: ปิดไว้จนกว่าจะมีการแก้ค่าใดค่าหนึ่ง
-(function () {
-    const form    = document.getElementById('editForm');
-    const saveBtn = document.getElementById('editSaveBtn');
-    const fields  = ['editNameEn', 'editName', 'editSsid'];
-    let snapshot = null;
-    function vals() {
-        return JSON.stringify(fields.map(function (id) {
-            return document.getElementById(id).value.trim();
-        }));
-    }
-    function update() { saveBtn.disabled = snapshot === null || vals() === snapshot; }
-    document.getElementById('editModal').addEventListener('shown.bs.modal', function () {
-        snapshot = vals();
-        update();
-    });
-    form.addEventListener('input', update);
-})();
-
-// เติม action URL และชื่อพื้นที่ใน delete modal
-document.getElementById('deleteModal').addEventListener('show.bs.modal', function (e) {
-    const btn = e.relatedTarget;
-    if (!btn) return;
-    document.getElementById('deleteForm').action = '/admin/locations/' + btn.dataset.id + '/delete';
-    document.getElementById('deleteLocName').textContent = btn.dataset.name ? '"' + btn.dataset.name + '"' : '';
-});
-
-// เปิด modal เดิมกลับมาเมื่อ validation ฝั่ง server ไม่ผ่าน
-window.addEventListener('load', function () {
-<?php if ($isAddErr): ?>
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('addModal')).show();
-<?php elseif ($isEditErr): ?>
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal')).show();
-<?php endif ?>
-});
-
-// เริ่มพิมพ์ในช่อง → ลบกรอบแดง + ข้อความ error ทันที
-document.querySelectorAll('.np-modal .form-control').forEach(function (inp) {
-    inp.addEventListener('input', function () {
-        inp.classList.remove('np-invalid');
-        var msg = inp.nextElementSibling;
-        if (msg && msg.classList.contains('np-field-err')) { msg.remove(); }
-    });
-});
-
-// ตรวจช่องบังคับ (data-req) ฝั่ง client — เตือน inline ไม่ปิด/รีโหลด dialog
-function npValidateForm(form) {
-    var ok = true;
-    form.querySelectorAll('[data-req]').forEach(function (inp) {
-        inp.classList.remove('np-invalid');
-        var sib = inp.nextElementSibling;
-        if (sib && sib.classList.contains('np-field-err')) { sib.remove(); }
-        if (inp.value.trim() === '') {
-            ok = false;
-            inp.classList.add('np-invalid');
-            var p = document.createElement('p');
-            p.className = 'np-field-err';
-            p.innerHTML = '<i class="bi bi-info-circle-fill"></i> ' + inp.dataset.reqmsg;
-            inp.insertAdjacentElement('afterend', p);
-        }
-    });
-    if (! ok) { var first = form.querySelector('.np-invalid'); if (first) { first.focus(); } }
-    return ok;
-}
-document.querySelectorAll('#addModal form, #editForm').forEach(function (form) {
-    form.addEventListener('submit', function (e) {
-        if (! npValidateForm(form)) { e.preventDefault(); }
-    });
-});
+// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
+window.NP_POOL = {
+    dataUrl:   '<?= site_url('admin/pool/data') ?>',
+    csrfName:  '<?= csrf_token() ?>',
+    badFile:   <?= json_encode(lang('Pool.importBadFile')) ?>,
+    countUnit: <?= json_encode(lang('Voucher.confirmCountUnit')) ?>,
+    openModal: '<?= $isAddErr ? 'add' : ($isEditErr ? 'edit' : '') ?>',
+    i18n: {
+        nameEn: <?= json_encode(lang('Location.nameEn')) ?>,
+        name:   <?= json_encode(lang('Location.name')) ?>,
+        ssid:   <?= json_encode(lang('Location.ssid')) ?>,
+    },
+};
 </script>
-
-<!-- Add Location: ปิดปุ่ม Save จนกว่าจะกรอกช่องบังคับครบ + validate ตอน submit (สคริปต์แยกอิสระ กัน error จากก้อนอื่น) -->
-<script>
-(function () {
-    var addForm = document.querySelector('#addModal form');
-    if (! addForm) { return; }
-    var saveBtn = addForm.querySelector('button[type="submit"]');
-    var reqs    = addForm.querySelectorAll('[data-req]');
-
-    // เปิดปุ่มเฉพาะเมื่อช่องบังคับ (Name EN + SSID) ถูกกรอกครบ
-    function syncBtn() {
-        if (! saveBtn) { return; }
-        var filled = true;
-        reqs.forEach(function (i) { if (i.value.trim() === '') { filled = false; } });
-        saveBtn.disabled = ! filled;
-    }
-    addForm.addEventListener('input', syncBtn);
-    // sync ตอนเปิด modal ด้วย (เผื่อ server เติมค่ากลับมาหลัง validation fail → เปิดปุ่มให้กดซ้ำได้)
-    var addModal = document.getElementById('addModal');
-    if (addModal) { addModal.addEventListener('shown.bs.modal', syncBtn); }
-    syncBtn();   // เริ่มต้น: ปิดปุ่มจนกว่าจะกรอกครบ
-})();
-</script>
+<script><?= file_get_contents(__DIR__ . '/index.js') ?></script>
 <?= $this->endSection() ?>

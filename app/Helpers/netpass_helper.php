@@ -50,3 +50,18 @@ if (! function_exists('voucher_active')) {
             && strtotime($expiresAt) > time();
     }
 }
+
+if (! function_exists('csv_safe')) {
+    /**
+     * กัน CSV formula injection — ใส่ ' นำหน้าค่าที่ขึ้นต้นด้วย = + - @ หรือ tab/CR
+     * (Excel/Sheets จะตีความเป็นสูตรถ้าไม่ป้องกัน)
+     */
+    function csv_safe($value): string
+    {
+        $value = (string) $value;
+        if ($value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'" . $value;
+        }
+        return $value;
+    }
+}

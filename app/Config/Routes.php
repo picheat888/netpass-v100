@@ -5,8 +5,8 @@ use CodeIgniter\Router\RouteCollection;
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
 
-// Shield: login / logout / register ฯลฯ — override login ให้ใช้ username
-service('auth')->routes($routes, ['except' => ['login', 'logout']]);
+// Shield: login / logout / register ฯลฯ — override login ให้ใช้ username; ยกเว้น register/magic-link (ปิดใช้งาน)
+service('auth')->routes($routes, ['except' => ['login', 'logout', 'register', 'magic-link']]);
 $routes->get('login', '\App\Controllers\Auth\LoginController::loginView');
 $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
 $routes->get('logout', '\App\Controllers\Auth\LoginController::logoutAction');   // override: logout โดยไม่ขึ้นข้อความ flash
@@ -75,4 +75,9 @@ $routes->group('admin', ['filter' => 'group:admin'], static function ($routes) {
     $routes->post('members/(:num)/reset-password', 'Admin\MemberController::resetPassword/$1');
     $routes->get('members/import/template', 'Admin\MemberController::importTemplate');
     $routes->post('members/import', 'Admin\MemberController::import');
+
+    // บันทึกการใช้งาน (audit log)
+    $routes->get('logs', 'Admin\ActivityLogController::index');
+    $routes->get('logs/data', 'Admin\ActivityLogController::data');   // DataTables server-side (JSON)
+    $routes->get('logs/export', 'Admin\ActivityLogController::export');   // ดาวน์โหลด CSV (Excel)
 });

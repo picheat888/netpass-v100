@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Services\ActivityLog;
+
 /**
  * บังคับเปลี่ยนรหัสผ่านเมื่อ login ครั้งแรก (identity มี force_reset = 1)
  * ผู้ใช้ตั้งรหัสใหม่เองก่อนเข้าใช้งานระบบส่วนอื่น
@@ -76,6 +78,13 @@ class ForcePasswordController extends BaseController
         db_connect()->table('auth_identities')
             ->where('user_id', auth()->id())->where('type', 'email_password')
             ->update(['force_reset' => 0]);
+
+        ActivityLog::record('auth.password_change', [
+            'target_type'  => 'member',
+            'target_id'    => (int) auth()->id(),
+            'target_label' => ActivityLog::displayName($user),
+            'details'      => ['via' => 'force_reset'],
+        ]);
 
         return redirect()->to($this->home())->with('message', lang('Force.changed'));
     }

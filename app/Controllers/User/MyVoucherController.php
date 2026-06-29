@@ -44,16 +44,17 @@ class MyVoucherController extends BaseController
         $status = (string) $req->getGet('status');
 
         // map ดัชนีคอลัมน์ DataTables → คอลัมน์ SQL ที่ sort ได้
-        // คอลัมน์ 0 = checkbox, ไม่มีคอลัมน์ผู้ขอ (หน้า user เห็นเฉพาะของตัวเอง)
+        // คอลัมน์ 0 = checkbox, 1 = ผู้จัดจำหน่าย (หน้า user ไม่มีคอลัมน์ผู้ขอ เห็นเฉพาะของตัวเอง)
         $orderCols = [
-            1 => 'voucher_issues.guest_voucher',
-            2 => 'loc_name',
-            3 => 'voucher_issues.duration',
-            4 => 'voucher_issues.issued_at',
-            5 => 'voucher_issues.expires_at',
-            6 => 'voucher_issues.status',
+            1 => 'voucher_issues.supplier',
+            2 => 'voucher_issues.guest_voucher',
+            3 => 'loc_name',
+            4 => 'voucher_issues.duration',
+            5 => 'voucher_issues.issued_at',
+            6 => 'voucher_issues.expires_at',
+            7 => 'voucher_issues.status',
         ];
-        $orderIdx = (int) ($req->getGet('order')[0]['column'] ?? 4);
+        $orderIdx = (int) ($req->getGet('order')[0]['column'] ?? 5);
         $orderDir = strtolower((string) ($req->getGet('order')[0]['dir'] ?? 'desc')) === 'asc' ? 'ASC' : 'DESC';
         $orderBy  = $orderCols[$orderIdx] ?? 'voucher_issues.issued_at';
 
@@ -89,6 +90,7 @@ class MyVoucherController extends BaseController
                 ->like('voucher_issues.code', $search)
                 ->orLike('voucher_issues.guest_voucher', $search)
                 ->orLike('voucher_issues.guest_name', $search)
+                ->orLike('voucher_issues.supplier', $search)
                 ->groupEnd();
         }
 
@@ -175,7 +177,13 @@ class MyVoucherController extends BaseController
         // คอลัมน์เลือก (checkbox) — value = id ของ voucher issue ใช้พิมพ์ตั๋วหลายใบ
         $cChk = '<input type="checkbox" class="form-check-input vch-pick" value="' . (int) $row['id'] . '" aria-label="select">';
 
-        return [$cChk, $c1, $c2, $c3, $c4, $c5, $c6, $c7];
+        // คอลัมน์ผู้จัดจำหน่าย (supplier/vendor) — ว่างแสดงขีด
+        $supplier = trim((string) ($row['supplier'] ?? ''));
+        $cSup = $supplier !== ''
+            ? '<span class="text-truncate d-inline-block" style="max-width:180px">' . esc($supplier) . '</span>'
+            : '<span class="np-stat-sub">—</span>';
+
+        return [$cChk, $cSup, $c1, $c2, $c3, $c4, $c5, $c6, $c7];
     }
 
     // คืนข้อมูลตั๋วของ id ที่เลือก (เฉพาะของผู้ใช้เอง) → JSON สำหรับพิมพ์หลายใบ

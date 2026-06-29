@@ -31,6 +31,9 @@ $active = $active ?? '';
             <a class="np-nav-item <?= $active === 'members' ? 'active' : '' ?>" href="<?= site_url('admin/members') ?>">
                 <i class="bi bi-people"></i><span class="flex-grow-1"><?= lang('Nav.members') ?></span>
             </a>
+            <a class="np-nav-item <?= $active === 'logs' ? 'active' : '' ?>" href="<?= site_url('admin/logs') ?>">
+                <i class="bi bi-clock-history"></i><span class="flex-grow-1"><?= lang('Nav.logs') ?></span>
+            </a>
         <?php else: ?>
             <a class="np-nav-item <?= $active === 'myvoucher' ? 'active' : '' ?>" href="<?= site_url('myvoucher') ?>">
                 <i class="bi bi-ticket-perforated"></i><span class="flex-grow-1"><?= lang('Nav.myvoucher') ?></span>

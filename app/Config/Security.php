@@ -24,7 +24,8 @@ class Security extends BaseConfig
      *
      * Randomize the CSRF Token for added security.
      */
-    public bool $tokenRandomize = false;
+    // สุ่มค่า token ทุก request (ป้องกัน BREACH); AJAX ในระบบ refresh token จาก response อยู่แล้ว
+    public bool $tokenRandomize = true;
 
     /**
      * --------------------------------------------------------------------------

@@ -157,7 +157,8 @@ class Auth extends ShieldAuth
      * --------------------------------------------------------------------
      * Determines whether users can register for the site.
      */
-    public bool $allowRegistration = true;
+    // ปิดสมัครสมาชิกเอง — ระบบให้ Admin เป็นผู้สร้าง member เท่านั้น
+    public bool $allowRegistration = false;
 
     /**
      * --------------------------------------------------------------------
@@ -181,7 +182,8 @@ class Auth extends ShieldAuth
      * could be modified as the only method of login once an account
      * has been set up.
      */
-    public bool $allowMagicLinkLogins = true;
+    // ปิด magic-link login — ใช้เฉพาะ username/password
+    public bool $allowMagicLinkLogins = false;
 
     /**
      * --------------------------------------------------------------------

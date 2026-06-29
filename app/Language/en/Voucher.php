@@ -21,48 +21,39 @@ return [
     'termsBody1'     => "Activities conducted online using the Inaba Foods guest free wireless network (Guest Network) must not violate any applicable law or regulation or the rights of Inaba Foods or any third party, and must not bring Inaba Foods’ name or reputation into disrepute.
                         Inaba Foods will cooperate fully with law enforcement upon receipt of notice that use of the Guest Network is in violation of applicable laws.  If you are unsure whether your use of the Guest Network and activities conducted online may violate these Terms and Conditions, you are advised to cease the activity immediately.",
     'termsBtn2'      => 'User obligations and limitations',
-    'termsBody2'     => "The Guest Network is intended to be used in an appropriate manner.  Inaba Foods may, at its discretion, block or limit access to certain websites that you may seek to access while using the Guest Network.
-                        This includes but is not limited to websites and/or services that:
-                        \u{00A0}\u{00A0}\u{00A0}(a) could interfere with the integrity and/or performance of the Guest Network or Inaba foods’ other networks or equipment.
-                        \u{00A0}\u{00A0}\u{00A0}(b) contain any viruses, malware or other computer programming routines that may damage, modify, delete, detrimentally interfere with, or access without authority any Inaba Foods system, data or personal information.
-                        \u{00A0}\u{00A0}\u{00A0}(c) provide access to, create, store, distribute or display offensive, pornographic or illegal text, graphics, audio or video.
-                        \u{00A0}\u{00A0}\u{00A0}(d) are used for online gambling.
-                        \u{00A0}\u{00A0}\u{00A0}(e) are used to harass or attempt to harass other people.
-                        \u{00A0}\u{00A0}\u{00A0}(f) are offensive or promote racism, bigotry, hatred or physical harm of any kind against any group or individual.
-                        \u{00A0}\u{00A0}\u{00A0}(g) promote conduct that is abusive, threatening, obscene, defamatory or libelous.
-                        \u{00A0}\u{00A0}\u{00A0}(h) further or promote any criminal activity or enterprise, or provide instructional information about illegal activities, including but not limited to:
-                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(i) making or buying illegal weapons.
-                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(ii) violating someone’s privacy, or
-                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(iii) creating computer viruses or malware.
-                        The Guest Network must not be used to stream or download TV, movies, share music, video or other files.
-                        Inaba Foods will take reasonable steps to make sure access through the Guest Network connection is secure, however we cannot guarantee the security of the Guest Network at all times.
-                        You are solely responsible for any information or data uploaded, downloaded or otherwise communicated using the Guest Network, and are responsible for keeping all user names, passwords and other security based information secure and private at all times.
-                        Inaba Foods will not be responsible or liable for any kind of loss or damage incurred as a result of use of the Guest Network.
-                        Inaba Foods strongly recommends you install a personal antivirus and firewall on your wireless enabled device to block unwanted traffic and potentially malicious files.
+    'termsBody2'     => "Users of the Guest Wi-Fi network must use the network appropriately and in compliance with applicable laws, regulations, and company policies, subject to the following requirements:
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(a) Accessing websites containing inappropriate content or content that may pose a risk to information security, such as gambling, pornography, or websites related to illegal activities, is prohibited.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(b) Downloading software from untrusted sources, pirated software, or files that may contain viruses, malware, or other malicious programs is prohibited.contain any viruses, malware or other computer programming routines that may damage, modify, delete, detrimentally interfere with, or access without authority any Inaba Foods system, data or personal information.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(c) Downloading, transmitting, or distributing media or information containing pornographic, obscene, or illegal content is prohibited.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(d) Using the network for online gaming, watching movies, listening to music, or other activities unrelated to business purposes is prohibited.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(e) Using the Internet to transmit, distribute, or disclose confidential company information or personal data without authorization is prohibited.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(f) Participating in, supporting, or engaging in any activity that may affect the company’s reputation, image, or credibility is prohibited.
                         ",
     'termsBtn3'      => "Requester Responsibilities",
-    'termsBody3'     => "The employee requesting Guest Wi-Fi access (Requester) is responsible for ensuring that the guest is aware of and complies with these Terms and Conditions.
-                        The Requester shall only request Guest Wi-Fi access for legitimate business purposes and must provide accurate guest information during the request process.
-                        The Requester is responsible for notifying the IT Department if the Guest Wi-Fi access is no longer required or if any misuse is suspected.
-                        Inaba Foods reserves the right to revoke Guest Wi-Fi access at any time if the Requester or Guest violates these Terms and Conditions.
+    'termsBody3'     => "Employees requesting Guest Wi-Fi access are responsible for the following:
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(a) Requesting Guest Wi-Fi access only when necessary and related to the company’s business operations.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(b) Providing accurate and complete information about visitors or Guest Wi-Fi users.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(c) Informing users of and ensuring compliance with the company’s Guest Wi-Fi terms, conditions, and usage policy.
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}(d) Immediately notify the IT Department when Guest Wi-Fi access is no longer required or when inappropriate use is identified.
                         ",
     'termsBtn4'      => 'Privacy',
-    'termsBody4'     => "Inaba Foods is committed to safeguarding personal privacy.  It recognizes that individuals have a right to control how their personal information is collected and used.
-                        Inaba Foods will only collect, use and store your personal information for the purposes of delivering access to the Guest Network, monitoring conduct on the Guest Network, ensuring compliance with these Terms and Conditions, and reporting conduct on the Guest Network to third parties as permitted by law.
-                        Inaba Foods will collect and store the IP and MAC address of the wireless enabled device that has accessed the Guest Network, the date and time of access, the duration of access, domains and sites contacted or visited from that IP and/or MAC address, and, for the purpose of assuring compliance with these Terms and Conditions, metadata of any information, data or files transmitted to or from the Guest Network.
-                        Inaba Foods is not in any way responsible for how any third party (including but not limited to any website that you access and/or use through the Guest Network) collects and/or uses your personal information.  You are solely responsible for checking the terms of use and privacy policy of each website you visit on a case by case basis and determining whether you accept such terms of use and/or privacy policies.
-                        ",
+    'termsBody4'     => "The company may monitor, record, and retain Guest Wi-Fi usage information for information security, legal compliance, and network management purposes. Such information may include:
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}• The IP Address and MAC Address of connected devices
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}• The date, time, and duration of use
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}• Websites or domains accessed
+                        \u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}• Log information necessary for security incident investigation
+                        The company will store and use such information in accordance with applicable laws and relevant personal data protection policies.
+                       ",
     'termsBtn5'      => 'Policy',
-    'termsBody5'     => "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+    'termsBody5'     => "The company reserves the right to control, define, or restrict access to certain websites and services in order to maintain the security of the organization’s network systems and data.
+                        Guest Wi-Fi must be used for appropriate business purposes only and must not violate any laws, public morals, or company requirements.
+                        The company reserves the right to immediately suspend, terminate, or revoke Guest Wi-Fi access if any violation of the terms, policies, or any use that may cause damage to the organization’s information systems, reputation, or interests are detected.
                         ",
     'termsAccept'   => 'I have read and accept the Terms of Use',
     'guestsTitle'   => 'Guest details',
     'guestsSub'     => 'Enter one guest per voucher',
     'guestSupplier' => 'Supplier / Vendor',
+    'colSupplier'   => 'Supplier',
     'guestFirst'    => 'First name',
     'guestLast'     => 'Last name',
     'guestPhone'    => 'Phone number',
@@ -71,7 +62,13 @@ return [
     'errGuestIncomplete' => 'Please fill in all guest fields (row {0})',
     'errMaxStock'   => 'Only {0} left — cannot add more guests',
     'errMaxGuest'   => 'Maximum {0} per request',
-    'errRequired'   => 'Required',
+    'errRequired'   => 'Please fill out this field',
+    'errPhoneInvalid' => 'Invalid phone number (e.g. 0812345678)',
+    'errDupPhone'   => 'This phone number is already used in another row',
+    'errDupPhoneRow' => 'Duplicate phone number (row {0})',
+    'errDupName'    => 'This name is already used in another row',
+    'errDupNameRow' => 'Duplicate name (row {0})',
+    'errSupplierRequired' => 'Please enter the supplier',
     'confirmCount'  => 'Quantity',
     'confirmCountUnit' => '{0} voucher(s)',
     'issuedTitle'   => 'Vouchers issued',

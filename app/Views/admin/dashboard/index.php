@@ -17,16 +17,16 @@ $stats = [
 
 <!-- STAT CARDS -->
 <div class="row g-3">
-    <?php foreach ($stats as $stat): ?>
+    <?php foreach ($stats as $i => $stat): ?>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="np-card np-card-pad h-100 np-card-hover">
+            <div class="np-card np-card-pad h-100 np-card-hover np-rise" style="--d:<?= $i * 70 ?>ms">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="np-stat-icon" style="background:<?= $stat['soft'] ?>;color:<?= $stat['color'] ?>">
                         <i class="bi <?= $stat['icon'] ?>"></i>
                     </div>
                     <span class="np-chip"><?= esc($stat['trend']) ?></span>
                 </div>
-                <div class="np-stat-value"><?= esc(number_format((int) $stat['value'])) ?></div>
+                <div class="np-stat-value np-countup" data-count="<?= (int) $stat['value'] ?>"><?= esc(number_format((int) $stat['value'])) ?></div>
                 <div class="np-stat-label"><?= esc($stat['label']) ?></div>
                 <div class="np-stat-sub"><?= esc($stat['sub']) ?></div>
             </div>
@@ -55,10 +55,10 @@ $stats = [
                     <span class="np-bar-gl" style="bottom:25%"></span>
                     <span class="np-bar-gl" style="bottom:50%"></span>
                     <span class="np-bar-gl" style="bottom:75%"></span>
-                    <?php foreach ($chart as $point): ?>
+                    <?php foreach ($chart as $bi => $point): ?>
                         <div class="flex-fill d-flex flex-column justify-content-end np-bar-col">
                             <span class="np-bar-val"><?= esc($point['val']) ?></span>
-                            <div class="np-bar" style="width:100%;max-width:40px;margin:0 auto;height:<?= max(4, (int) $point['h']) ?>%;background:linear-gradient(180deg,#5B92E0,#3B7DDD);border-radius:8px 8px 4px 4px"></div>
+                            <div class="np-bar np-bar-grow" style="--d:<?= $bi * 60 ?>ms;width:100%;max-width:40px;margin:0 auto;height:<?= max(4, (int) $point['h']) ?>%;background:linear-gradient(180deg,#5B92E0,#3B7DDD);border-radius:8px 8px 4px 4px"></div>
                         </div>
                     <?php endforeach ?>
                 </div>
@@ -96,7 +96,7 @@ $stats = [
                         <span style="font-size:13px;font-weight:600;color:var(--np-text-2);font-feature-settings:'tnum'"><?= esc($instock) ?><span style="color:var(--np-muted-3);font-weight:500"> / <?= esc($total) ?></span></span>
                     </div>
                     <div class="progress" style="height:7px;background:#EEF1F6">
-                        <div class="progress-bar" style="width:<?= $pct ?>%;background:<?= $color ?>"></div>
+                        <div class="progress-bar np-prog-grow" style="--d:<?= $i * 80 ?>ms;width:<?= $pct ?>%;background:<?= $color ?>"></div>
                     </div>
                 </div>
             <?php endforeach ?>
@@ -119,9 +119,9 @@ $stats = [
         <div class="text-center np-stat-sub py-4"><?= lang('Dashboard.noActivity') ?></div>
     <?php else: ?>
         <div class="d-flex flex-column">
-            <?php foreach ($recent as $row): ?>
+            <?php foreach ($recent as $ri => $row): ?>
                 <?php $ok = ($row['status'] ?? '') === 'active'; ?>
-                <div class="np-recent-item d-flex align-items-center gap-3">
+                <div class="np-recent-item d-flex align-items-center gap-3 np-rise" style="--d:<?= $ri * 50 ?>ms">
                     <div class="np-avatar" style="width:38px;height:38px;font-size:13px;border-radius:12px"><i class="bi bi-ticket-perforated"></i></div>
                     <div class="flex-grow-1 min-w-0">
                         <div style="font-size:13.5px;font-weight:600" class="text-truncate">
@@ -139,4 +139,11 @@ $stats = [
         </div>
     <?php endif ?>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<?php // cache-busting: ผูกเวอร์ชันกับเวลาที่แก้ไฟล์ → browser ดึงตัวใหม่เมื่อโค้ดเปลี่ยน
+$dashJs  = FCPATH . 'assets/js/dashboard.js';
+$dashVer = is_file($dashJs) ? filemtime($dashJs) : '1'; ?>
+<script src="<?= base_url('assets/js/dashboard.js') ?>?v=<?= $dashVer ?>"></script>
 <?= $this->endSection() ?>

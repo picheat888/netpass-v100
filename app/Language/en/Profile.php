@@ -66,6 +66,7 @@ return [
     'pwdGood'         => 'Good',
     'pwdStrong'       => 'Strong',
     'positionLocked'  => 'Position is set by an administrator',
+    'fieldLocked'     => 'This information is set by an administrator',
 
     // ── Avatar crop ──
     'photoTitle'      => 'Profile photo',

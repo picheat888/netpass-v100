@@ -53,36 +53,68 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
-                <button type="submit" class="btn btn-np"><?= lang('Common.save') ?></button>
+                <!-- disabled ไว้ก่อน เปิดเมื่อมีการแก้ไขจริง (JS) -->
+                <button type="submit" class="btn btn-np" id="editSaveBtn" disabled><?= lang('Common.save') ?></button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- ยืนยันลบ voucher (branded — โทนแดง กว้าง 430) -->
-<div class="modal fade np-modal np-modal-confirm" id="vDeleteModal" tabindex="-1">
+<!-- ยืนยันการแก้ไข voucher (confirm) — เด้งทับ edit modal ก่อน submit, โชว์ค่าเดิม → ค่าใหม่ -->
+<div class="modal fade np-dialog-modal" id="editConfirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <form class="modal-content" method="post" id="vDeleteForm" action="">
+        <div class="modal-content np-dialog">
+            <div class="dlg-head">
+                <span class="dlg-ico is-confirm"><i class="bi bi-pencil-square"></i></span>
+                <div class="dlg-htext">
+                    <h5><?= lang('Pool.editConfirmTitle') ?></h5>
+                    <p><?= lang('Pool.editConfirmSub') ?></p>
+                </div>
+                <button type="button" class="dlg-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="dlg-body">
+                <p><?= lang('Pool.editConfirmBody') ?></p>
+                <!-- ตารางเทียบค่าเดิม → ค่าใหม่ (เติมด้วย JS เฉพาะช่องที่เปลี่ยน) -->
+                <table class="dlg-cmp-table">
+                    <thead>
+                        <tr><th><?= lang('Common.changeField') ?></th><th><?= lang('Common.changeOld') ?></th><th><?= lang('Common.changeNew') ?></th></tr>
+                    </thead>
+                    <tbody id="editDiffBody"></tbody>
+                </table>
+            </div>
+            <div class="dlg-foot">
+                <button type="button" class="dlg-btn dlg-btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
+                <button type="button" class="dlg-btn dlg-btn-confirm" id="editConfirmBtn"><i class="bi bi-check-lg"></i> <?= lang('Pool.editSaveChanges') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ยืนยันลบ voucher (delete) -->
+<div class="modal fade np-dialog-modal" id="vDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content np-dialog" method="post" id="vDeleteForm" action="">
             <?= csrf_field() ?>
-            <div class="modal-header">
-                <span class="np-modal-ico is-danger"><i class="bi bi-trash3-fill"></i></span>
-                <div class="np-modal-htext">
+            <div class="dlg-head">
+                <span class="dlg-ico is-delete"><i class="bi bi-trash3-fill"></i></span>
+                <div class="dlg-htext">
                     <h5><?= lang('Pool.deleteTitle') ?></h5>
                     <p><?= lang('Pool.deleteSub') ?></p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-0"><?= lang('Pool.confirmDelete') ?></p>
-                <p class="fw-semibold mt-1 mb-0 font-mono" id="vDeleteUser"></p>
-                <div class="np-callout is-danger">
+                <button type="button" class="dlg-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+                <div class="dlg-callout is-delete">
                     <i class="bi bi-exclamation-octagon-fill"></i>
                     <span><?= lang('Pool.deleteImpact') ?></span>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
-                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i><?= lang('Common.delete') ?></button>
+            <div class="dlg-body is-centered">
+                <div class="dlg-warn-ico is-delete"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <p><?= lang('Pool.confirmDelete') ?></p>
+                <p class="dlg-target font-mono" id="vDeleteUser"></p>
+            </div>
+            <div class="dlg-foot">
+                <button type="button" class="dlg-btn dlg-btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
+                <button type="submit" class="dlg-btn dlg-btn-delete"><i class="bi bi-trash"></i> <?= lang('Common.delete') ?></button>
             </div>
         </form>
     </div>
@@ -91,42 +123,15 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// edit modal — เติมค่าจากปุ่มที่กด (รองรับแถวที่ DataTables สร้างใหม่)
-document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
-    const b = e.relatedTarget; if (!b) return;
-    document.getElementById('editForm').action = '<?= site_url('admin/pool/voucher') ?>/' + b.dataset.id + '/update';
-    document.getElementById('editUser').value = b.dataset.user;
-    document.getElementById('editPass').value = b.dataset.pass;
-});
-
-// delete voucher modal — เติม action + username จากปุ่มที่กด
-document.getElementById('vDeleteModal').addEventListener('show.bs.modal', function (e) {
-    const b = e.relatedTarget; if (!b) return;
-    document.getElementById('vDeleteForm').action = '<?= site_url('admin/pool/voucher') ?>/' + b.dataset.id + '/delete';
-    document.getElementById('vDeleteUser').textContent = b.dataset.user || '';
-});
-
-// ตาราง DataTables server-side
-document.addEventListener('DOMContentLoaded', function () {
-    const stSel = document.getElementById('stStatus');
-    const dt = NetPass.dataTable('#poolDetailTable', {
-        filters: '#stToolbar',
-        ajax: {
-            url: '<?= site_url('admin/pool/location/' . $location['id'] . '/data') ?>',
-            data: function (d) { d.status = stSel.value; }
-        },
-        order: [],
-        columns: [
-            { orderable: false },                       // ลำดับ (#)
-            { orderable: true },                        // username
-            { orderable: false },                       // password
-            { orderable: true },                        // ระยะเวลา
-            { orderable: true },                        // สถานะ
-            { orderable: true },                        // วันที่นำเข้า
-            { orderable: false, className: 'text-end' } // จัดการ
-        ]
-    });
-    stSel.addEventListener('change', function () { dt.ajax.reload(); });
-});
+// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
+window.NP_POOL_DETAIL = {
+    voucherBaseUrl: '<?= site_url('admin/pool/voucher') ?>',
+    dataUrl:        '<?= site_url('admin/pool/location/' . $location['id'] . '/data') ?>',
+    i18n: {
+        username: <?= json_encode(lang('Pool.username')) ?>,
+        password: <?= json_encode(lang('Pool.password')) ?>,
+    },
+};
 </script>
+<script><?= file_get_contents(__DIR__ . '/detail.js') ?></script>
 <?= $this->endSection() ?>

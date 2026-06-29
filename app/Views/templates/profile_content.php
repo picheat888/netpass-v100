@@ -86,26 +86,30 @@ $fieldErr = static function (array $errs, string $key): string {
                 <!-- file input ของ avatar (ซ่อน เปิดผ่านปุ่มกล้องบน avatar) -->
                 <input type="file" id="avatarInput" name="avatar" accept="image/png,image/jpeg" hidden>
 
+<?php /* ฝั่ง user ล็อกช่อง email/ชื่อ/นามสกุล (admin เป็นผู้กำหนด) — admin ยังแก้ได้ */ ?>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Profile.email') ?> <span class="np-req">*</span></label>
+                    <label class="form-label"><?= lang('Profile.email') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
                     <input type="email" name="email" class="form-control<?= $invalid($infoErrors, 'email') ?>" maxlength="254"
                            placeholder="<?= esc(lang('Profile.phEmail'), 'attr') ?>"
-                           value="<?= esc(old('email', $user->email ?? '')) ?>">
+                           value="<?= esc(old('email', $user->email ?? '')) ?>"<?= $isAdmin ? '' : ' disabled' ?>>
+                    <?php if (! $isAdmin): ?><p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.fieldLocked') ?></p><?php endif ?>
                     <?= $fieldErr($infoErrors, 'email') ?>
                 </div>
                 <div class="row g-3">
                     <div class="col-sm-6 np-field">
-                        <label class="form-label"><?= lang('Profile.firstName') ?> <span class="np-req">*</span></label>
+                        <label class="form-label"><?= lang('Profile.firstName') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
                         <input type="text" name="firstname" class="form-control<?= $invalid($infoErrors, 'firstname') ?>" maxlength="150"
                                placeholder="<?= esc(lang('Profile.phFirstname'), 'attr') ?>"
-                               value="<?= esc(old('firstname', $pFirst)) ?>">
+                               value="<?= esc(old('firstname', $pFirst)) ?>"<?= $isAdmin ? '' : ' disabled' ?>>
+                        <?php if (! $isAdmin): ?><p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.fieldLocked') ?></p><?php endif ?>
                         <?= $fieldErr($infoErrors, 'firstname') ?>
                     </div>
                     <div class="col-sm-6 np-field">
-                        <label class="form-label"><?= lang('Profile.lastName') ?> <span class="np-req">*</span></label>
+                        <label class="form-label"><?= lang('Profile.lastName') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
                         <input type="text" name="lastname" class="form-control<?= $invalid($infoErrors, 'lastname') ?>" maxlength="150"
                                placeholder="<?= esc(lang('Profile.phLastname'), 'attr') ?>"
-                               value="<?= esc(old('lastname', $pLast)) ?>">
+                               value="<?= esc(old('lastname', $pLast)) ?>"<?= $isAdmin ? '' : ' disabled' ?>>
+                        <?php if (! $isAdmin): ?><p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.fieldLocked') ?></p><?php endif ?>
                         <?= $fieldErr($infoErrors, 'lastname') ?>
                     </div>
                 </div>

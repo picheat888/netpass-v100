@@ -299,6 +299,31 @@ window.NetPass = window.NetPass || {};
         });
     };
 
+    // บันทึกการ์ดตั๋ว (.vm-ticket-wrap) เป็นรูป PNG — โคลนนอกจอ แล้วเรนเดอร์ด้วย html-to-image
+    // ตัดปุ่ม copy ออก + แทนไอคอน wifi (icon font) ด้วย inline SVG ให้ติดมาในรูป
+    NP.saveCardImage = async function (cardEl, filename) {
+        if (! cardEl || ! window.htmlToImage) { return; }
+        var holder = document.createElement('div');
+        holder.className = 'np-capture';   // บังคับการ์ดเป็นแนวนอนเหมือนตอนพิมพ์
+        holder.style.cssText = 'position:fixed;left:-99999px;top:0;width:730px;background:#fff;';
+        holder.appendChild(cardEl.cloneNode(true));
+        holder.querySelectorAll('.vm-copy').forEach(function (el) { el.remove(); });
+        var titleIcon = holder.querySelector('.vm-ticket-title i');
+        if (titleIcon) { titleIcon.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="#3b7ddd" viewBox="0 0 16 16" style="flex-shrink:0"><path d="M15.384 6.115a.485.485 0 0 0-.047-.736A12.444 12.444 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049z"/><path d="M13.229 8.271c.216-.216.194-.578-.063-.745A9.456 9.456 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7c1.689 0 3.24.5 4.576 1.336.206.132.48.108.653-.065zm-2.183 2.183c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.06 0-2.062.254-2.946.704-.285.145-.326.524-.1.75l.015.015c.16.16.408.19.611.09A5.478 5.478 0 0 1 8 10c.764 0 1.49.156 2.15.435.203.1.45.07.611-.09l.085-.092zM9.06 12.44c.196-.196.198-.52-.04-.66A1.99 1.99 0 0 0 8 11.5a1.99 1.99 0 0 0-1.02.28c-.238.14-.236.464-.04.66l.706.706a.5.5 0 0 0 .707 0l.707-.707z"/></svg>'; }
+        document.body.appendChild(holder);
+        try {
+            await document.fonts.ready;   // กันฟอนต์ไทยยังโหลดไม่เสร็จ
+            var node = holder.querySelector('.vm-ticket-wrap');
+            var dataUrl = await htmlToImage.toPng(node, { pixelRatio: 2, backgroundColor: '#ffffff' });
+            var a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'voucher-' + (filename || 'wifi') + '.png';
+            a.click();
+        } finally {
+            holder.remove();
+        }
+    };
+
     // เปิดใช้กับ select ทั้งหน้าเมื่อโหลดเสร็จ (toolbar filters / ฟอร์ม)
     document.addEventListener('DOMContentLoaded', function () {
         NP.enhanceSelects(document);

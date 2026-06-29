@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\LocationModel;
+use App\Services\ActivityLog;
 
 /**
  * จัดการพื้นที่ (Location) — สร้าง / แก้ไข / ลบ พร้อม SSID และชื่อภาษาอังกฤษ
@@ -50,10 +51,18 @@ class LocationController extends BaseController
                 ->with('loc_form', 'add');
         }
 
-        $model->insert([
+        $data = [
             'name'    => $this->request->getPost('name'),
             'name_en' => $this->request->getPost('name_en'),
             'ssid'    => $this->request->getPost('ssid'),
+        ];
+        $newId = $model->insert($data);
+
+        ActivityLog::record('location.create', [
+            'target_type'  => 'location',
+            'target_id'    => $newId,
+            'target_label' => $data['name_en'] ?: $data['name'],
+            'details'      => $data,
         ]);
 
         return redirect()->to(site_url('admin/pool'))->with('message', lang('Location.created'));
@@ -78,10 +87,21 @@ class LocationController extends BaseController
                 ->with('loc_edit_id', $id);
         }
 
-        $model->update($id, [
+        $new = [
             'name'    => $this->request->getPost('name'),
             'name_en' => $this->request->getPost('name_en'),
             'ssid'    => $this->request->getPost('ssid'),
+        ];
+        $model->update($id, $new);
+
+        ActivityLog::record('location.update', [
+            'target_type'  => 'location',
+            'target_id'    => $id,
+            'target_label' => $new['name_en'] ?: $new['name'],
+            'details'      => [
+                'before' => ['name' => $loc['name'], 'name_en' => $loc['name_en'], 'ssid' => $loc['ssid']],
+                'after'  => $new,
+            ],
         ]);
 
         return redirect()->to(site_url('admin/pool'))->with('message', lang('Location.updated'));
@@ -103,6 +123,13 @@ class LocationController extends BaseController
         }
 
         $model->delete($id);
+
+        ActivityLog::record('location.delete', [
+            'target_type'  => 'location',
+            'target_id'    => $id,
+            'target_label' => ($loc['name_en'] ?? '') ?: ($loc['name'] ?? ''),
+            'details'      => ['name' => $loc['name'], 'name_en' => $loc['name_en'], 'ssid' => $loc['ssid']],
+        ]);
 
         return redirect()->to(site_url('admin/pool'))->with('message_danger', lang('Location.deleted'));
     }

@@ -22,7 +22,7 @@ return [
     'errNameEnRequired' => 'Please enter the location name (EN).',
     'errNameMax'      => 'Location name must not exceed 150 characters.',
     'errNameEnMax'    => 'English name must not exceed 150 characters.',
-    'errSsidRequired' => 'Please enter the SSID.',
+    'errSsidRequired' => 'Please enter the SSID Name.',
     'errSsidMax'      => 'SSID must not exceed 100 characters.',
     'searchPlaceholder' => 'Search name / SSID…',
     'colName'     => 'Location name',

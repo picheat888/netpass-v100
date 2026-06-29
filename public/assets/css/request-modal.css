@@ -162,6 +162,7 @@
 
 .np-rq-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
@@ -202,9 +203,10 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23d92d20'/%3E%3Ccircle cx='8' cy='4.7' r='1' fill='white'/%3E%3Crect x='7.1' y='6.6' width='1.8' height='5.2' rx='.9' fill='white'/%3E%3C/svg%3E");
 }
 
-/* validation รวมใน Step 4 ยืดเต็มความกว้างเท่าการ์ด guest */
-#reqStep4 .np-valid-alert {
+/* alert จำนวน guest เกิน max: ยืดเต็มความกว้างหัว step (ตกลงบรรทัดใหม่ใต้ title/ปุ่ม) */
+.np-rq-top .np-valid-alert:not(.d-none) {
   display: flex;
+  flex: 0 0 100%;
 }
 
 .np-rq-top #reqStepTitle {
@@ -238,7 +240,7 @@
 }
 
 .np-rq-body {
-  padding: 16px 24px 8px;
+  padding: 0px 24px 8px;
   overflow-y: auto;
   max-height: 54vh;
 }
@@ -502,8 +504,12 @@
   background-size: 15px 15px;
 }
 
-/* supplier = ตึก/บริษัท */
-.np-guest-row .g-sup {
+/* supplier = ตึก/บริษัท (ช่องเดียวเหนือรายชื่อ) */
+#reqSupplier {
+  padding-left: 32px;
+  background-repeat: no-repeat;
+  background-position: 11px center;
+  background-size: 15px 15px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='2.5' width='9' height='11' rx='1'/%3E%3Cpath d='M6 5.3h1.2M8.8 5.3H10M6 7.8h1.2M8.8 7.8H10M6.8 13.5v-2.4h2.4v2.4'/%3E%3C/svg%3E");
 }
 
@@ -518,8 +524,9 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.4 2.6 6.9 5.7 5.5 7a7.5 7.5 0 0 0 3.5 3.5l1.3-1.4 3.1 1.5v2.1c0 .6-.5 1.1-1.2 1A11.4 11.4 0 0 1 2.3 4.7C2.2 4 2.7 3.5 3.3 3.5z'/%3E%3C/svg%3E");
 }
 
-/* ข้อความ validation ใต้ช่อง: (i) ข้อความ สีแดง — ซ่อนไว้จนกว่าจะ .show */
-.np-field-err {
+/* ข้อความ validation ใต้ช่องใน Request Modal: (i) ข้อความ สีแดง — ซ่อนไว้จนกว่าจะ .show
+   scope ที่ #requestModal เพื่อไม่ทับ .np-field-err สากลใน style.css (หน้าอื่นโชว์ error ได้เลยไม่ต้องมี .show) */
+#requestModal .np-field-err {
   display: none;
   align-items: center;
   gap: 4px;
@@ -529,12 +536,12 @@
   color: #d92d20;
 }
 
-.np-field-err.show {
+#requestModal .np-field-err.show {
   display: flex;
 }
 
 /* ไอคอน (i) เล็ก หน้า ข้อความ — SVG ฝัง ไม่พึ่ง icon font / ไม่โดน textContent ทับ */
-.np-field-err::before {
+#requestModal .np-field-err::before {
   content: "";
   flex-shrink: 0;
   width: 12px;
@@ -572,6 +579,33 @@
 .np-guest-del:hover {
   background: #fde8e8;
   color: #c92a2a;
+}
+
+/* ช่อง Supplier เดียวต่อ request — label กับ input อยู่แถวเดียวกัน, error ตกบรรทัดใหม่ */
+.np-guest-supplier {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 14px;
+}
+
+.np-guest-supplier .form-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+/* input กินพื้นที่ที่เหลือบนแถวเดียวกับ label */
+.np-guest-supplier .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ข้อความ error ตกลงเต็มความกว้างใต้แถว label+input */
+.np-guest-supplier .np-field-err {
+  flex: 0 0 100%;
 }
 
 .np-guest-add {

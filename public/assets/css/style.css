@@ -935,6 +935,13 @@ body {
   padding: 20px 22px 16px;
 }
 
+/* กลุ่มปุ่มด้านขวาของหัว modal (บันทึกรูป + ปิด) */
+.vm-head-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .vm-status-pill {
   display: inline-flex;
   align-items: center;
@@ -1857,6 +1864,69 @@ body {
 }
 
 /* ==========================================================================
+   13.1 หน้า Error — ย้ายไป public/assets/css/error.css
+   (โหลดเฉพาะหน้า error เพื่อให้เพจเบา ไม่พึ่ง style.css/bootstrap)
+   ========================================================================== */
+
+/* ==========================================================================
+   13.2 Dashboard — เอนิเมชันตอนโหลด (การ์ด rise / แท่งกราฟโต / progress ยืด)
+   stagger ผ่านตัวแปร --d (ตั้ง inline ตาม index)
+   ========================================================================== */
+.np-rise {
+  animation: np-rise 0.5s ease both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes np-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.np-bar-grow {
+  transform-origin: bottom;
+  animation: np-bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes np-bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.np-prog-grow {
+  transform-origin: left;
+  animation: np-prog-grow 0.9s ease both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes np-prog-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .np-rise,
+  .np-bar-grow,
+  .np-prog-grow {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
    14. DataTables (server-side) — จัด toolbar/footer ให้เหมือนตารางเดิมของ NetPass
    โครง DT2: row[0]=toolbar (search+filters | action), row กลาง=table, row[สุดท้าย]=footer
    ========================================================================== */
@@ -1944,7 +2014,8 @@ body {
 }
 
 #vfToolbar .ts-wrapper,
-#stToolbar .ts-wrapper {
+#stToolbar .ts-wrapper,
+#lgToolbar .ts-wrapper {
   width: 200px;
   min-width: 200px;
 }
@@ -2383,6 +2454,8 @@ table.np-table.dataTable > tbody tr:last-child > td {
   transform: none;
   opacity: 1;
 }
+
+/* Dialog (.np-dialog / .dlg-*) -> assets/css/dialog.css (global, reusable) */
 
 .np-icon-sm {
   transition:
@@ -2990,7 +3063,8 @@ table.np-table.dataTable > tbody tr:last-child > td {
   /* ฟิลเตอร์ Location/Status กว้าง 158px */
   #vfToolbar .ts-wrapper,
   #mbToolbar .ts-wrapper,
-  #stToolbar .ts-wrapper {
+  #stToolbar .ts-wrapper,
+  #lgToolbar .ts-wrapper {
     width: 158px;
     min-width: 158px;
   }
@@ -3074,14 +3148,16 @@ table.np-table.dataTable > tbody tr:last-child > td {
   }
   #vfToolbar .ts-wrapper,
   #mbToolbar .ts-wrapper,
-  #stToolbar .ts-wrapper {
+  #stToolbar .ts-wrapper,
+  #lgToolbar .ts-wrapper {
     flex: 1 1 0;
     width: auto;
     min-width: 0;
   }
   #vfToolbar .ts-control,
   #mbToolbar .ts-control,
-  #stToolbar .ts-control {
+  #stToolbar .ts-control,
+  #lgToolbar .ts-control {
     min-height: 42px;
   }
 
@@ -3460,4 +3536,205 @@ table.np-table.dataTable > tbody tr:last-child > td {
   .np-toast {
     transition: none;
   }
+}
+
+/* ==========================================================================
+   19. Activity Log — เซลล์ตาราง + badge การกระทำ
+   ========================================================================== */
+.np-log-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+  line-height: 1.3;
+}
+.np-log-time span {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--np-muted-2);
+}
+
+.np-log-actor {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: flex-start;
+}
+.np-log-actor-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+.np-log-actor-sub {
+  font-size: 11px;
+  color: var(--np-muted-2);
+}
+.np-log-role {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: #eef0f4;
+  color: var(--np-muted);
+  margin-top: 1px;
+}
+.np-log-role.is-admin {
+  background: #e8f0fb;
+  color: var(--np-blue);
+}
+
+/* badge การกระทำ — โทนตามชนิด */
+.np-log-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.np-log-badge i {
+  font-size: 13px;
+}
+.np-log-badge.is-info {
+  background: #e8f0fb;
+  color: var(--np-blue);
+}
+.np-log-badge.is-teal {
+  background: #e0f3f6;
+  color: var(--np-teal);
+}
+.np-log-badge.is-amber {
+  background: #fbefd7;
+  color: #b9790a;
+}
+.np-log-badge.is-warning {
+  background: #fdeede;
+  color: #c2620a;
+}
+.np-log-badge.is-danger {
+  background: #fdecec;
+  color: var(--np-red);
+}
+.np-log-badge.is-muted {
+  background: #eef0f4;
+  color: var(--np-muted);
+}
+
+/* การกระทำ — ข้อความสีตาม tone (ไม่มีพื้น badge) */
+.np-log-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.np-log-act i {
+  font-size: 13px;
+}
+.np-log-act.is-info {
+  color: var(--np-blue);
+}
+.np-log-act.is-teal {
+  color: var(--np-teal);
+}
+.np-log-act.is-amber {
+  color: #b9790a;
+}
+.np-log-act.is-warning {
+  color: #c2620a;
+}
+.np-log-act.is-danger {
+  color: var(--np-red);
+}
+.np-log-act.is-muted {
+  color: var(--np-muted);
+}
+
+/* ไม่บีบตาราง — เซลล์ไม่ตัดบรรทัด แล้วเลื่อนแนวนอนแทน */
+#logTable th,
+#logTable td {
+  white-space: nowrap;
+}
+
+.np-log-target {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.np-log-target-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+.np-log-target-type {
+  font-size: 11px;
+  color: var(--np-muted-2);
+}
+.np-log-ip {
+  font-size: 12px;
+  color: var(--np-muted);
+}
+/* เตือนช่วงวันที่ — อยู่ข้างช่อง To ในแถบตัวกรอง (จัดกึ่งกลางแนวตั้ง) */
+.np-export-err {
+  margin: 0;
+}
+
+/* IP — ล็อกความกว้างคงที่ (พอดี IPv4) เกินตัดด้วย … */
+.np-log-ipaddr {
+  display: inline-block;
+  width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-size: 12px;
+  color: var(--np-text-2);
+}
+
+/* แถวเดียวแนวนอน (flat) — ไม่ซ้อนบรรทัด */
+.np-log-dt {
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--np-text);
+}
+.np-log-dt b {
+  font-weight: 400;
+}
+.np-log-name {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--np-text);
+  white-space: nowrap;
+}
+.np-log-type {
+  font-size: 12.5px;
+  color: var(--np-text-2);
+  white-space: nowrap;
+}
+/* รายละเอียดย่อ — บรรทัดเดียว ตัดด้วย … (ดูเต็มที่ tooltip / ปุ่มดู) */
+.np-log-details {
+  display: inline-block;
+  width: 320px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-size: 12.5px;
+  color: var(--np-muted);
+}
+
+/* หัวข้อส่วนใน modal รายละเอียด (เช่น รายชื่อผู้รับ voucher) */
+.np-log-section {
+  margin: 16px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--np-muted-2);
 }

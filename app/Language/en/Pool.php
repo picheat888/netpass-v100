@@ -57,4 +57,9 @@ return [
     'deleteTitle'     => 'Delete voucher',
     'deleteSub'       => 'This action cannot be undone.',
     'deleteImpact'    => 'This voucher will be permanently removed from the pool.',
+    'editConfirmTitle' => 'Confirm changes',
+    'editConfirmSub'   => 'Review the changes before saving.',
+    'editConfirmBody'  => 'Changes to be saved',
+    'editSaveChanges'  => 'Save changes',
+    'editNoChange'     => 'No changes',
 ];

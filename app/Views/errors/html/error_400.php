@@ -1,84 +1,38 @@
+<?php
+
+/**
+ * หน้า 400 Bad Request — ดีไซน์ minimal (ตัวเลขใหญ่ไล่สีโทน warning)
+ * standalone page: โหลด url helper เอง (base_url/site_url ต้องใช้ได้)
+ */
+helper('url');
+$locale = service('request')->getLocale();
+$isEn   = $locale === 'en';
+$sub    = $isEn ? 'Bad request' : 'คำขอไม่ถูกต้อง';
+$text   = $isEn
+    ? "The request couldn't be understood. Check the address and try again."
+    : 'ระบบไม่เข้าใจคำขอนี้ โปรดตรวจสอบ URL แล้วลองใหม่อีกครั้ง';
+$btn    = $isEn ? 'Back to home' : 'กลับหน้าหลัก';
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= esc($locale) ?>">
 <head>
-    <meta charset="utf-8">
-    <title><?= lang('Errors.badRequest') ?></title>
-
-    <style>
-        div.logo {
-            height: 200px;
-            width: 155px;
-            display: inline-block;
-            opacity: 0.08;
-            position: absolute;
-            top: 2rem;
-            left: 50%;
-            margin-left: -73px;
-        }
-        body {
-            height: 100%;
-            background: #fafafa;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #777;
-            font-weight: 300;
-        }
-        h1 {
-            font-weight: lighter;
-            letter-spacing: normal;
-            font-size: 3rem;
-            margin-top: 0;
-            margin-bottom: 0;
-            color: #222;
-        }
-        .wrap {
-            max-width: 1024px;
-            margin: 5rem auto;
-            padding: 2rem;
-            background: #fff;
-            text-align: center;
-            border: 1px solid #efefef;
-            border-radius: 0.5rem;
-            position: relative;
-        }
-        pre {
-            white-space: normal;
-            margin-top: 1.5rem;
-        }
-        code {
-            background: #fafafa;
-            border: 1px solid #efefef;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            display: block;
-        }
-        p {
-            margin-top: 1.5rem;
-        }
-        .footer {
-            margin-top: 2rem;
-            border-top: 1px solid #efefef;
-            padding: 1em 2em 0 2em;
-            font-size: 85%;
-            color: #999;
-        }
-        a:active,
-        a:link,
-        a:visited {
-            color: #dd4814;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>400 · NetPass</title>
+    <link href="<?= base_url('assets/fonts/fonts.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/error.css') ?>" rel="stylesheet">
 </head>
-<body>
-<div class="wrap">
-    <h1>400</h1>
+<body class="np-err-body is-warning">
+    <main class="np-err">
+        <!-- icon minimal: คำขอผิดพลาด -->
+        <div class="np-err-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 16h.01"/><path d="M12 8v4"/><path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z"/></svg>
+        </div>
 
-    <p>
-        <?php if (ENVIRONMENT !== 'production') : ?>
-            <?= nl2br(esc($message)) ?>
-        <?php else : ?>
-            <?= lang('Errors.sorryBadRequest') ?>
-        <?php endif; ?>
-    </p>
-</div>
+        <h1 class="np-err-num">400</h1>
+        <h2 class="np-err-sub"><?= esc($sub) ?></h2>
+        <p class="np-err-text"><?= esc($text) ?></p>
+        <a class="np-err-link" href="<?= site_url('/') ?>"><?= esc($btn) ?></a>
+    </main>
 </body>
 </html>

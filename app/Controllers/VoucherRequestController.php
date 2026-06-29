@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\LocationModel;
 use App\Models\VoucherIssueModel;
 use App\Models\VoucherModel;
+use App\Services\ActivityLog;
 use CodeIgniter\HTTP\ResponseInterface;
 
 /**
@@ -19,6 +20,7 @@ class VoucherRequestController extends BaseController
 
         $locationId = (int) $this->request->getPost('location_id');
         $duration   = trim((string) $this->request->getPost('duration'));
+        $supplier   = trim((string) $this->request->getPost('supplier'));   // supplier ค่าเดียวใช้กับ guest ทุกคน
         $guests     = $this->request->getPost('guests');
         $guests     = is_array($guests) ? array_values($guests) : [];
 
@@ -26,19 +28,44 @@ class VoucherRequestController extends BaseController
         if (! $locationId || ! $duration || ! array_key_exists($duration, config('Voucher')->durations)) {
             return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errInvalid')]);
         }
+        if ($supplier === '') {
+            return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errSupplierRequired')]);
+        }
         if ($guests === []) {
             return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errInvalid')]);
         }
 
-        // ตรวจ guest ครบทุกช่องทุกแถว
+        // ตรวจ guest ครบทุกช่องทุกแถว (ชื่อ/นามสกุล/เบอร์)
         foreach ($guests as $i => $g) {
-            $supplier  = trim((string) ($g['supplier'] ?? ''));
             $firstname = trim((string) ($g['firstname'] ?? ''));
             $lastname  = trim((string) ($g['lastname'] ?? ''));
             $phone     = trim((string) ($g['phone'] ?? ''));
-            if ($supplier === '' || $firstname === '' || $lastname === '' || $phone === '') {
+            if ($firstname === '' || $lastname === '' || $phone === '') {
                 return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errGuestIncomplete', [$i + 1])]);
             }
+            // ตรวจรูปแบบเบอร์โทรไทย: ขึ้นต้น 0 ตามด้วยตัวเลขรวม 9–10 หลัก
+            if (! preg_match('/^0\d{8,9}$/', preg_replace('/[\s-]/', '', $phone))) {
+                return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errPhoneInvalid')]);
+            }
+        }
+
+        // กันเบอร์โทร/ชื่อ-นามสกุลซ้ำข้ามรายการ (ป้องกัน copy-paste คนเดียวกันหลายใบ)
+        $seenPhones = [];
+        $seenNames  = [];
+        foreach ($guests as $i => $g) {
+            // เบอร์โทร — เทียบหลังตัดขีด/ช่องว่าง
+            $normPhone = preg_replace('/[\s-]/', '', (string) ($g['phone'] ?? ''));
+            if (isset($seenPhones[$normPhone])) {
+                return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errDupPhoneRow', [$i + 1])]);
+            }
+            $seenPhones[$normPhone] = true;
+
+            // ชื่อ-นามสกุล — เทียบหลังตัดช่องว่าง + ตัวพิมพ์เล็ก
+            $normName = mb_strtolower(preg_replace('/\s+/', ' ', trim((string) ($g['firstname'] ?? '')) . '|' . trim((string) ($g['lastname'] ?? ''))));
+            if (isset($seenNames[$normName])) {
+                return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errDupNameRow', [$i + 1])]);
+            }
+            $seenNames[$normName] = true;
         }
 
         $voucherModel  = new VoucherModel();
@@ -87,7 +114,7 @@ class VoucherRequestController extends BaseController
                 'duration'        => $duration,
                 'guest_name'      => trim($firstname . ' ' . $lastname),
                 'guest_voucher'   => $voucher['vou_username'],
-                'supplier'        => trim((string) $g['supplier']),
+                'supplier'        => $supplier,
                 'guest_firstname' => $firstname,
                 'guest_lastname'  => $lastname,
                 'guest_phone'     => trim((string) $g['phone']),
@@ -113,6 +140,27 @@ class VoucherRequestController extends BaseController
         if (! $db->transStatus()) {
             return $this->response->setJSON(['success' => false, 'message' => lang('Voucher.errGeneral')]);
         }
+
+        // บันทึก audit: ผู้ขอ + ข้อมูล guest + รายละเอียด request
+        // เก็บเป็น English คงที่ — ชื่อพื้นที่ใช้ name_en, duration ใช้ key ดิบ (ไม่ผูกกับภาษาที่แสดง)
+        $logLoc = ($location['name_en'] ?? '') ?: ($location['name'] ?? '');
+        ActivityLog::record('voucher.request', [
+            'target_type'  => 'request',
+            'target_id'    => $locationId,
+            'target_label' => $logLoc,
+            'details'      => [
+                'location' => $logLoc,
+                'ssid'     => $location['ssid'] ?? null,
+                'duration' => $duration,
+                'supplier' => $supplier,
+                'count'    => count($tickets),
+                'guests'   => array_map(static fn ($g, $t) => [
+                    'name'     => trim(((string) ($g['firstname'] ?? '')) . ' ' . ((string) ($g['lastname'] ?? ''))),
+                    'phone'    => trim((string) ($g['phone'] ?? '')),
+                    'username' => $t['username'],
+                ], $guests, $tickets),
+            ],
+        ]);
 
         return $this->response->setJSON(['success' => true, 'tickets' => $tickets]);
     }

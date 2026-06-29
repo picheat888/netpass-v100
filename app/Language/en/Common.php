@@ -40,6 +40,11 @@ return [
     'password'  => 'Password',
     'rememberMe'=> 'Remember me',
     'filter'    => 'Filter',
+    // ตารางเทียบค่า (dialog confirm)
+    'changeField' => 'Field',
+    'changeOld'   => 'Before',
+    'changeNew'   => 'After',
+    'changeValue' => 'Value',
     // ข้อความ login / validation (ใช้คำง่ายๆ)
     'invalidLogin'  => 'Invalid username or password. Please try again.',
     'enterUsername' => 'Please enter your username',

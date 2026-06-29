@@ -40,6 +40,11 @@ return [
     'password'  => 'รหัสผ่าน',
     'rememberMe'=> 'จดจำฉันไว้',
     'filter'    => 'กรอง',
+    // ตารางเทียบค่า (dialog confirm)
+    'changeField' => 'รายการ',
+    'changeOld'   => 'เดิม',
+    'changeNew'   => 'ใหม่',
+    'changeValue' => 'ค่า',
     // ข้อความ login / validation (ใช้คำง่ายๆ)
     'invalidLogin'  => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง',
     'enterUsername' => 'กรุณากรอกชื่อผู้ใช้',

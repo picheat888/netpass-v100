@@ -20,7 +20,9 @@
     <link href="<?= base_url('assets/plugins/datatables/css/dataTables.bootstrap5.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/plugins/tom-select/css/tom-select.bootstrap5.min.css') ?>" rel="stylesheet">
     <?php // cache-busting: ผูกเวอร์ชันกับเวลาที่แก้ไฟล์ → browser โหลด CSS ใหม่ทันทีที่เปลี่ยน
-    $cssFile = FCPATH . 'assets/css/style.css'; $cssVer = is_file($cssFile) ? filemtime($cssFile) : '1'; ?>
+    $cssFile = FCPATH . 'assets/css/style.css'; $cssVer = is_file($cssFile) ? filemtime($cssFile) : '1';
+    $dlgFile = FCPATH . 'assets/css/dialog.css'; $dlgVer = is_file($dlgFile) ? filemtime($dlgFile) : '1'; ?>
     <link href="<?= base_url('assets/css/style.css') ?>?v=<?= $cssVer ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/dialog.css') ?>?v=<?= $dlgVer ?>" rel="stylesheet">
 </head>
 <body>

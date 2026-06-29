@@ -57,4 +57,9 @@ return [
     'deleteTitle'     => 'ลบ Voucher',
     'deleteSub'       => 'การลบนี้ย้อนกลับไม่ได้',
     'deleteImpact'    => 'Voucher ใบนี้จะถูกลบออกจากคลังถาวร',
+    'editConfirmTitle' => 'ยืนยันการแก้ไข',
+    'editConfirmSub'   => 'ตรวจสอบการเปลี่ยนแปลงก่อนบันทึก',
+    'editConfirmBody'  => 'การเปลี่ยนแปลงที่จะบันทึก',
+    'editSaveChanges'  => 'บันทึกการเปลี่ยนแปลง',
+    'editNoChange'     => 'ไม่มีการเปลี่ยนแปลง',
 ];

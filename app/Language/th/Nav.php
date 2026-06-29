@@ -9,6 +9,7 @@ return [
     'pool'     => 'คลัง Voucher',
     'locations' => 'พื้นที่',
     'members'   => 'สมาชิก',
+    'logs'      => 'บันทึกการใช้งาน',
     'profile'   => 'โปรไฟล์',
     'request'   => 'ขอ Voucher',
     'signOut'   => 'ออกจากระบบ',

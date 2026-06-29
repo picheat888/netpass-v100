@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Services\ActivityLog;
 
 /**
  * จัดการโปรไฟล์ส่วนตัว — แก้ไขชื่อ/ตำแหน่ง และเปลี่ยนรหัสผ่าน (ใช้ร่วมกันทั้ง admin และ user)
@@ -32,26 +33,34 @@ class ProfileController extends BaseController
     // บันทึกการแก้ไขชื่อ/ตำแหน่ง + รูปโปรไฟล์ (อัปโหลด jpg/png แล้วย่อขนาด)
     public function update()
     {
-        // ชื่อ/นามสกุล/อีเมล บังคับกรอก (position ไม่ตรวจ เพราะผู้ใช้แก้เองไม่ได้ — admin เป็นผู้กำหนด)
-        $rules = [
-            'firstname' => 'required|max_length[150]',
-            'lastname'  => 'required|max_length[150]',
-            'email'     => 'required|valid_email',
-        ];
-        $messages = [
-            'firstname' => [
-                'required'   => lang('Profile.errFirstRequired'),
-                'max_length' => lang('Profile.errMaxLen'),
-            ],
-            'lastname' => [
-                'required'   => lang('Profile.errLastRequired'),
-                'max_length' => lang('Profile.errMaxLen'),
-            ],
-            'email' => [
-                'required'    => lang('Profile.errEmailRequired'),
-                'valid_email' => lang('Profile.errEmailValid'),
-            ],
-        ];
+        // ชื่อ/นามสกุล/อีเมล แก้ได้เฉพาะ admin — ฝั่ง user ช่องถูก disable (admin เป็นผู้กำหนด)
+        $isAdmin = auth()->user()->inGroup('admin');
+
+        $rules    = [];
+        $messages = [];
+
+        // กฎเฉพาะ admin: ชื่อ/นามสกุล/อีเมล บังคับกรอก (position ไม่ตรวจ — admin กำหนดผ่านหน้า Member)
+        if ($isAdmin) {
+            $rules = [
+                'firstname' => 'required|max_length[150]',
+                'lastname'  => 'required|max_length[150]',
+                'email'     => 'required|valid_email',
+            ];
+            $messages = [
+                'firstname' => [
+                    'required'   => lang('Profile.errFirstRequired'),
+                    'max_length' => lang('Profile.errMaxLen'),
+                ],
+                'lastname' => [
+                    'required'   => lang('Profile.errLastRequired'),
+                    'max_length' => lang('Profile.errMaxLen'),
+                ],
+                'email' => [
+                    'required'    => lang('Profile.errEmailRequired'),
+                    'valid_email' => lang('Profile.errEmailValid'),
+                ],
+            ];
+        }
 
         // ตรวจไฟล์รูปเฉพาะเมื่อมีการเลือกไฟล์มา — รับเฉพาะ jpg/png และไม่เกิน 4MB
         $avatar    = $this->request->getFile('avatar');
@@ -73,24 +82,28 @@ class ProfileController extends BaseController
 
         $userId    = auth()->user()->id;
         $userModel = new UserModel();
-
-        // อีเมล: เก็บใน auth_identities (type email_password) — เช็คไม่ให้ซ้ำกับผู้ใช้อื่นก่อน
-        $email = strtolower(trim((string) $this->request->getPost('email')));
-        $db    = db_connect();
-        $taken = $db->table('auth_identities')
-            ->where('type', 'email_password')
-            ->where('secret', $email)
-            ->where('user_id !=', $userId)
-            ->countAllResults();
-        if ($taken > 0) {
-            return redirect()->back()->withInput()->with('prof_errors', ['email' => lang('Profile.errEmailTaken')]);
-        }
+        $db        = db_connect();
 
         // ไม่บันทึก position จากหน้านี้ — เป็นค่าที่ admin กำหนดให้ (ช่องถูก disable ไว้)
-        $data = [
-            'firstname' => $this->request->getPost('firstname'),
-            'lastname'  => $this->request->getPost('lastname'),
-        ];
+        $data  = [];
+        $email = null;
+
+        // ชื่อ/นามสกุล/อีเมล อัปเดตได้เฉพาะ admin — ฝั่ง user ช่องถูก disable จึงข้าม (กัน tamper จาก client)
+        if ($isAdmin) {
+            // อีเมล: เก็บใน auth_identities (type email_password) — เช็คไม่ให้ซ้ำกับผู้ใช้อื่นก่อน
+            $email = strtolower(trim((string) $this->request->getPost('email')));
+            $taken = $db->table('auth_identities')
+                ->where('type', 'email_password')
+                ->where('secret', $email)
+                ->where('user_id !=', $userId)
+                ->countAllResults();
+            if ($taken > 0) {
+                return redirect()->back()->withInput()->with('prof_errors', ['email' => lang('Profile.errEmailTaken')]);
+            }
+
+            $data['firstname'] = $this->request->getPost('firstname');
+            $data['lastname']  = $this->request->getPost('lastname');
+        }
 
         // จัดการรูปโปรไฟล์
         if ($hasAvatar) {
@@ -121,13 +134,28 @@ class ProfileController extends BaseController
             $data['img'] = 'uploads/avatars/' . $newName;
         }
 
-        $userModel->update($userId, $data);
+        // บันทึกเฉพาะเมื่อมีข้อมูลให้อัปเดต (user ที่ไม่ได้เปลี่ยนรูป จะไม่มีอะไรเปลี่ยน)
+        if (! empty($data)) {
+            $userModel->update($userId, $data);
+        }
 
-        // อัปเดตอีเมลใน identity ของ Shield (email_password)
-        $db->table('auth_identities')
-            ->where('user_id', $userId)
-            ->where('type', 'email_password')
-            ->update(['secret' => $email]);
+        // อัปเดตอีเมลใน identity ของ Shield (email_password) — เฉพาะ admin
+        if ($isAdmin && $email !== null) {
+            $db->table('auth_identities')
+                ->where('user_id', $userId)
+                ->where('type', 'email_password')
+                ->update(['secret' => $email]);
+        }
+
+        ActivityLog::record('profile.update', [
+            'target_type'  => 'member',
+            'target_id'    => $userId,
+            'target_label' => ActivityLog::displayName(auth()->user()),
+            'details'      => [
+                'fields'        => array_keys($data),
+                'email_changed' => $isAdmin && $email !== null,
+            ],
+        ]);
 
         return redirect()->back()->with('message', lang('Profile.updated'));
     }
@@ -178,6 +206,13 @@ class ProfileController extends BaseController
         // อัปเดตรหัสผ่านใหม่ผ่าน Shield
         $users = auth()->getProvider();
         $users->save($user->fill(['password' => $new]));
+
+        ActivityLog::record('auth.password_change', [
+            'target_type'  => 'member',
+            'target_id'    => (int) $user->id,
+            'target_label' => ActivityLog::displayName($user),
+            'details'      => ['via' => 'profile'],
+        ]);
 
         return redirect()->back()->with('pwd_message', lang('Profile.passwordChanged'));
     }

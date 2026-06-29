@@ -77,9 +77,10 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf',
             // 'invalidchars',
-            'locale', // ตั้งภาษาตาม session ทุก request
+            // ป้องกัน cross-site request forgery กับทุก POST (login มี csrf_field() อยู่แล้ว จึงไม่ต้องยกเว้น)
+            'csrf',
+            'locale',  // ตั้งภาษาตาม session ทุก request
             'forcepw', // บังคับเปลี่ยนรหัสผ่านครั้งแรก (ถ้า force_reset)
         ],
         'after' => [

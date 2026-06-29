@@ -3,6 +3,7 @@
 namespace App\Database\Seeds;
 
 use App\Models\UserModel;
+use CodeIgniter\CLI\CLI;
 use CodeIgniter\Database\Seeder;
 
 /**
@@ -12,6 +13,12 @@ class DemoCredsSeeder extends Seeder
 {
     public function run()
     {
+        // บัญชี demo สร้างเฉพาะ environment development เท่านั้น
+        if (ENVIRONMENT !== 'development') {
+            CLI::write('ข้าม DemoCredsSeeder: ไม่ใช่ environment development', 'yellow');
+            return;
+        }
+
         $users     = new UserModel();
         $passwords = service('passwords');
         $db        = db_connect();

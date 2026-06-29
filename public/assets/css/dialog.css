@@ -1,0 +1,263 @@
+/* ==========================================================================
+   NetPass Dialog — confirm / warning / delete  (GLOBAL / reusable)
+   คอมโพเนนต์ dialog มาตรฐาน แยกจาก style.css เพื่อใช้ซ้ำข้ามระบบได้
+   โครงเดียวกัน: icon chip + หัว + body กึ่งกลาง (ไอคอนใหญ่) + ปุ่มล่าง
+   ต่างกันที่โทน: is-confirm (ฟ้า) / is-warning (เหลือง) / is-delete (แดง)
+
+   ใช้กับ Bootstrap modal:
+     <div class="modal fade np-dialog-modal">
+       <div class="modal-dialog modal-dialog-centered">
+         <form|div class="modal-content np-dialog"> ... </>
+
+   พกพา: ทุกสีอ้าง var(--np-*) แต่มี fallback ในตัว → วางใช้โปรเจกต์อื่นได้เลย
+   (ถ้าโปรเจกต์นั้นนิยาม --np-* เอง dialog จะปรับตามธีมอัตโนมัติ)
+   ========================================================================== */
+
+.np-dialog-modal .modal-dialog {
+  max-width: 480px;
+}
+
+.np-dialog {
+  border: 0;
+  border-radius: 16px;
+  box-shadow: var(--np-shadow-pop, 0 12px 32px rgba(20, 22, 43, 0.14));
+  overflow: hidden;
+}
+
+/* ---- หัว: icon chip + ชื่อ + ปุ่มปิด (+ callout เต็มแถว) ---- */
+.dlg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 20px 22px 15px;
+  border-bottom: 1px solid var(--np-border, #ecedf3);
+}
+
+.dlg-ico {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.dlg-ico.is-confirm {
+  background: #e8f0fb;
+  color: var(--np-blue, #3b7ddd);
+}
+.dlg-ico.is-warning {
+  background: #fbefd7;
+  color: var(--np-amber, #e0930b);
+}
+.dlg-ico.is-delete {
+  background: #fdecec;
+  color: var(--np-red, #e5484d);
+}
+
+.dlg-htext {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.dlg-htext h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--np-text, #1b1e2b);
+}
+.dlg-htext p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--np-muted, #7a7f92);
+}
+
+.dlg-close {
+  margin: 0 0 0 auto;
+  border: 0;
+  background: none;
+  color: var(--np-muted-2, #9097ab);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  align-self: flex-start;
+}
+.dlg-close:hover {
+  color: var(--np-text, #1b1e2b);
+}
+
+/* ---- body: ข้อความ + ชื่อรายการ (จัดกึ่งกลาง + ไอคอนใหญ่) ---- */
+.dlg-body {
+  padding: 20px 22px;
+  font-size: 14px;
+  color: var(--np-text-2, #3c4255);
+  line-height: 1.6;
+}
+.dlg-body p {
+  margin: 0;
+}
+.dlg-target {
+  margin-top: 6px !important;
+  font-weight: 600;
+  color: var(--np-text, #1b1e2b);
+}
+
+.dlg-body.is-centered {
+  text-align: center;
+}
+
+/* ---- ตารางเทียบค่าเดิม → ค่าใหม่ / สรุปค่า (confirm dialog ตอน add/edit) ---- */
+.dlg-cmp-table {
+  width: 100%;
+  margin-top: 14px;
+  border-collapse: collapse;
+}
+.dlg-cmp-table th {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--np-muted-2, #9097ab);
+  text-align: left;
+  padding: 0 10px 8px;
+  border-bottom: 1px solid var(--np-border, #ecedf3);
+}
+.dlg-cmp-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--np-border, #ecedf3);
+  vertical-align: middle;
+}
+.dlg-cmp-table tr:last-child td {
+  border-bottom: 0;
+}
+.dlg-cmp-field {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--np-muted, #7a7f92);
+  white-space: nowrap;
+}
+.dlg-cmp-from {
+  font-size: 12.5px;
+  color: var(--np-muted-2, #9097ab);
+  text-decoration: line-through;
+  word-break: break-word;
+}
+.dlg-cmp-to {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--np-blue, #3b7ddd);
+  word-break: break-word;
+}
+.dlg-cmp-val {
+  font-size: 13px;
+  color: var(--np-text, #1b1e2b);
+  word-break: break-word;
+}
+.dlg-warn-ico {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.dlg-warn-ico.is-confirm {
+  color: var(--np-blue, #3b7ddd);
+}
+.dlg-warn-ico.is-warning {
+  color: var(--np-amber, #e0930b);
+}
+.dlg-warn-ico.is-delete {
+  color: var(--np-red, #e5484d);
+}
+
+/* ---- กล่องผลกระทบ (เต็มแถวใต้หัว) ---- */
+.dlg-callout {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.dlg-callout i {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.dlg-callout.is-warning {
+  background: #fbefd7;
+  color: #8a5d06;
+}
+.dlg-callout.is-delete {
+  background: #fdecec;
+  color: #9b3438;
+}
+.dlg-head .dlg-callout {
+  flex: 0 0 100%;
+  align-items: center;
+}
+.dlg-head .dlg-callout i {
+  margin-top: 0;
+}
+
+/* ---- ปุ่มล่าง ---- */
+.dlg-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--np-border, #ecedf3);
+}
+
+.dlg-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.dlg-btn-light {
+  background: #fff;
+  border-color: var(--np-line, #d6d9e4);
+  color: var(--np-text-2, #3c4255);
+}
+.dlg-btn-light:hover {
+  background: var(--np-bg, #f5f7fb);
+}
+.dlg-btn-confirm {
+  background: var(--np-blue, #3b7ddd);
+  color: #fff;
+}
+.dlg-btn-confirm:hover {
+  background: #336fc4;
+}
+.dlg-btn-warning {
+  background: var(--np-amber, #e0930b);
+  color: #fff;
+}
+.dlg-btn-warning:hover {
+  background: #c47f08;
+}
+.dlg-btn-delete {
+  background: var(--np-red, #e5484d);
+  color: #fff;
+}
+.dlg-btn-delete:hover {
+  background: #cf3f44;
+}
+.dlg-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

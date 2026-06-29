@@ -66,6 +66,7 @@ return [
     'pwdGood'         => 'ดี',
     'pwdStrong'       => 'แข็งแรง',
     'positionLocked'  => 'ตำแหน่งกำหนดโดยผู้ดูแลระบบ',
+    'fieldLocked'     => 'ข้อมูลนี้กำหนดโดยผู้ดูแลระบบ',
 
     // ── crop รูปโปรไฟล์ ──
     'photoTitle'      => 'รูปโปรไฟล์',

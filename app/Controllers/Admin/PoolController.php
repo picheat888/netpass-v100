@@ -5,6 +5,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\LocationModel;
 use App\Models\VoucherLotModel;
+use App\Services\ActivityLog;
 use App\Models\VoucherModel;
 
 /**
@@ -213,9 +214,17 @@ class PoolController extends BaseController
     }
 
     // ดาวน์โหลด template CSV (username,password)
+    // ค่าตัวอย่างผ่าน csv_safe() ทุก cell เพื่อกัน formula injection (template ปลอดภัย)
     public function importTemplate()
     {
-        $csv = "username,password\r\nguest-1234,AB12CD34\r\nguest-5678,XY98ZW76\r\n";
+        $out = fopen('php://temp', 'r+');
+        fputcsv($out, ['username', 'password']);
+        fputcsv($out, array_map('csv_safe', ['guest-1234', 'AB12CD34']));
+        fputcsv($out, array_map('csv_safe', ['guest-5678', 'XY98ZW76']));
+        rewind($out);
+        $csv = stream_get_contents($out);
+        fclose($out);
+
         return $this->response
             ->setHeader('Content-Type', 'text/csv; charset=UTF-8')
             ->setHeader('Content-Disposition', 'attachment; filename="voucher-template.csv"')
@@ -293,9 +302,35 @@ class PoolController extends BaseController
         }
         $voucherModel->insertBatch($batch);
 
-        session()->setFlashdata('message', lang('Pool.imported') . ' (' . count($rows) . ')');
+        // สรุปผลสำหรับ modal: ชื่อพื้นที่ (ตาม locale) + SSID + label ระยะเวลา
+        $loc     = (new LocationModel())->find($locId);
+        $isEn    = service('request')->getLocale() === 'en';
+        $locName = $isEn ? (($loc['name_en'] ?? '') ?: ($loc['name'] ?? '')) : ($loc['name'] ?? '');
 
-        return $this->response->setJSON(['ok' => true, 'imported' => count($rows)]);
+        // เก็บ log เป็น English คงที่ — ชื่อพื้นที่ name_en, duration key ดิบ
+        $logLoc = ($loc['name_en'] ?? '') ?: ($loc['name'] ?? '');
+        ActivityLog::record('voucher.import', [
+            'target_type'  => 'location',
+            'target_id'    => $locId,
+            'target_label' => $logLoc,
+            'details'      => [
+                'location' => $logLoc,
+                'ssid'     => $loc['ssid'] ?? null,
+                'duration' => $duration,
+                'imported' => count($rows),
+                'lot_id'   => $lotId,
+            ],
+        ]);
+
+        return $this->response->setJSON([
+            'ok'       => true,
+            'imported' => count($rows),
+            'location' => $locName,
+            'ssid'     => $loc['ssid'] ?? '',
+            'duration' => duration_label($duration),
+            // ส่ง CSRF token ใหม่กลับ (regenerate=true หมุน token ทุก request) เพื่อให้ import ครั้งถัดไปไม่โดน 403
+            'csrf'     => csrf_hash(),
+        ]);
     }
 
     // เพิ่ม voucher ทีละใบ
@@ -317,13 +352,25 @@ class PoolController extends BaseController
         }
 
         $lotId = $this->newLot($locId, $duration, 1);
-        (new VoucherModel())->insert([
+        $vModel = new VoucherModel();
+        $vId = $vModel->insert([
             'lot_id'       => $lotId,
             'location_id'  => $locId,
             'duration'     => $duration,
             'vou_username' => $this->request->getPost('vou_username'),
             'vou_password' => $this->request->getPost('vou_password'),
             'status'       => 'instock',
+        ]);
+
+        ActivityLog::record('voucher.add', [
+            'target_type'  => 'voucher',
+            'target_id'    => $vId,
+            'target_label' => $this->request->getPost('vou_username'),
+            'details'      => [
+                'username'    => $this->request->getPost('vou_username'),
+                'location_id' => $locId,
+                'duration'    => $duration,
+            ],
         ]);
 
         return redirect()->to('admin/pool/location/' . $locId)->with('message', lang('Pool.voucherAdded'));
@@ -346,6 +393,16 @@ class PoolController extends BaseController
             'vou_password' => $this->request->getPost('vou_password'),
         ]);
 
+        ActivityLog::record('voucher.update', [
+            'target_type'  => 'voucher',
+            'target_id'    => $id,
+            'target_label' => $this->request->getPost('vou_username'),
+            'details'      => [
+                'before' => ['username' => $voucher['vou_username'], 'password' => $voucher['vou_password']],
+                'after'  => ['username' => $this->request->getPost('vou_username'), 'password' => $this->request->getPost('vou_password')],
+            ],
+        ]);
+
         return redirect()->to('admin/pool/location/' . $voucher['location_id'])->with('message', lang('Pool.voucherUpdated'));
     }
 
@@ -362,18 +419,32 @@ class PoolController extends BaseController
         }
         $voucherModel->delete($id);
 
+        ActivityLog::record('voucher.delete', [
+            'target_type'  => 'voucher',
+            'target_id'    => $id,
+            'target_label' => $voucher['vou_username'],
+            'details'      => [
+                'username'    => $voucher['vou_username'],
+                'location_id' => $voucher['location_id'],
+                'duration'    => $voucher['duration'],
+            ],
+        ]);
+
         return redirect()->to('admin/pool/location/' . $voucher['location_id'])->with('message_danger', lang('Pool.voucherDeleted'));
     }
 
-    // สร้าง lot ใหม่ + คืน id
+    // สร้าง lot ใหม่ + คืน id — code รูปแบบ LOT-yyyy-xxxx (xxxx นับต่อปี รีเซ็ตทุกปี, 4 หลัก)
     private function newLot(int $locId, string $duration, int $qty): int
     {
         $lotModel = new VoucherLotModel();
-        $seq      = $lotModel->countAll() + 2401;
-        $code     = 'LOT-' . $seq;
+        $prefix   = 'LOT-' . date('Y') . '-';
+        // ลำดับถัดไป = เลขสูงสุดของปีนี้ + 1 (อิงค่าสูงสุดเพื่อกันชนกรณีมีการลบ lot)
+        $last = $lotModel->like('code', $prefix, 'after')->orderBy('code', 'DESC')->first();
+        $seq  = $last ? ((int) substr($last['code'], strlen($prefix)) + 1) : 1;
+        $code = $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
         while ($lotModel->where('code', $code)->first()) {
             $seq++;
-            $code = 'LOT-' . $seq;
+            $code = $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
         }
         $lotModel->insert([
             'code' => $code, 'location_id' => $locId, 'duration' => $duration, 'qty' => $qty, 'status' => 'active',

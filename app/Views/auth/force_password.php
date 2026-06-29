@@ -18,6 +18,7 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
     <link href="<?= base_url('assets/plugins/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/plugins/bootstrap-icons/bootstrap-icons.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/dialog.css') ?>" rel="stylesheet">
 </head>
 <body class="np-login-body">
 
@@ -75,26 +76,24 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
 
     <div class="np-login-foot">© <?= date('Y') ?> NetPass · v1.0</div>
 
-    <!-- Modal: เตือนก่อนออกจากระบบ (ยังไม่ตั้งรหัส → เข้าระบบไม่ได้) — ใช้ดีไซน์ np-modal-confirm เดียวกับทั้งระบบ -->
-    <div class="modal fade np-modal np-modal-confirm" id="cancelModal" tabindex="-1">
+    <!-- Modal: เตือนก่อนออกจากระบบ (ยังไม่ตั้งรหัส → เข้าระบบไม่ได้) — dialog โทน warning -->
+    <div class="modal fade np-dialog-modal" id="cancelModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="np-modal-ico is-warning"><i class="bi bi-exclamation-triangle-fill"></i></span>
-                    <div class="np-modal-htext">
+            <div class="modal-content np-dialog">
+                <div class="dlg-head">
+                    <span class="dlg-ico is-warning"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                    <div class="dlg-htext">
                         <h5><?= lang('Force.cancelTitle') ?></h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="dlg-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
                 </div>
-                <div class="modal-body">
-                    <div class="np-callout is-warning">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        <span><?= lang('Force.cancelWarn') ?></span>
-                    </div>
+                <div class="dlg-body is-centered">
+                    <div class="dlg-warn-ico is-warning"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <p><?= lang('Force.cancelWarn') ?></p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= lang('Force.cancelStay') ?></button>
-                    <a href="<?= site_url('logout') ?>" class="btn btn-danger"><i class="bi bi-box-arrow-right me-1"></i><?= lang('Common.logout') ?></a>
+                <div class="dlg-foot">
+                    <button type="button" class="dlg-btn dlg-btn-light" data-bs-dismiss="modal"><?= lang('Force.cancelStay') ?></button>
+                    <a href="<?= site_url('logout') ?>" class="dlg-btn dlg-btn-warning"><i class="bi bi-box-arrow-right"></i> <?= lang('Common.logout') ?></a>
                 </div>
             </div>
         </div>
@@ -102,74 +101,14 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
 
     <script src="<?= base_url('assets/plugins/bootstrap/bootstrap.bundle.min.js') ?>"></script>
     <script>
-    (function () {
-        var newPwd = document.getElementById('fNew');
-        var confirmPwd = document.getElementById('fConfirm');
-        var rulesBox = document.getElementById('fRules');
-        var meter = document.getElementById('fMeter');
-        var meterLabel = document.getElementById('fMeterLabel');
-        var matchMsg = document.getElementById('fMatch');
-        var submitBtn = document.getElementById('fSubmit');
-        var rulesPassed = 0;   // จำนวนกฎที่ผ่านล่าสุด (อัปเดตใน evaluate)
-        var STRENGTH = ['', <?= json_encode(lang('Profile.pwdWeak')) ?>, <?= json_encode(lang('Profile.pwdFair')) ?>, <?= json_encode(lang('Profile.pwdGood')) ?>, <?= json_encode(lang('Profile.pwdStrong')) ?>];
-        var MATCH_OK = <?= json_encode(lang('Profile.confirmMatchOk')) ?>;
-        var MATCH_BAD = <?= json_encode(lang('Force.errConfirmMatch')) ?>;
-        var tests = {
-            len: function (value) { return value.length >= 8; },
-            upper: function (value) { return /[A-Z]/.test(value); },
-            lower: function (value) { return /[a-z]/.test(value); },
-            number: function (value) { return /[0-9]/.test(value); },
-            symbol: function (value) { return /[^A-Za-z0-9]/.test(value); }
-        };
-        function evaluate() {
-            var value = newPwd.value, passed = 0;
-            rulesBox.querySelectorAll('li').forEach(function (item) {
-                var ok = tests[item.dataset.rule](value);
-                if (ok) passed++;
-                item.classList.toggle('ok', ok);
-                item.querySelector('i').className = ok ? 'bi bi-check-circle-fill' : 'bi bi-circle';
-            });
-            var level = value.length === 0 ? 0 : (passed <= 2 ? 1 : (passed === 3 ? 2 : (passed === 4 ? 3 : 4)));
-            meter.dataset.lvl = level;
-            meterLabel.textContent = STRENGTH[level];
-            rulesPassed = passed;
-            refreshSubmit();
-        }
-        function checkMatch() {
-            if (confirmPwd.value === '') { matchMsg.className = 'np-match-msg'; matchMsg.innerHTML = ''; }
-            else if (confirmPwd.value === newPwd.value) { matchMsg.className = 'np-match-msg is-ok'; matchMsg.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + MATCH_OK; }
-            else { matchMsg.className = 'np-match-msg is-bad'; matchMsg.innerHTML = '<i class="bi bi-info-circle-fill"></i> ' + MATCH_BAD; }
-            refreshSubmit();
-        }
-
-        // เปิดปุ่ม submit เมื่อกฎผ่านครบ 5 และ confirm ตรงกับ new password
-        function refreshSubmit() {
-            var ok = rulesPassed === 5 && confirmPwd.value !== '' && confirmPwd.value === newPwd.value;
-            submitBtn.disabled = ! ok;
-        }
-        newPwd.addEventListener('input', function () {
-            if (newPwd.value.length >= 1) { rulesBox.classList.add('show'); meter.classList.add('show'); }
-            else { rulesBox.classList.remove('show'); meter.classList.remove('show'); }
-            evaluate(); checkMatch();
-        });
-        confirmPwd.addEventListener('input', checkMatch);
-        document.querySelectorAll('.np-pwd-toggle').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var inp = btn.parentElement.querySelector('input');
-                var reveal = inp.type === 'password';
-                inp.type = reveal ? 'text' : 'password';
-                btn.querySelector('i').className = reveal ? 'bi bi-eye-slash' : 'bi bi-eye';
-            });
-        });
-
-        // ตอน submit: spinner กลางปุ่ม + disable กัน double-submit
-        document.querySelector('form').addEventListener('submit', function () {
-            submitBtn.disabled = true;
-            submitBtn.querySelector('.np-btn-label').classList.add('d-none');
-            submitBtn.querySelector('.spinner-border').classList.remove('d-none');
-        });
-    })();
+    // ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
+    window.NP_FPW = {
+        strength:  ['', <?= json_encode(lang('Profile.pwdWeak')) ?>, <?= json_encode(lang('Profile.pwdFair')) ?>, <?= json_encode(lang('Profile.pwdGood')) ?>, <?= json_encode(lang('Profile.pwdStrong')) ?>],
+        matchOk:   <?= json_encode(lang('Profile.confirmMatchOk')) ?>,
+        matchBad:  <?= json_encode(lang('Force.errConfirmMatch')) ?>,
+    };
     </script>
+    <script><?= file_get_contents(__DIR__ . '/force_password.js') ?></script>
 
 </body>
 </html>
