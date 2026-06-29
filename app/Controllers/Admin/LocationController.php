@@ -58,6 +58,13 @@ class LocationController extends BaseController
         ];
         $newId = $model->insert($data);
 
+        // insert ล้มเหลว (เช่น model validation ไม่ผ่าน) — โชว์ error ใต้ช่อง ไม่แสดง success ลวง
+        if ($newId === false) {
+            return redirect()->back()->withInput()
+                ->with('loc_errors', $model->errors())
+                ->with('loc_form', 'add');
+        }
+
         ActivityLog::record('location.create', [
             'target_type'  => 'location',
             'target_id'    => $newId,
@@ -92,7 +99,13 @@ class LocationController extends BaseController
             'name_en' => $this->request->getPost('name_en'),
             'ssid'    => $this->request->getPost('ssid'),
         ];
-        $model->update($id, $new);
+        // update ล้มเหลว (เช่น model validation ไม่ผ่าน) — โชว์ error ใต้ช่อง ไม่แสดง success ลวง
+        if ($model->update($id, $new) === false) {
+            return redirect()->back()->withInput()
+                ->with('loc_errors', $model->errors())
+                ->with('loc_form', 'edit')
+                ->with('loc_edit_id', $id);
+        }
 
         ActivityLog::record('location.update', [
             'target_type'  => 'location',
