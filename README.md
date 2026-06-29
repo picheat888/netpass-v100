@@ -6,7 +6,7 @@
 
 ## Features
 
-# Admin
+### Admin
 - **Dashboard** — ภาพรวม voucher คงเหลือ, request วันนี้, กราฟรายสัปดาห์, กิจกรรมล่าสุด, สรุปแยกพื้นที่
 - **Voucher History** — ประวัติการออก voucher ทั้งหมด กรองตาม Location / Status / Keyword, พิมพ์ Ticket หลายใบพร้อมกัน
 - **Voucher Pool (Stock)** — คลัง voucher แยกตาม Location, นำเข้าแบบ batch (ดาวน์โหลด template + import) หรือเพิ่มทีละใบ, แก้ไข/ลบ
@@ -14,12 +14,12 @@
 - **Members** — จัดการบัญชีผู้ใช้ เพิ่ม/แก้ไข/เปิด-ปิดการใช้งาน, กำหนด Role (Admin/User), reset password, นำเข้าแบบ batch
 - **Profile** — แก้ไขข้อมูลส่วนตัว/ตำแหน่ง, อัปโหลด+ครอป Avatar, เปลี่ยนรหัสผ่าน
 
-# User
+### User
 - **Request Voucher** — Wizard 3 ขั้นตอน (เลือก Location → เลือกระยะเวลา → ยืนยัน) แสดง Ticket + QR Code เชื่อมต่อ Wi-Fi ได้ทันที
 - **My Voucher** — ประวัติ voucher ของตัวเอง กรองตาม Status / Keyword, พิมพ์ Ticket
 - **Profile** — แก้ไขข้อมูลส่วนตัวและเปลี่ยนรหัสผ่าน
 
-# ทั่วไป
+### ทั่วไป
 - รองรับ **2 ภาษา** — ไทย / อังกฤษ สลับได้ทุกหน้า 
 - **บังคับเปลี่ยนรหัสผ่าน** ครั้งแรกที่ล็อกอิน (force password reset)
 - **Session แบบ Database** — ไม่มีปัญหา session file lock บน Windows/Apache
@@ -55,7 +55,9 @@ PHP Extensions ที่ต้องการ: `intl`, `mbstring`, `mysqli`, `js
 
 ## Installation
 
-ติดตั้งบน **Ubuntu Server 24.04 LTS** 
+ติดตั้งบน **Ubuntu Server 24.04 LTS**
+
+> สำหรับ deploy แบบเต็ม (Nginx + Cloudflare Origin Cert + Cloudflare Tunnel) ดู [`installation.md`](installation.md)
 
 ```bash
 # 1. ติดตั้ง package ที่ต้องใช้
@@ -69,9 +71,9 @@ sudo mv composer.phar /usr/local/bin/composer
 
 # 3. ตั้งค่าฐานข้อมูล
 sudo mysql_secure_installation        # ตั้งรหัส root + ปิด remote root
-sudo mysql -e "CREATE DATABASE ink_guestwifi CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+sudo mysql -e "CREATE DATABASE netpass CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 sudo mysql -e "CREATE USER 'netpass'@'localhost' IDENTIFIED BY 'CHANGE_ME';"                <------   เปลี่ยน  CHANGE_ME  เป็นรหัสที่ตั้งใน DB
-sudo mysql -e "GRANT ALL PRIVILEGES ON ink_guestwifi.* TO 'netpass'@'localhost'; FLUSH PRIVILEGES;"
+sudo mysql -e "GRANT ALL PRIVILEGES ON netpass.* TO 'netpass'@'localhost'; FLUSH PRIVILEGES;"
 
 # 4. วางโปรเจกต์
 sudo git clone <repo-url> /var/www/guest-wifi-v100
@@ -81,24 +83,23 @@ cd /var/www/guest-wifi-v100
 composer install --no-dev --optimize-autoloader
 
 # 6. ตั้งค่า .env สำหรับ production
-cp env .env
+cp env.production.example .env
 #    CI_ENVIRONMENT = production
 #    app.baseURL    = 'https://netpass.example.com/'
+#    app.indexPage  = ''                          # ตัด index.php ออกจาก URL
 #    database.default.hostname = localhost
-#    database.default.database = ink_guestwifi
+#    database.default.database = netpass
 #    database.default.username = netpass
 #    database.default.password = CHANGE_ME        <------   เปลี่ยน  CHANGE_ME  เป็นรหัสที่ตั้งใน DB
 php spark key:generate
 
-# 7. สร้างตาราง + ใส่ข้อมูลตั้งต้น (production จะไม่สร้าง demo account)
-php spark migrate
-php spark db:seed NetPassSeeder
+# 7. สร้างตาราง (production: migrate อย่างเดียว ไม่ seed demo account)
+php spark migrate --all
 
-# 8. สร้าง admin account แรก แล้วเพิ่มเข้า group admin
-php spark shield:user create
-sudo mysql ink_guestwifi -e \
-  "INSERT INTO auth_groups_users (user_id, \`group\`, created_at)
-   VALUES ((SELECT id FROM users ORDER BY id DESC LIMIT 1), 'admin', NOW());"
+# 8. สร้าง admin account แรก แล้วเลื่อนเป็น group admin
+php spark shield:user create                              # ตั้ง username/email/รหัสแข็งแรง
+php spark shield:user addgroup   -n <username> -g admin   # เลื่อนเป็น admin
+php spark shield:user removegroup -n <username> -g user   # เอาออกจากกลุ่ม user
 
 # 9. ตั้งสิทธิ์โฟลเดอร์ให้ web server เขียน writable/ ได้
 sudo chown -R www-data:www-data /var/www/guest-wifi-v100
