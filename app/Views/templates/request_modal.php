@@ -212,49 +212,53 @@ $_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['nam
     </div>
 </div>
 
-<!-- Data สำหรับ JS (stock, csrf, lang) -->
-<script>
-const NP_STOCK   = <?= json_encode($_stock) ?>;
-const NP_CSRF    = {token:'<?= csrf_token() ?>',hash:'<?= csrf_hash() ?>'};
-const NP_REQ_URL = '<?= site_url('voucher/request') ?>';
-const NP_CSS = {
-    main:  '<?= base_url('assets/css/style.css') ?>',
-    icons: '<?= base_url('assets/plugins/bootstrap-icons/bootstrap-icons.min.css') ?>',
-    fonts: '<?= base_url('assets/fonts/fonts.css') ?>'
-};
-const NP_L = {
-    no:    <?= json_encode(lang('Voucher.guestNo')) ?>,
-    sup:   <?= json_encode(lang('Voucher.guestSupplier')) ?>,
-    first: <?= json_encode(lang('Voucher.guestFirst')) ?>,
-    last:  <?= json_encode(lang('Voucher.guestLast')) ?>,
-    phone: <?= json_encode(lang('Voucher.guestPhone')) ?>,
-    incomplete: <?= json_encode(lang('Voucher.errGuestIncomplete')) ?>,
-    maxStock:   <?= json_encode(lang('Voucher.errMaxStock')) ?>,
-    maxGuest:   <?= json_encode(lang('Voucher.errMaxGuest')) ?>,
-    required:   <?= json_encode(lang('Voucher.errRequired')) ?>,
-    phoneInvalid: <?= json_encode(lang('Voucher.errPhoneInvalid')) ?>,
-    dupPhone:   <?= json_encode(lang('Voucher.errDupPhone')) ?>,
-    dupName:    <?= json_encode(lang('Voucher.errDupName')) ?>,
-    countUnit:  <?= json_encode(lang('Voucher.confirmCountUnit')) ?>,
-    cardTitle:  <?= json_encode(lang('Voucher.cardTitle')) ?>,
-    lblWifi:    <?= json_encode(lang('Voucher.lblWifiName')) ?>,
-    colLoc:     <?= json_encode(lang('Voucher.colLocation')) ?>,
-    colDur:     <?= json_encode(lang('Voucher.colDuration')) ?>,
-    colExp:     <?= json_encode(lang('Voucher.colExpiresAt')) ?>,
-    scan:       <?= json_encode(lang('Voucher.scanConnect')) ?>,
-    genErr:     <?= json_encode(lang('Voucher.errGeneral')) ?>,
-    btnConfirm: <?= json_encode(lang('Voucher.btnConfirm')) ?>,
-    area:       <?= json_encode(lang('Voucher.area')) ?>,
-    saveImage:  <?= json_encode(lang('Voucher.saveImage')) ?>
-};
-const NP_STEP_TITLES = [
-    '',
-    {title:<?= json_encode(lang('Voucher.termsTitle')) ?>, sub:<?= json_encode(lang('Voucher.termsSub')) ?>},
-    {title:<?= json_encode(lang('Voucher.step1Title')) ?>, sub:<?= json_encode(lang('Voucher.step1Sub')) ?>},
-    {title:<?= json_encode(lang('Voucher.step2Title')) ?>, sub:<?= json_encode(lang('Voucher.step2Sub')) ?>},
-    {title:<?= json_encode(lang('Voucher.guestsTitle')) ?>, sub:<?= json_encode(lang('Voucher.guestsSub')) ?>},
-    {title:<?= json_encode(lang('Voucher.step3Title')) ?>, sub:<?= json_encode(lang('Voucher.step3Sub')) ?>}
+<!-- Data สำหรับ JS (stock, csrf, lang) → data island; อ่านโดย JS ภายนอก (CSP-safe) -->
+<?php
+$npReq = [
+    'stock'  => $_stock,
+    'csrf'   => ['token' => csrf_token(), 'hash' => csrf_hash()],
+    'reqUrl' => site_url('voucher/request'),
+    'css'    => [
+        'main'  => base_url('assets/css/style.css'),
+        'icons' => base_url('assets/plugins/bootstrap-icons/bootstrap-icons.min.css'),
+        'fonts' => base_url('assets/fonts/fonts.css'),
+    ],
+    'l' => [
+        'no'           => lang('Voucher.guestNo'),
+        'sup'          => lang('Voucher.guestSupplier'),
+        'first'        => lang('Voucher.guestFirst'),
+        'last'         => lang('Voucher.guestLast'),
+        'phone'        => lang('Voucher.guestPhone'),
+        'incomplete'   => lang('Voucher.errGuestIncomplete'),
+        'maxStock'     => lang('Voucher.errMaxStock'),
+        'maxGuest'     => lang('Voucher.errMaxGuest'),
+        'required'     => lang('Voucher.errRequired'),
+        'phoneInvalid' => lang('Voucher.errPhoneInvalid'),
+        'dupPhone'     => lang('Voucher.errDupPhone'),
+        'dupName'      => lang('Voucher.errDupName'),
+        'countUnit'    => lang('Voucher.confirmCountUnit'),
+        'cardTitle'    => lang('Voucher.cardTitle'),
+        'lblWifi'      => lang('Voucher.lblWifiName'),
+        'colLoc'       => lang('Voucher.colLocation'),
+        'colDur'       => lang('Voucher.colDuration'),
+        'colExp'       => lang('Voucher.colExpiresAt'),
+        'scan'         => lang('Voucher.scanConnect'),
+        'genErr'       => lang('Voucher.errGeneral'),
+        'btnConfirm'   => lang('Voucher.btnConfirm'),
+        'area'         => lang('Voucher.area'),
+        'saveImage'    => lang('Voucher.saveImage'),
+    ],
+    'stepTitles' => [
+        '',
+        ['title' => lang('Voucher.termsTitle'),  'sub' => lang('Voucher.termsSub')],
+        ['title' => lang('Voucher.step1Title'),  'sub' => lang('Voucher.step1Sub')],
+        ['title' => lang('Voucher.step2Title'),  'sub' => lang('Voucher.step2Sub')],
+        ['title' => lang('Voucher.guestsTitle'), 'sub' => lang('Voucher.guestsSub')],
+        ['title' => lang('Voucher.step3Title'),  'sub' => lang('Voucher.step3Sub')],
+    ],
 ];
-</script>
+$reqModalJs = FCPATH . 'assets/js/request-modal.js';
+?>
+<script type="application/json" id="np-req-data"><?= json_encode($npReq, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
 <script src="<?= base_url('assets/plugins/qrcode/qrcode-generator.min.js') ?>"></script>
-<script><?= file_get_contents(__DIR__ . '/request_modal.js') ?></script>
+<script src="<?= base_url('assets/js/request-modal.js') ?>?v=<?= is_file($reqModalJs) ? filemtime($reqModalJs) : '1' ?>"></script>

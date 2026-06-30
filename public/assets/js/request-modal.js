@@ -1,3 +1,12 @@
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+const _NPREQ = JSON.parse(document.getElementById('np-req-data').textContent);
+const NP_STOCK = _NPREQ.stock;
+const NP_CSRF = _NPREQ.csrf;
+const NP_REQ_URL = _NPREQ.reqUrl;
+const NP_CSS = _NPREQ.css;
+const NP_L = _NPREQ.l;
+const NP_STEP_TITLES = _NPREQ.stepTitles;
+
 (function () {
     'use strict';
     let step = 1, selLocId = null, selLocName = '', selDur = null, selDurLabel = '';
