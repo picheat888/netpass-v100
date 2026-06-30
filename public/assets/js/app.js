@@ -298,11 +298,18 @@ window.NetPass = window.NetPass || {};
         if (! window.TomSelect) { return; }
         (root || document).querySelectorAll('select.form-select').forEach(function (el) {
             if (el.tomselect || el.dataset.noTs !== undefined) { return; }
+            var origId = el.id;
             new TomSelect(el, {
                 controlInput: null,        // ไม่มีช่องพิมพ์ค้นหา — เป็น dropdown styled เฉยๆ
                 allowEmptyOption: true,
                 hideSelected: false
             });
+            // a11y: controlInput:null ทำให้ TomSelect ชี้ <label for> ไปที่ id "<id>-ts-control"
+            // ที่ไม่ถูกสร้างจริง → ชี้ label กลับไปที่ <select> เดิม (element ที่ label อ้างได้ถูกต้อง)
+            if (origId) {
+                var lbl = document.querySelector('label[for="' + origId + '-ts-control"]');
+                if (lbl) { lbl.setAttribute('for', origId); }
+            }
         });
     };
 
