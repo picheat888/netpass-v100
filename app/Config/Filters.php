@@ -85,7 +85,9 @@ class Filters extends BaseFilters
         ],
         'after' => [
             // 'honeypot',
-            // 'secureheaders',
+            // เพิ่ม security headers ทุก response: X-Frame-Options, X-Content-Type-Options(nosniff),
+            // X-Download-Options, X-Permitted-Cross-Domain-Policies, Referrer-Policy
+            'secureheaders',
         ],
     ];
 
