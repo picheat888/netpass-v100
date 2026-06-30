@@ -21,10 +21,9 @@ class ContentSecurityPolicy extends BaseConfig
 
     /**
      * Default CSP report context
-     * เริ่มแบบ report-only — บราว์เซอร์จะ "รายงาน" violation ใน console แต่ยังไม่บล็อก
-     * (ไม่พังหน้าเว็บ) เมื่อทดสอบครบทุกหน้าแล้วไม่มี violation ค่อยตั้งเป็น false เพื่อ enforce
+     * enforce แล้ว (ทดสอบทุกหน้าไม่มี violation) — บราว์เซอร์จะ "บล็อก" ทรัพยากรที่ผิด policy จริง
      */
-    public bool $reportOnly = true;
+    public bool $reportOnly = false;
 
     /**
      * Specifies a URL where a browser will send reports
