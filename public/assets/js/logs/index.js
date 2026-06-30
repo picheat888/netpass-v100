@@ -1,3 +1,6 @@
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+const NP_LOGS = JSON.parse(document.getElementById('np-logs-data').textContent);
+
 document.addEventListener('DOMContentLoaded', function () {
     const I = NP_LOGS.i18n;
     const actSel = document.getElementById('lgAction');

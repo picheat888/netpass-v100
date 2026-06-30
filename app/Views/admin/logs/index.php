@@ -65,22 +65,24 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
-window.NP_LOGS = {
-    urls: { data: '<?= site_url('admin/logs/data') ?>', export: '<?= site_url('admin/logs/export') ?>' },
-    i18n: {
-        noDetails: <?= json_encode(lang('Activity.noDetails')) ?>,
-        field:     <?= json_encode(lang('Common.changeField')) ?>,
-        before:    <?= json_encode(lang('Common.changeOld')) ?>,
-        after:     <?= json_encode(lang('Common.changeNew')) ?>,
-        value:     <?= json_encode(lang('Common.changeValue')) ?>,
-        guestList: <?= json_encode(lang('Activity.guestList')) ?>,
-        gName:     <?= json_encode(lang('Activity.colName')) ?>,
-        gPhone:    <?= json_encode(lang('Activity.colPhone')) ?>,
-        gUser:     <?= json_encode(lang('Activity.colUsername')) ?>
-    }
-};
-</script>
-<script><?= file_get_contents(__DIR__ . '/index.js') ?></script>
+<?php
+// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+$npLogs = [
+    'urls' => ['data' => site_url('admin/logs/data'), 'export' => site_url('admin/logs/export')],
+    'i18n' => [
+        'noDetails' => lang('Activity.noDetails'),
+        'field'     => lang('Common.changeField'),
+        'before'    => lang('Common.changeOld'),
+        'after'     => lang('Common.changeNew'),
+        'value'     => lang('Common.changeValue'),
+        'guestList' => lang('Activity.guestList'),
+        'gName'     => lang('Activity.colName'),
+        'gPhone'    => lang('Activity.colPhone'),
+        'gUser'     => lang('Activity.colUsername'),
+    ],
+];
+$logsJs = FCPATH . 'assets/js/logs/index.js';
+?>
+<script type="application/json" id="np-logs-data"><?= json_encode($npLogs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
+<script src="<?= base_url('assets/js/logs/index.js') ?>?v=<?= is_file($logsJs) ? filemtime($logsJs) : '1' ?>"></script>
 <?= $this->endSection() ?>
