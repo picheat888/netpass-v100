@@ -145,29 +145,31 @@ $locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name'])
 <?= $this->section('scripts') ?>
 <!-- QR generator (สร้าง QR ฝั่ง client — ข้อมูลไม่ออกนอกเบราว์เซอร์) -->
 <script src="<?= base_url('assets/plugins/qrcode/qrcode-generator.min.js') ?>"></script>
-<script>
-// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
-window.NP_VOUCHER = {
-    urls: {
-        data:    '<?= site_url('admin/voucher/data') ?>',
-        tickets: '<?= site_url('admin/voucher/tickets') ?>',
-    },
-    assets: {
-        cssMain:  '<?= base_url('assets/css/style.css') ?>',
-        cssIcons: '<?= base_url('assets/plugins/bootstrap-icons/bootstrap-icons.min.css') ?>',
-        cssFonts: '<?= base_url('assets/fonts/fonts.css') ?>',
-    },
-    i18n: {
-        copied:   <?= json_encode(lang('Voucher.copied')) ?>,
-        title:    <?= json_encode(lang('Voucher.cardTitle')) ?>,
-        wifi:     <?= json_encode(lang('Voucher.lblWifiName')) ?>,
-        loc:      <?= json_encode(lang('Voucher.colLocation')) ?>,
-        dur:      <?= json_encode(lang('Voucher.colDuration')) ?>,
-        exp:      <?= json_encode(lang('Voucher.colExpiresAt')) ?>,
-        scan:     <?= json_encode(lang('Voucher.scanConnect')) ?>,
-        genErr:   <?= json_encode(lang('Voucher.errGeneral')) ?>,
-    },
-};
-</script>
-<script><?= file_get_contents(__DIR__ . '/index.js') ?></script>
+<?php
+// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+$npVoucher = [
+    'urls' => [
+        'data'    => site_url('admin/voucher/data'),
+        'tickets' => site_url('admin/voucher/tickets'),
+    ],
+    'assets' => [
+        'cssMain'  => base_url('assets/css/style.css'),
+        'cssIcons' => base_url('assets/plugins/bootstrap-icons/bootstrap-icons.min.css'),
+        'cssFonts' => base_url('assets/fonts/fonts.css'),
+    ],
+    'i18n' => [
+        'copied' => lang('Voucher.copied'),
+        'title'  => lang('Voucher.cardTitle'),
+        'wifi'   => lang('Voucher.lblWifiName'),
+        'loc'    => lang('Voucher.colLocation'),
+        'dur'    => lang('Voucher.colDuration'),
+        'exp'    => lang('Voucher.colExpiresAt'),
+        'scan'   => lang('Voucher.scanConnect'),
+        'genErr' => lang('Voucher.errGeneral'),
+    ],
+];
+$voucherJs = FCPATH . 'assets/js/voucher/index.js';
+?>
+<script type="application/json" id="np-voucher-data"><?= json_encode($npVoucher, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
+<script src="<?= base_url('assets/js/voucher/index.js') ?>?v=<?= is_file($voucherJs) ? filemtime($voucherJs) : '1' ?>"></script>
 <?= $this->endSection() ?>

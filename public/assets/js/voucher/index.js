@@ -1,3 +1,6 @@
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textContent);
+
 (function () {
     const modal = document.getElementById('voucherModal');
     if (!modal) return;
