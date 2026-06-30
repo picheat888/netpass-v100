@@ -181,7 +181,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
                 </div>
                 <div class="np-field">
                     <label class="form-label"><?= lang('Location.name') ?></label>
-                    <input type="text" name="name" class="form-control<?= $invCls($isAddErr, 'name') ?>" maxlength="150"
+                    <input type="text" name="name" autocomplete="off" class="form-control<?= $invCls($isAddErr, 'name') ?>" maxlength="150"
                            placeholder="<?= esc(lang('Location.phName'), 'attr') ?>"
                            value="<?= $oldVal($isAddErr, 'name') ?>">
                     <?= $errLine($isAddErr, 'name') ?>
@@ -227,7 +227,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
                 </div>
                 <div class="np-field">
                     <label class="form-label"><?= lang('Location.name') ?></label>
-                    <input type="text" name="name" id="editName" class="form-control<?= $invCls($isEditErr, 'name') ?>" maxlength="150"
+                    <input type="text" name="name" id="editName" autocomplete="off" class="form-control<?= $invCls($isEditErr, 'name') ?>" maxlength="150"
                            placeholder="<?= esc(lang('Location.phName'), 'attr') ?>"
                            value="<?= $oldVal($isEditErr, 'name') ?>">
                     <?= $errLine($isEditErr, 'name') ?>
