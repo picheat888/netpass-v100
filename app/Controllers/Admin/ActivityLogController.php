@@ -114,7 +114,8 @@ class ActivityLogController extends BaseController
         fputcsv($out, ['Date/Time', 'User', 'Role', 'Username', 'Action', 'Target type', 'Target', 'Details', 'IP']);
 
         foreach ($rows as $r) {
-            fputcsv($out, [
+            // ห่อทุก cell ด้วย csv_safe() — กัน formula injection จากค่า user input (ชื่อ/username/target/details)
+            fputcsv($out, array_map('csv_safe', [
                 $r['created_at'],
                 $r['actor_name'] ?? '',
                 $r['actor_role'] ?? '',
@@ -124,7 +125,7 @@ class ActivityLogController extends BaseController
                 $r['target_label'] ?? '',
                 $this->readableDetails($r),
                 $r['ip_address'] ?? '',
-            ]);
+            ]));
         }
 
         rewind($out);
