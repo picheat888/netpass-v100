@@ -1,7 +1,8 @@
 // โปรไฟล์: ครอป/ซูมรูป avatar, เช็คลิสต์+ความแข็งแรงรหัสผ่าน, toggle ดูรหัส, ล้าง error ตอนพิมพ์
-// ข้อความภาษาส่งมาทาง window.NP_PROFILE.lang (ตั้งใน view)
+// ข้อความภาษาอ่านจาก data island #np-profile-data (ตั้งใน view; CSP-safe)
 window.addEventListener('load', function () {
-    const L = (window.NP_PROFILE && window.NP_PROFILE.lang) || {};
+    const dataEl = document.getElementById('np-profile-data');
+    const L = (dataEl ? JSON.parse(dataEl.textContent).lang : null) || {};
 
     const input = document.getElementById('avatarInput');
     const box   = document.getElementById('avatarBox');

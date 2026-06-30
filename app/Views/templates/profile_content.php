@@ -242,18 +242,19 @@ $fieldErr = static function (array $errs, string $key): string {
 </div>
 
 <script src="<?= base_url('assets/plugins/cropperjs/cropper.min.js') ?>"></script>
-<script>
-    // ข้อความภาษาส่งให้ profile.js
-    window.NP_PROFILE = {
-        lang: {
-            avatarBadType: <?= json_encode(lang('Profile.avatarBadType')) ?>,
-            pwdWeak:   <?= json_encode(lang('Profile.pwdWeak')) ?>,
-            pwdFair:   <?= json_encode(lang('Profile.pwdFair')) ?>,
-            pwdGood:   <?= json_encode(lang('Profile.pwdGood')) ?>,
-            pwdStrong: <?= json_encode(lang('Profile.pwdStrong')) ?>,
-            matchOk:   <?= json_encode(lang('Profile.confirmMatchOk')) ?>,
-            matchBad:  <?= json_encode(lang('Profile.errConfirmMatch')) ?>,
-        },
-    };
-</script>
+<?php
+// ข้อความภาษา → data island (อ่านโดย profile.js; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+$npProfile = [
+    'lang' => [
+        'avatarBadType' => lang('Profile.avatarBadType'),
+        'pwdWeak'   => lang('Profile.pwdWeak'),
+        'pwdFair'   => lang('Profile.pwdFair'),
+        'pwdGood'   => lang('Profile.pwdGood'),
+        'pwdStrong' => lang('Profile.pwdStrong'),
+        'matchOk'   => lang('Profile.confirmMatchOk'),
+        'matchBad'  => lang('Profile.errConfirmMatch'),
+    ],
+];
+?>
+<script type="application/json" id="np-profile-data"><?= json_encode($npProfile, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
 <script src="<?= base_url('assets/js/profile.js') ?>?v=<?= filemtime(FCPATH . 'assets/js/profile.js') ?>"></script>
