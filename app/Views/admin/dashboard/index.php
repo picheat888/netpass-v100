@@ -4,7 +4,7 @@
 <?php
 $isEn    = service('request')->getLocale() === 'en';
 $palette = ['#3B7DDD', '#0EA66B', '#E0930B', '#8B5CF6', '#E5484D', '#0E8FA6'];
-$locName = static fn ($row) => $isEn ? (($row['loc_name_en'] ?? $row['name_en'] ?? '') ?: ($row['loc_name'] ?? $row['name'] ?? '')) : ($row['loc_name'] ?? $row['name'] ?? '');
+$locName = static fn ($row) => $isEn ? (($row['loc_name_en'] ?? $row['name_en'] ?? '') ?: ($row['loc_name'] ?? $row['name'] ?? '')) : (($row['loc_name'] ?? $row['name'] ?? '') ?: ($row['loc_name_en'] ?? $row['name_en'] ?? ''));
 
 // การ์ดสถิติ 4 ใบ — สี/ไอคอน + chip มุมขวา ตาม mockup
 $stats = [

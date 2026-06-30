@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <?php
 $isEn    = service('request')->getLocale() === 'en';
-$locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : $loc['name'];
+$locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : (($loc['name'] ?? '') ?: $loc['name_en']);
 
 // inline validation ของฟอร์ม Location: เปิด modal เดิมกลับมาพร้อม error ใต้ช่อง
 $locErrors = (array) (session('loc_errors') ?? []);

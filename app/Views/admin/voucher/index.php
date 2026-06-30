@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <?php
 $isEn    = service('request')->getLocale() === 'en';
-$locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : $loc['name'];
+$locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : (($loc['name'] ?? '') ?: $loc['name_en']);
 ?>
 
 <div class="np-card np-dt">

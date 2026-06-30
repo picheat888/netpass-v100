@@ -27,7 +27,7 @@ foreach ($_stockRows as $_row) {
 
 $_durations = voucher_durations();
 $_isEn      = service('request')->getLocale() === 'en';
-$_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : $loc['name'];
+$_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : (($loc['name'] ?? '') ?: $loc['name_en']);
 ?>
 <!-- CSS ของ Request Modal แยกไว้ที่ assets/css/request-modal.css -->
 <link rel="stylesheet" href="<?= base_url('assets/css/request-modal.css') ?>">
