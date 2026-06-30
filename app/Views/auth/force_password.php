@@ -33,7 +33,7 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
             <?= csrf_field() ?>
 
             <div class="np-field">
-                <label class="form-label fw-semibold"><?= lang('Force.newPassword') ?> <span class="np-req">*</span></label>
+                <label class="form-label fw-semibold" for="fNew"><?= lang('Force.newPassword') ?> <span class="np-req">*</span></label>
                 <div class="np-pwd-wrap">
                     <input type="password" name="new_password" id="fNew" class="form-control<?= $invalid('new_password') ?>" autocomplete="new-password" autofocus>
                     <button type="button" class="np-pwd-toggle" tabindex="-1" aria-label="<?= esc(lang('Profile.togglePwd'), 'attr') ?>"><i class="bi bi-eye"></i></button>
@@ -46,7 +46,7 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
             </div>
 
             <div class="np-field">
-                <label class="form-label fw-semibold"><?= lang('Force.confirmPassword') ?> <span class="np-req">*</span></label>
+                <label class="form-label fw-semibold" for="fConfirm"><?= lang('Force.confirmPassword') ?> <span class="np-req">*</span></label>
                 <div class="np-pwd-wrap">
                     <input type="password" name="confirm_password" id="fConfirm" class="form-control<?= $invalid('confirm_password') ?>" autocomplete="new-password">
                     <button type="button" class="np-pwd-toggle" tabindex="-1" aria-label="<?= esc(lang('Profile.togglePwd'), 'attr') ?>"><i class="bi bi-eye"></i></button>

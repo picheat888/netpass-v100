@@ -64,14 +64,14 @@ $fieldErr = static fn (?string $msg) => ! empty($msg)
             <?= csrf_field() ?>
 
             <div class="np-field">
-                <label class="form-label small fw-semibold"><?= lang('Common.username') ?></label>
-                <input type="text" name="username" autocomplete="username"
+                <label class="form-label small fw-semibold" for="loginUser"><?= lang('Common.username') ?></label>
+                <input type="text" name="username" id="loginUser" autocomplete="username"
                        class="form-control<?= $invalid('username', ! empty($authErr)) ?>" value="<?= old('username') ?>" required autofocus>
                 <?= $fieldErr($errors['username'] ?? null) ?>
             </div>
 
             <div class="np-field">
-                <label class="form-label small fw-semibold"><?= lang('Common.password') ?></label>
+                <label class="form-label small fw-semibold" for="loginPwd"><?= lang('Common.password') ?></label>
                 <div class="np-pwd-wrap">
                     <input type="password" name="password" id="loginPwd" autocomplete="current-password"
                            class="form-control<?= $invalid('password', ! empty($authErr)) ?>" required>

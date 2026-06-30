@@ -88,8 +88,8 @@ $fieldErr = static function (array $errs, string $key): string {
 
 <?php /* ฝั่ง user ล็อกช่อง email/ชื่อ/นามสกุล (admin เป็นผู้กำหนด) — admin ยังแก้ได้ */ ?>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Profile.email') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
-                    <input type="email" name="email" class="form-control<?= $invalid($infoErrors, 'email') ?>" maxlength="254"
+                    <label class="form-label" for="profEmail"><?= lang('Profile.email') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
+                    <input type="email" name="email" id="profEmail" autocomplete="email" class="form-control<?= $invalid($infoErrors, 'email') ?>" maxlength="254"
                            placeholder="<?= esc(lang('Profile.phEmail'), 'attr') ?>"
                            value="<?= esc(old('email', $user->email ?? '')) ?>"<?= $isAdmin ? '' : ' disabled' ?>>
                     <?php if (! $isAdmin): ?><p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.fieldLocked') ?></p><?php endif ?>
@@ -97,16 +97,16 @@ $fieldErr = static function (array $errs, string $key): string {
                 </div>
                 <div class="row g-3">
                     <div class="col-sm-6 np-field">
-                        <label class="form-label"><?= lang('Profile.firstName') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
-                        <input type="text" name="firstname" class="form-control<?= $invalid($infoErrors, 'firstname') ?>" maxlength="150"
+                        <label class="form-label" for="profFirstname"><?= lang('Profile.firstName') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
+                        <input type="text" name="firstname" id="profFirstname" autocomplete="given-name" class="form-control<?= $invalid($infoErrors, 'firstname') ?>" maxlength="150"
                                placeholder="<?= esc(lang('Profile.phFirstname'), 'attr') ?>"
                                value="<?= esc(old('firstname', $pFirst)) ?>"<?= $isAdmin ? '' : ' disabled' ?>>
                         <?php if (! $isAdmin): ?><p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.fieldLocked') ?></p><?php endif ?>
                         <?= $fieldErr($infoErrors, 'firstname') ?>
                     </div>
                     <div class="col-sm-6 np-field">
-                        <label class="form-label"><?= lang('Profile.lastName') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
-                        <input type="text" name="lastname" class="form-control<?= $invalid($infoErrors, 'lastname') ?>" maxlength="150"
+                        <label class="form-label" for="profLastname"><?= lang('Profile.lastName') ?> <?php if ($isAdmin): ?><span class="np-req">*</span><?php endif ?></label>
+                        <input type="text" name="lastname" id="profLastname" autocomplete="family-name" class="form-control<?= $invalid($infoErrors, 'lastname') ?>" maxlength="150"
                                placeholder="<?= esc(lang('Profile.phLastname'), 'attr') ?>"
                                value="<?= esc(old('lastname', $pLast)) ?>"<?= $isAdmin ? '' : ' disabled' ?>>
                         <?php if (! $isAdmin): ?><p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.fieldLocked') ?></p><?php endif ?>
@@ -114,8 +114,8 @@ $fieldErr = static function (array $errs, string $key): string {
                     </div>
                 </div>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Profile.position') ?></label>
-                    <input type="text" class="form-control" maxlength="100"
+                    <label class="form-label" for="profPosition"><?= lang('Profile.position') ?></label>
+                    <input type="text" id="profPosition" class="form-control" maxlength="100"
                            value="<?= esc($position) ?>" disabled>
                     <p class="np-field-hint"><i class="bi bi-lock"></i> <?= lang('Profile.positionLocked') ?></p>
                 </div>
@@ -136,22 +136,22 @@ $fieldErr = static function (array $errs, string $key): string {
             <form method="post" action="<?= site_url($formBase . '/password') ?>">
                 <?= csrf_field() ?>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Profile.username') ?></label>
-                    <input type="text" class="form-control" value="<?= esc($user->username) ?>" disabled autocomplete="username">
+                    <label class="form-label" for="profUsername"><?= lang('Profile.username') ?></label>
+                    <input type="text" id="profUsername" class="form-control" value="<?= esc($user->username) ?>" disabled autocomplete="username">
                 </div>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Profile.currentPassword') ?> <span class="np-req">*</span></label>
+                    <label class="form-label" for="profCurrentPwd"><?= lang('Profile.currentPassword') ?> <span class="np-req">*</span></label>
                     <div class="np-pwd-wrap">
-                        <input type="password" name="current_password" class="form-control<?= $invalid($pwdErrors, 'current_password') ?>" placeholder="<?= esc(lang('Profile.phCurrentPwd'), 'attr') ?>" autocomplete="current-password">
+                        <input type="password" name="current_password" id="profCurrentPwd" class="form-control<?= $invalid($pwdErrors, 'current_password') ?>" placeholder="<?= esc(lang('Profile.phCurrentPwd'), 'attr') ?>" autocomplete="current-password">
                         <button type="button" class="np-pwd-toggle" tabindex="-1" aria-label="<?= esc(lang('Profile.togglePwd'), 'attr') ?>"><i class="bi bi-eye"></i></button>
                     </div>
                     <?= $fieldErr($pwdErrors, 'current_password') ?>
                 </div>
                 <div class="row g-3">
                     <div class="col-sm-6 np-field">
-                        <label class="form-label"><?= lang('Profile.newPassword') ?> <span class="np-req">*</span></label>
+                        <label class="form-label" for="profNewPwd"><?= lang('Profile.newPassword') ?> <span class="np-req">*</span></label>
                         <div class="np-pwd-wrap">
-                            <input type="password" name="new_password" class="form-control<?= $invalid($pwdErrors, 'new_password') ?>" placeholder="<?= esc(lang('Profile.phNewPwd'), 'attr') ?>" value="<?= esc(old('new_password')) ?>" autocomplete="new-password">
+                            <input type="password" name="new_password" id="profNewPwd" class="form-control<?= $invalid($pwdErrors, 'new_password') ?>" placeholder="<?= esc(lang('Profile.phNewPwd'), 'attr') ?>" value="<?= esc(old('new_password')) ?>" autocomplete="new-password">
                             <button type="button" class="np-pwd-toggle" tabindex="-1" aria-label="<?= esc(lang('Profile.togglePwd'), 'attr') ?>"><i class="bi bi-eye"></i></button>
                         </div>
                         <?= $fieldErr($pwdErrors, 'new_password') ?>
@@ -162,9 +162,9 @@ $fieldErr = static function (array $errs, string $key): string {
                         </div>
                     </div>
                     <div class="col-sm-6 np-field">
-                        <label class="form-label"><?= lang('Profile.confirmPassword') ?> <span class="np-req">*</span></label>
+                        <label class="form-label" for="profConfirmPwd"><?= lang('Profile.confirmPassword') ?> <span class="np-req">*</span></label>
                         <div class="np-pwd-wrap">
-                            <input type="password" name="confirm_password" class="form-control<?= $invalid($pwdErrors, 'confirm_password') ?>" placeholder="<?= esc(lang('Profile.phConfirmPwd'), 'attr') ?>" value="<?= esc(old('confirm_password')) ?>" autocomplete="new-password">
+                            <input type="password" name="confirm_password" id="profConfirmPwd" class="form-control<?= $invalid($pwdErrors, 'confirm_password') ?>" placeholder="<?= esc(lang('Profile.phConfirmPwd'), 'attr') ?>" value="<?= esc(old('confirm_password')) ?>" autocomplete="new-password">
                             <button type="button" class="np-pwd-toggle" tabindex="-1" aria-label="<?= esc(lang('Profile.togglePwd'), 'attr') ?>"><i class="bi bi-eye"></i></button>
                         </div>
                         <?= $fieldErr($pwdErrors, 'confirm_password') ?>

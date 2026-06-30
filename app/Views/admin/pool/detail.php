@@ -43,12 +43,12 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold"><?= lang('Pool.username') ?></label>
-                    <input type="text" name="vou_username" id="editUser" class="form-control font-mono" required>
+                    <label class="form-label small fw-semibold" for="editUser"><?= lang('Pool.username') ?></label>
+                    <input type="text" name="vou_username" id="editUser" autocomplete="off" class="form-control font-mono" required>
                 </div>
                 <div class="mb-0">
-                    <label class="form-label small fw-semibold"><?= lang('Pool.password') ?></label>
-                    <input type="text" name="vou_password" id="editPass" class="form-control font-mono" required>
+                    <label class="form-label small fw-semibold" for="editPass"><?= lang('Pool.password') ?></label>
+                    <input type="text" name="vou_password" id="editPass" autocomplete="off" class="form-control font-mono" required>
                 </div>
             </div>
             <div class="modal-footer">
