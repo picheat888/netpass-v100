@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // select[data-autosubmit] (เช่น แถวต่อหน้า ใน list footer) → submit ฟอร์มเมื่อเปลี่ยนค่า
+    // ใช้ delegated listener แทน inline onchange เพื่อรองรับ CSP (script-src 'self')
+    document.addEventListener('change', function (e) {
+        var sel = e.target.closest('select[data-autosubmit]');
+        if (sel && sel.form) { sel.form.submit(); }
+    });
+
     // ── แถบ progress ด้านบน ตอนนำทาง/โหลดหน้า ──
     var bar = document.createElement('div');
     bar.className = 'np-progress';

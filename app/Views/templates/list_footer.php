@@ -43,7 +43,7 @@ unset($hidden['page'], $hidden['per_page']);
                     <input type="hidden" name="<?= esc($field, 'attr') ?>" value="<?= esc($value, 'attr') ?>">
                 <?php endforeach ?>
                 <span><?= lang('Common.perPage') ?></span>
-                <select name="per_page" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+                <select name="per_page" class="form-select form-select-sm" style="width:auto" data-autosubmit>
                     <?php foreach ([10, 20, 50, 100] as $pp): ?>
                         <option value="<?= $pp ?>" <?= (int) $perPage === $pp ? 'selected' : '' ?>><?= $pp ?></option>
                     <?php endforeach ?>

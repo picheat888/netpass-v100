@@ -21,8 +21,10 @@ class ContentSecurityPolicy extends BaseConfig
 
     /**
      * Default CSP report context
+     * เริ่มแบบ report-only — บราว์เซอร์จะ "รายงาน" violation ใน console แต่ยังไม่บล็อก
+     * (ไม่พังหน้าเว็บ) เมื่อทดสอบครบทุกหน้าแล้วไม่มี violation ค่อยตั้งเป็น false เพื่อ enforce
      */
-    public bool $reportOnly = false;
+    public bool $reportOnly = true;
 
     /**
      * Specifies a URL where a browser will send reports
@@ -78,17 +80,18 @@ class ContentSecurityPolicy extends BaseConfig
 
     /**
      * Lists allowed stylesheets' URLs.
+     * unsafe-inline จำเป็น: มี inline style="" ใน view + lib (DataTables/TomSelect/Cropper) inject style เอง
      *
      * @var list<string>|string
      */
-    public $styleSrc = 'self';
+    public $styleSrc = ['self', 'unsafe-inline'];
 
     /**
      * Specifies valid sources for stylesheets <link> elements.
      *
      * @var list<string>|string
      */
-    public array|string $styleSrcElem = 'self';
+    public array|string $styleSrcElem = ['self', 'unsafe-inline'];
 
     /**
      * Specifies valid sources for stylesheets inline
@@ -96,14 +99,15 @@ class ContentSecurityPolicy extends BaseConfig
      *
      * @var list<string>|string
      */
-    public array|string $styleSrcAttr = 'self';
+    public array|string $styleSrcAttr = ['self', 'unsafe-inline'];
 
     /**
      * Defines the origins from which images can be loaded.
+     * data: จำเป็น: QR code + พรีวิว avatar ใช้ canvas.toDataURL() เป็น data URI
      *
      * @var list<string>|string
      */
-    public $imageSrc = 'self';
+    public $imageSrc = ['self', 'data:'];
 
     /**
      * Restricts the URLs that can appear in a page's `<base>` element.
@@ -131,10 +135,11 @@ class ContentSecurityPolicy extends BaseConfig
 
     /**
      * Specifies the origins that can serve web fonts.
+     * ฟอนต์ self-host ทั้งหมด (Poppins/Prompt/Google Sans Code + bootstrap-icons)
      *
      * @var list<string>|string
      */
-    public $fontSrc;
+    public $fontSrc = 'self';
 
     /**
      * Lists valid endpoints for submission from `<form>` tags.
