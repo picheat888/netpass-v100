@@ -14,6 +14,7 @@ use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\LocaleFilter;
 use App\Filters\ForcePasswordFilter;
+use App\Filters\ActiveCheckFilter;
 
 class Filters extends BaseFilters
 {
@@ -38,6 +39,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'locale'        => LocaleFilter::class,
         'forcepw'       => ForcePasswordFilter::class,
+        'activecheck'   => ActiveCheckFilter::class,
     ];
 
     /**
@@ -80,8 +82,9 @@ class Filters extends BaseFilters
             // 'invalidchars',
             // ป้องกัน cross-site request forgery กับทุก POST (login มี csrf_field() อยู่แล้ว จึงไม่ต้องยกเว้น)
             'csrf',
-            'locale',  // ตั้งภาษาตาม session ทุก request
-            'forcepw', // บังคับเปลี่ยนรหัสผ่านครั้งแรก (ถ้า force_reset)
+            'locale',      // ตั้งภาษาตาม session ทุก request
+            'activecheck', // เตะ user ที่ถูกปิดใช้งาน (active=0) ออกจากระบบทันที
+            'forcepw',     // บังคับเปลี่ยนรหัสผ่านครั้งแรก (ถ้า force_reset)
         ],
         'after' => [
             // 'honeypot',

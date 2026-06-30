@@ -55,6 +55,11 @@ $fieldErr = static fn (?string $msg) => ! empty($msg)
             <div class="alert alert-success py-2 small"><?= esc(session('message')) ?></div>
         <?php endif; ?>
 
+        <?php /* แจ้งเตือนเมื่อถูกเตะออกจากระบบ (เช่น บัญชีถูกปิดใช้งานระหว่างใช้งาน) */ ?>
+        <?php if (session('notice') !== null): ?>
+            <div class="alert alert-warning py-2 small"><i class="bi bi-exclamation-triangle-fill me-1"></i><?= esc(session('notice')) ?></div>
+        <?php endif; ?>
+
         <form action="<?= url_to('login') ?>" method="post" id="loginForm" novalidate>
             <?= csrf_field() ?>
 

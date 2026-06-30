@@ -47,6 +47,7 @@ return [
     'changeValue' => 'Value',
     // ข้อความ login / validation (ใช้คำง่ายๆ)
     'invalidLogin'  => 'Invalid username or password. Please try again.',
+    'accountDeactivated' => 'Your account has been deactivated. Please contact an administrator.',
     'enterUsername' => 'Please enter your username',
     'enterPassword' => 'Please enter your password',
 ];
