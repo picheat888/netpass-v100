@@ -42,7 +42,8 @@ const NP_MYVOUCHER = JSON.parse(document.getElementById('np-myvoucher-data').tex
         // สร้าง QR แบบ WIFI ให้สแกนเชื่อมต่อได้เลย
         const box = document.getElementById('vmQr');
         box.innerHTML = '';
-        const payload = 'WIFI:T:WPA;S:' + wifiEsc(d.ssid) + ';P:' + wifiEsc(d.pass) + ';;';
+        // SSID เปิด (auth ที่ captive portal) → QR แค่พาเข้า Wi-Fi เปลือยๆ; กรอก voucher ที่พอร์ทัล
+        const payload = 'WIFI:T:nopass;S:' + wifiEsc(d.ssid) + ';;';
         const qr = qrcode(0, 'M');
         qr.addData(payload);
         qr.make();
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function wifiEsc(s) { return String(s || '').replace(/([\\;,:"])/g, '\\$1'); }
     function qrSvg(ssid, pass) {
         const qr = qrcode(0, 'M');
-        qr.addData('WIFI:T:WPA;S:' + wifiEsc(ssid) + ';P:' + wifiEsc(pass) + ';;');
+        qr.addData('WIFI:T:nopass;S:' + wifiEsc(ssid) + ';;');
         qr.make();
         return qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     }

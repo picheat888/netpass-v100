@@ -301,7 +301,8 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     });
 
     // สร้างการ์ดตั๋ว (vm-ticket) + พิมพ์ 3 ใบ/แถว
-    function qrSvg(ssid,pass){ const qr=qrcode(0,'M'); qr.addData('WIFI:T:WPA;S:'+wifiEsc(ssid)+';P:'+wifiEsc(pass)+';;'); qr.make(); return qr.createSvgTag({cellSize:4,margin:0,scalable:true}); }
+    // SSID เปิด (auth ที่ captive portal) → QR แค่พาเข้า Wi-Fi เปลือยๆ; กรอก voucher ที่พอร์ทัล
+    function qrSvg(ssid,pass){ const qr=qrcode(0,'M'); qr.addData('WIFI:T:nopass;S:'+wifiEsc(ssid)+';;'); qr.make(); return qr.createSvgTag({cellSize:4,margin:0,scalable:true}); }
     function buildTicket(t){
         return '<div class="vm-ticket-wrap"><div class="vm-ticket">'
             + '<div class="vm-ticket-main">'
