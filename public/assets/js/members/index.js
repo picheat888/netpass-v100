@@ -1,4 +1,6 @@
-// ───────── JS ล้วน (ห้ามมี php-echo tag ใต้บรรทัดนี้) ─────────
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+const NP_MEMBERS = JSON.parse(document.getElementById('np-members-data').textContent);
+
 // เติมข้อมูลใน edit modal จาก data attribute ของปุ่ม
 document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;

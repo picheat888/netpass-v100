@@ -604,36 +604,34 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
 
 <?= $this->section('scripts') ?>
 <script src="<?= base_url('assets/plugins/cropperjs/cropper.min.js') ?>"></script>
-<script>
-// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
-window.NP_MEMBERS = {
-    urls: {
-        data: '<?= site_url('admin/members/data') ?>',
-    },
-    csrf: {
-        name: '<?= csrf_token() ?>',
-    },
-    i18n: {
-        strength:    ['', <?= json_encode(lang('Profile.pwdWeak')) ?>, <?= json_encode(lang('Profile.pwdFair')) ?>, <?= json_encode(lang('Profile.pwdGood')) ?>, <?= json_encode(lang('Profile.pwdStrong')) ?>],
-        badType:     <?= json_encode(lang('Profile.avatarBadType')) ?>,
-        forceNote:   <?= json_encode(lang('Member.forceChangeNote')) ?>,
-        colName:     <?= json_encode(lang('Member.colName')) ?>,
-        email:       <?= json_encode(lang('Member.email')) ?>,
-        position:    <?= json_encode(lang('Member.position')) ?>,
-        role:        <?= json_encode(lang('Member.role')) ?>,
-        firstName:   <?= json_encode(lang('Member.firstName')) ?>,
-        lastName:    <?= json_encode(lang('Member.lastName')) ?>,
-        roleLbl:     <?= json_encode(lang('Member.role')) ?>,
-        adminLbl:    <?= json_encode(lang('Member.roleAdmin')) ?>,
-        userLbl:     <?= json_encode(lang('Member.roleUser')) ?>,
-        photoLbl:    <?= json_encode(lang('Profile.photoTitle')) ?>,
-        noChange:    <?= json_encode(lang('Member.editNoChange')) ?>,
-        uploadNew:   <?= json_encode(lang('Profile.uploadNew')) ?>,
-        noFile:      <?= json_encode(lang('Member.importNoFile')) ?>,
-        badFile:     <?= json_encode(lang('Member.importBadFile')) ?>,
-    },
-    openModal: '<?= $isAddErr ? 'add' : ($isEditErr ? 'edit' : '') ?>',
-};
-</script>
-<script><?= file_get_contents(__DIR__ . '/index.js') ?></script>
+<?php
+// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+$npMembers = [
+    'urls' => ['data' => site_url('admin/members/data')],
+    'csrf' => ['name' => csrf_token()],
+    'i18n' => [
+        'strength'  => ['', lang('Profile.pwdWeak'), lang('Profile.pwdFair'), lang('Profile.pwdGood'), lang('Profile.pwdStrong')],
+        'badType'   => lang('Profile.avatarBadType'),
+        'forceNote' => lang('Member.forceChangeNote'),
+        'colName'   => lang('Member.colName'),
+        'email'     => lang('Member.email'),
+        'position'  => lang('Member.position'),
+        'role'      => lang('Member.role'),
+        'firstName' => lang('Member.firstName'),
+        'lastName'  => lang('Member.lastName'),
+        'roleLbl'   => lang('Member.role'),
+        'adminLbl'  => lang('Member.roleAdmin'),
+        'userLbl'   => lang('Member.roleUser'),
+        'photoLbl'  => lang('Profile.photoTitle'),
+        'noChange'  => lang('Member.editNoChange'),
+        'uploadNew' => lang('Profile.uploadNew'),
+        'noFile'    => lang('Member.importNoFile'),
+        'badFile'   => lang('Member.importBadFile'),
+    ],
+    'openModal' => $isAddErr ? 'add' : ($isEditErr ? 'edit' : ''),
+];
+$membersJs = FCPATH . 'assets/js/members/index.js';
+?>
+<script type="application/json" id="np-members-data"><?= json_encode($npMembers, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
+<script src="<?= base_url('assets/js/members/index.js') ?>?v=<?= is_file($membersJs) ? filemtime($membersJs) : '1' ?>"></script>
 <?= $this->endSection() ?>
