@@ -100,15 +100,17 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
     </div>
 
     <script src="<?= base_url('assets/plugins/bootstrap/bootstrap.bundle.min.js') ?>"></script>
-    <script>
-    // ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
-    window.NP_FPW = {
-        strength:  ['', <?= json_encode(lang('Profile.pwdWeak')) ?>, <?= json_encode(lang('Profile.pwdFair')) ?>, <?= json_encode(lang('Profile.pwdGood')) ?>, <?= json_encode(lang('Profile.pwdStrong')) ?>],
-        matchOk:   <?= json_encode(lang('Profile.confirmMatchOk')) ?>,
-        matchBad:  <?= json_encode(lang('Force.errConfirmMatch')) ?>,
-    };
-    </script>
-    <script><?= file_get_contents(__DIR__ . '/force_password.js') ?></script>
+    <?php
+    // ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+    $npFpw = [
+        'strength' => ['', lang('Profile.pwdWeak'), lang('Profile.pwdFair'), lang('Profile.pwdGood'), lang('Profile.pwdStrong')],
+        'matchOk'  => lang('Profile.confirmMatchOk'),
+        'matchBad' => lang('Force.errConfirmMatch'),
+    ];
+    $fpwJs = FCPATH . 'assets/js/auth/force_password.js';
+    ?>
+    <script type="application/json" id="np-fpw-data"><?= json_encode($npFpw, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
+    <script src="<?= base_url('assets/js/auth/force_password.js') ?>?v=<?= is_file($fpwJs) ? filemtime($fpwJs) : '1' ?>"></script>
 
 </body>
 </html>

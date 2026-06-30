@@ -1,3 +1,6 @@
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+var NP_FPW = JSON.parse(document.getElementById('np-fpw-data').textContent);
+
 (function () {
     var newPwd = document.getElementById('fNew');
     var confirmPwd = document.getElementById('fConfirm');
