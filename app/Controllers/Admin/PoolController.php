@@ -91,7 +91,7 @@ class PoolController extends BaseController
 
         $data = array_map(function ($location) use ($rankById, $isEn) {
             $color = $this->palette[($rankById[$location['id']] ?? 0) % count($this->palette)];
-            $name  = $isEn ? (($location['name_en'] ?? '') ?: $location['name']) : $location['name'];
+            $name  = $isEn ? (($location['name_en'] ?? '') ?: $location['name']) : (($location['name'] ?? '') ?: $location['name_en']);
             $attr  = static fn ($value) => esc((string) $value, 'attr');
 
             return [
@@ -129,7 +129,7 @@ class PoolController extends BaseController
         $isEn = service('request')->getLocale() === 'en';
 
         return view('admin/pool/detail', [
-            'title'    => $isEn ? ($location['name_en'] ?: $location['name']) : $location['name'],
+            'title'    => $isEn ? ($location['name_en'] ?: $location['name']) : ($location['name'] ?: $location['name_en']),
             'subtitle' => lang('Pool.subtitle'),
             'active'   => 'pool',
             'location' => $location,
@@ -305,7 +305,7 @@ class PoolController extends BaseController
         // สรุปผลสำหรับ modal: ชื่อพื้นที่ (ตาม locale) + SSID + label ระยะเวลา
         $loc     = (new LocationModel())->find($locId);
         $isEn    = service('request')->getLocale() === 'en';
-        $locName = $isEn ? (($loc['name_en'] ?? '') ?: ($loc['name'] ?? '')) : ($loc['name'] ?? '');
+        $locName = $isEn ? (($loc['name_en'] ?? '') ?: ($loc['name'] ?? '')) : (($loc['name'] ?? '') ?: ($loc['name_en'] ?? ''));
 
         // เก็บ log เป็น English คงที่ — ชื่อพื้นที่ name_en, duration key ดิบ
         $logLoc = ($loc['name_en'] ?? '') ?: ($loc['name'] ?? '');

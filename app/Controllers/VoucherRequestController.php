@@ -86,7 +86,7 @@ class VoucherRequestController extends BaseController
         $hours    = duration_hours($duration);
         $userId   = auth()->user()->id;
         $isEn     = service('request')->getLocale() === 'en';
-        $locName  = $isEn ? (($location['name_en'] ?? '') ?: $location['name']) : $location['name'];
+        $locName  = $isEn ? (($location['name_en'] ?? '') ?: $location['name']) : (($location['name'] ?? '') ?: $location['name_en']);
         $durLabel = duration_label($duration);
 
         $db = db_connect();
