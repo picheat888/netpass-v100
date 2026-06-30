@@ -88,32 +88,32 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
 
                     <div class="row g-3">
                         <div class="col-sm-6 np-field mb-0">
-                            <label class="form-label"><?= lang('Member.firstName') ?> <span class="np-req">*</span></label>
-                            <input type="text" name="firstname" class="form-control<?= $invCls($isAddErr, 'firstname') ?>" maxlength="150"
+                            <label class="form-label" for="addFirstname"><?= lang('Member.firstName') ?> <span class="np-req">*</span></label>
+                            <input type="text" name="firstname" id="addFirstname" class="form-control<?= $invCls($isAddErr, 'firstname') ?>" maxlength="150"
                                    placeholder="<?= esc(lang('Member.phFirstname'), 'attr') ?>"
                                    data-req data-reqmsg="<?= esc(lang('Member.errFirstReq'), 'attr') ?>"
                                    value="<?= $oldVal($isAddErr, 'firstname') ?>">
                             <?= $errLine($isAddErr, 'firstname') ?>
                         </div>
                         <div class="col-sm-6 np-field mb-0">
-                            <label class="form-label"><?= lang('Member.lastName') ?> <span class="np-req">*</span></label>
-                            <input type="text" name="lastname" class="form-control<?= $invCls($isAddErr, 'lastname') ?>" maxlength="150"
+                            <label class="form-label" for="addLastname"><?= lang('Member.lastName') ?> <span class="np-req">*</span></label>
+                            <input type="text" name="lastname" id="addLastname" class="form-control<?= $invCls($isAddErr, 'lastname') ?>" maxlength="150"
                                    placeholder="<?= esc(lang('Member.phLastname'), 'attr') ?>"
                                    data-req data-reqmsg="<?= esc(lang('Member.errLastReq'), 'attr') ?>"
                                    value="<?= $oldVal($isAddErr, 'lastname') ?>">
                             <?= $errLine($isAddErr, 'lastname') ?>
                         </div>
                         <div class="col-sm-6 np-field mb-0">
-                            <label class="form-label"><?= lang('Member.email') ?></label>
-                            <input type="email" name="email" class="form-control<?= $invCls($isAddErr, 'email') ?>" maxlength="254"
+                            <label class="form-label" for="addEmail"><?= lang('Member.email') ?></label>
+                            <input type="email" name="email" id="addEmail" autocomplete="off" class="form-control<?= $invCls($isAddErr, 'email') ?>" maxlength="254"
                                    placeholder="<?= esc(lang('Member.phEmail'), 'attr') ?>"
                                    data-fmtmsg="<?= esc(lang('Member.errEmailValid'), 'attr') ?>"
                                    value="<?= $oldVal($isAddErr, 'email') ?>">
                             <?= $errLine($isAddErr, 'email') ?>
                         </div>
                         <div class="col-sm-6 np-field mb-0">
-                            <label class="form-label"><?= lang('Member.position') ?> <span class="np-req">*</span></label>
-                            <input type="text" name="position" class="form-control<?= $invCls($isAddErr, 'position') ?>" maxlength="100"
+                            <label class="form-label" for="addPosition"><?= lang('Member.position') ?> <span class="np-req">*</span></label>
+                            <input type="text" name="position" id="addPosition" class="form-control<?= $invCls($isAddErr, 'position') ?>" maxlength="100"
                                    placeholder="<?= esc(lang('Member.phPosition'), 'attr') ?>"
                                    data-req data-reqmsg="<?= esc(lang('Member.errPositionReq'), 'attr') ?>"
                                    value="<?= $oldVal($isAddErr, 'position') ?>">
@@ -134,15 +134,15 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
 
                     <div class="row g-3">
                         <div class="col-sm-6 np-field mb-0">
-                            <label class="form-label"><?= lang('Member.role') ?></label>
-                            <select name="role" class="form-select">
+                            <label class="form-label" for="addRole"><?= lang('Member.role') ?></label>
+                            <select name="role" id="addRole" class="form-select">
                                 <option value="user"  <?= old('role') === 'user'  ? 'selected' : '' ?>><?= lang('Member.roleUser') ?></option>
                                 <option value="admin" <?= old('role') === 'admin' ? 'selected' : '' ?>><?= lang('Member.roleAdmin') ?></option>
                             </select>
                         </div>
                         <div class="col-sm-6 np-field mb-0">
-                            <label class="form-label"><?= lang('Member.username') ?> <span class="np-req">*</span></label>
-                            <input type="text" name="username" class="form-control font-mono<?= $invCls($isAddErr, 'username') ?>" maxlength="100"
+                            <label class="form-label" for="addUsername"><?= lang('Member.username') ?> <span class="np-req">*</span></label>
+                            <input type="text" name="username" id="addUsername" autocomplete="off" class="form-control font-mono<?= $invCls($isAddErr, 'username') ?>" maxlength="100"
                                    placeholder="<?= esc(lang('Member.phUsername'), 'attr') ?>"
                                    data-req data-reqmsg="<?= esc(lang('Member.errUsernameReq'), 'attr') ?>"
                                    value="<?= $oldVal($isAddErr, 'username') ?>">
@@ -150,7 +150,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                         </div>
                         <div class="col-12 np-field mb-0">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label mb-0"><?= lang('Member.password') ?> <span class="np-req">*</span></label>
+                                <label class="form-label mb-0" for="addPwd"><?= lang('Member.password') ?> <span class="np-req">*</span></label>
                                 <button type="button" class="np-linkbtn" id="addRandomPwd"><i class="bi bi-shuffle"></i> <?= lang('Member.randomPwd') ?></button>
                             </div>
                             <div class="np-pwd-wrap">
@@ -219,7 +219,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
 
                 <div class="row g-3">
                     <div class="col-sm-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Member.firstName') ?> <span class="np-req">*</span></label>
+                        <label class="form-label" for="editFirstname"><?= lang('Member.firstName') ?> <span class="np-req">*</span></label>
                         <input type="text" name="firstname" id="editFirstname" class="form-control<?= $invCls($isEditErr, 'firstname') ?>" maxlength="150"
                                placeholder="<?= esc(lang('Member.phFirstname'), 'attr') ?>"
                                data-req data-reqmsg="<?= esc(lang('Member.errFirstReq'), 'attr') ?>"
@@ -227,7 +227,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                         <?= $errLine($isEditErr, 'firstname') ?>
                     </div>
                     <div class="col-sm-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Member.lastName') ?> <span class="np-req">*</span></label>
+                        <label class="form-label" for="editLastname"><?= lang('Member.lastName') ?> <span class="np-req">*</span></label>
                         <input type="text" name="lastname" id="editLastname" class="form-control<?= $invCls($isEditErr, 'lastname') ?>" maxlength="150"
                                placeholder="<?= esc(lang('Member.phLastname'), 'attr') ?>"
                                data-req data-reqmsg="<?= esc(lang('Member.errLastReq'), 'attr') ?>"
@@ -235,15 +235,15 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                         <?= $errLine($isEditErr, 'lastname') ?>
                     </div>
                     <div class="col-sm-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Member.email') ?></label>
-                        <input type="email" name="email" id="editEmail" class="form-control<?= $invCls($isEditErr, 'email') ?>" maxlength="254"
+                        <label class="form-label" for="editEmail"><?= lang('Member.email') ?></label>
+                        <input type="email" name="email" id="editEmail" autocomplete="off" class="form-control<?= $invCls($isEditErr, 'email') ?>" maxlength="254"
                                placeholder="<?= esc(lang('Member.phEmail'), 'attr') ?>"
                                data-fmtmsg="<?= esc(lang('Member.errEmailValid'), 'attr') ?>"
                                value="<?= $oldVal($isEditErr, 'email') ?>">
                         <?= $errLine($isEditErr, 'email') ?>
                     </div>
                     <div class="col-sm-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Member.position') ?> <span class="np-req">*</span></label>
+                        <label class="form-label" for="editPosition"><?= lang('Member.position') ?> <span class="np-req">*</span></label>
                         <input type="text" name="position" id="editPosition" class="form-control<?= $invCls($isEditErr, 'position') ?>" maxlength="100"
                                placeholder="<?= esc(lang('Member.phPosition'), 'attr') ?>"
                                data-req data-reqmsg="<?= esc(lang('Member.errPositionReq'), 'attr') ?>"
@@ -251,12 +251,12 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                         <?= $errLine($isEditErr, 'position') ?>
                     </div>
                     <div class="col-sm-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Member.username') ?></label>
+                        <label class="form-label" for="editUsername"><?= lang('Member.username') ?></label>
                         <input type="text" id="editUsername" class="form-control font-mono" disabled>
                         <p class="np-field-hint mb-0"><i class="bi bi-lock"></i> <?= lang('Member.usernameLocked') ?></p>
                     </div>
                     <div class="col-sm-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Member.role') ?></label>
+                        <label class="form-label" for="editRole"><?= lang('Member.role') ?></label>
                         <select name="role" id="editRole" class="form-select">
                             <option value="user"><?= lang('Member.roleUser') ?></option>
                             <option value="admin"><?= lang('Member.roleAdmin') ?></option>
@@ -442,12 +442,12 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
             </div>
             <div class="modal-body">
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Member.username') ?></label>
+                    <label class="form-label" for="rsUsername"><?= lang('Member.username') ?></label>
                     <input type="text" id="rsUsername" class="form-control font-mono" disabled>
                 </div>
                 <div class="np-field mb-0">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <label class="form-label mb-0"><?= lang('Member.newPassword') ?> <span class="np-req">*</span></label>
+                        <label class="form-label mb-0" for="rsPwd"><?= lang('Member.newPassword') ?> <span class="np-req">*</span></label>
                         <button type="button" class="np-linkbtn" id="rsRandomPwd"><i class="bi bi-shuffle"></i> <?= lang('Member.randomPwd') ?></button>
                     </div>
                     <div class="np-pwd-wrap">
