@@ -527,7 +527,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
             </div>
             <div class="modal-body">
                 <div class="d-flex justify-content-end mb-2">
-                    <a href="<?= site_url('admin/members/import/template') ?>" class="np-tpl-chip"><i class="bi bi-download"></i><?= lang('Member.importDownloadTpl') ?></a>
+                    <a href="<?= site_url('admin/members/import/template') ?>" download="member_import_template.csv" class="np-tpl-chip"><i class="bi bi-download"></i><?= lang('Member.importDownloadTpl') ?></a>
                 </div>
 
                 <!-- dropzone: ลากวาง/คลิกเลือก — input ไฟล์จริงซ่อนเต็มพื้นที่ -->

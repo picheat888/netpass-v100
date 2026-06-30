@@ -77,7 +77,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
                 </div>
 
                 <div class="d-flex justify-content-end mt-3 mb-2">
-                    <a href="<?= site_url('admin/pool/import/template') ?>" class="np-tpl-chip"><i class="bi bi-download"></i><?= lang('Pool.importDownloadTpl') ?></a>
+                    <a href="<?= site_url('admin/pool/import/template') ?>" download="voucher-template.csv" class="np-tpl-chip"><i class="bi bi-download"></i><?= lang('Pool.importDownloadTpl') ?></a>
                 </div>
 
                 <div class="np-drop" id="poolImportDrop" tabindex="0" role="button" aria-label="<?= esc(lang('Pool.importChooseFile'), 'attr') ?>">
