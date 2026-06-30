@@ -59,16 +59,16 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
             <div class="modal-body">
                 <div class="row g-3">
                     <div class="col-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Pool.selectLocation') ?></label>
-                        <select name="location_id" class="form-select" required>
+                        <label class="form-label" for="poolImportLoc"><?= lang('Pool.selectLocation') ?></label>
+                        <select name="location_id" id="poolImportLoc" class="form-select" required>
                             <?php foreach ($locations as $location): ?>
                                 <option value="<?= $location['id'] ?>"><?= esc($locName($location)) ?></option>
                             <?php endforeach ?>
                         </select>
                     </div>
                     <div class="col-6 np-field mb-0">
-                        <label class="form-label"><?= lang('Pool.selectDuration') ?></label>
-                        <select name="duration" class="form-select" required>
+                        <label class="form-label" for="poolImportDur"><?= lang('Pool.selectDuration') ?></label>
+                        <select name="duration" id="poolImportDur" class="form-select" required>
                             <?php foreach ($durations as $key => $durationItem): ?>
                                 <option value="<?= $key ?>"><?= esc($isEn ? $durationItem['label_en'] : $durationItem['label']) ?></option>
                             <?php endforeach ?>
@@ -172,23 +172,23 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
             </div>
             <div class="modal-body">
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Location.nameEn') ?> <span class="np-req">*</span></label>
-                    <input type="text" name="name_en" class="form-control<?= $invCls($isAddErr, 'name_en') ?>" maxlength="150"
+                    <label class="form-label" for="addNameEn"><?= lang('Location.nameEn') ?> <span class="np-req">*</span></label>
+                    <input type="text" name="name_en" id="addNameEn" class="form-control<?= $invCls($isAddErr, 'name_en') ?>" maxlength="150"
                            placeholder="<?= esc(lang('Location.phNameEn'), 'attr') ?>"
                            data-req data-reqmsg="<?= esc(lang('Location.errNameEnRequired'), 'attr') ?>"
                            value="<?= $oldVal($isAddErr, 'name_en') ?>">
                     <?= $errLine($isAddErr, 'name_en') ?>
                 </div>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Location.name') ?></label>
-                    <input type="text" name="name" autocomplete="off" class="form-control<?= $invCls($isAddErr, 'name') ?>" maxlength="150"
+                    <label class="form-label" for="addName"><?= lang('Location.name') ?></label>
+                    <input type="text" name="name" id="addName" autocomplete="off" class="form-control<?= $invCls($isAddErr, 'name') ?>" maxlength="150"
                            placeholder="<?= esc(lang('Location.phName'), 'attr') ?>"
                            value="<?= $oldVal($isAddErr, 'name') ?>">
                     <?= $errLine($isAddErr, 'name') ?>
                 </div>
                 <div class="np-field mb-0">
-                    <label class="form-label"><?= lang('Location.ssid') ?> <span class="np-req">*</span></label>
-                    <input type="text" name="ssid" class="form-control font-mono<?= $invCls($isAddErr, 'ssid') ?>" maxlength="100"
+                    <label class="form-label" for="addSsid"><?= lang('Location.ssid') ?> <span class="np-req">*</span></label>
+                    <input type="text" name="ssid" id="addSsid" class="form-control font-mono<?= $invCls($isAddErr, 'ssid') ?>" maxlength="100"
                            placeholder="<?= esc(lang('Location.phSsid'), 'attr') ?>"
                            data-req data-reqmsg="<?= esc(lang('Location.errSsidRequired'), 'attr') ?>"
                            value="<?= $oldVal($isAddErr, 'ssid') ?>">
@@ -218,7 +218,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
             </div>
             <div class="modal-body">
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Location.nameEn') ?> <span class="np-req">*</span></label>
+                    <label class="form-label" for="editNameEn"><?= lang('Location.nameEn') ?> <span class="np-req">*</span></label>
                     <input type="text" name="name_en" id="editNameEn" class="form-control<?= $invCls($isEditErr, 'name_en') ?>" maxlength="150"
                            placeholder="<?= esc(lang('Location.phNameEn'), 'attr') ?>"
                            data-req data-reqmsg="<?= esc(lang('Location.errNameEnRequired'), 'attr') ?>"
@@ -226,14 +226,14 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
                     <?= $errLine($isEditErr, 'name_en') ?>
                 </div>
                 <div class="np-field">
-                    <label class="form-label"><?= lang('Location.name') ?></label>
+                    <label class="form-label" for="editName"><?= lang('Location.name') ?></label>
                     <input type="text" name="name" id="editName" autocomplete="off" class="form-control<?= $invCls($isEditErr, 'name') ?>" maxlength="150"
                            placeholder="<?= esc(lang('Location.phName'), 'attr') ?>"
                            value="<?= $oldVal($isEditErr, 'name') ?>">
                     <?= $errLine($isEditErr, 'name') ?>
                 </div>
                 <div class="np-field mb-0">
-                    <label class="form-label"><?= lang('Location.ssid') ?> <span class="np-req">*</span></label>
+                    <label class="form-label" for="editSsid"><?= lang('Location.ssid') ?> <span class="np-req">*</span></label>
                     <input type="text" name="ssid" id="editSsid" class="form-control font-mono<?= $invCls($isEditErr, 'ssid') ?>" maxlength="100"
                            placeholder="<?= esc(lang('Location.phSsid'), 'attr') ?>"
                            data-req data-reqmsg="<?= esc(lang('Location.errSsidRequired'), 'attr') ?>"
