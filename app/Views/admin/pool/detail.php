@@ -122,16 +122,18 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
-window.NP_POOL_DETAIL = {
-    voucherBaseUrl: '<?= site_url('admin/pool/voucher') ?>',
-    dataUrl:        '<?= site_url('admin/pool/location/' . $location['id'] . '/data') ?>',
-    i18n: {
-        username: <?= json_encode(lang('Pool.username')) ?>,
-        password: <?= json_encode(lang('Pool.password')) ?>,
-    },
-};
-</script>
-<script><?= file_get_contents(__DIR__ . '/detail.js') ?></script>
+<?php
+// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+$npPoolDetail = [
+    'voucherBaseUrl' => site_url('admin/pool/voucher'),
+    'dataUrl'        => site_url('admin/pool/location/' . $location['id'] . '/data'),
+    'i18n'           => [
+        'username' => lang('Pool.username'),
+        'password' => lang('Pool.password'),
+    ],
+];
+$poolDetailJs = FCPATH . 'assets/js/pool/detail.js';
+?>
+<script type="application/json" id="np-pool-detail-data"><?= json_encode($npPoolDetail, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
+<script src="<?= base_url('assets/js/pool/detail.js') ?>?v=<?= is_file($poolDetailJs) ? filemtime($poolDetailJs) : '1' ?>"></script>
 <?= $this->endSection() ?>

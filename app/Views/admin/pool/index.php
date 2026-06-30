@@ -312,20 +312,22 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-// ───────── ค่าจาก server (PHP อยู่ที่นี่ที่เดียว) ─────────
-window.NP_POOL = {
-    dataUrl:   '<?= site_url('admin/pool/data') ?>',
-    csrfName:  '<?= csrf_token() ?>',
-    badFile:   <?= json_encode(lang('Pool.importBadFile')) ?>,
-    countUnit: <?= json_encode(lang('Voucher.confirmCountUnit')) ?>,
-    openModal: '<?= $isAddErr ? 'add' : ($isEditErr ? 'edit' : '') ?>',
-    i18n: {
-        nameEn: <?= json_encode(lang('Location.nameEn')) ?>,
-        name:   <?= json_encode(lang('Location.name')) ?>,
-        ssid:   <?= json_encode(lang('Location.ssid')) ?>,
-    },
-};
-</script>
-<script><?= file_get_contents(__DIR__ . '/index.js') ?></script>
+<?php
+// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+$npPool = [
+    'dataUrl'   => site_url('admin/pool/data'),
+    'csrfName'  => csrf_token(),
+    'badFile'   => lang('Pool.importBadFile'),
+    'countUnit' => lang('Voucher.confirmCountUnit'),
+    'openModal' => $isAddErr ? 'add' : ($isEditErr ? 'edit' : ''),
+    'i18n'      => [
+        'nameEn' => lang('Location.nameEn'),
+        'name'   => lang('Location.name'),
+        'ssid'   => lang('Location.ssid'),
+    ],
+];
+$poolJs = FCPATH . 'assets/js/pool/index.js';
+?>
+<script type="application/json" id="np-pool-data"><?= json_encode($npPool, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?></script>
+<script src="<?= base_url('assets/js/pool/index.js') ?>?v=<?= is_file($poolJs) ? filemtime($poolJs) : '1' ?>"></script>
 <?= $this->endSection() ?>

@@ -1,3 +1,6 @@
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+const NP_POOL_DETAIL = JSON.parse(document.getElementById('np-pool-detail-data').textContent);
+
 // edit modal — เติมค่าจากปุ่มที่กด (รองรับแถวที่ DataTables สร้างใหม่)
 const editForm     = document.getElementById('editForm');
 const editUser     = document.getElementById('editUser');

@@ -1,3 +1,5 @@
+// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+const NP_POOL = JSON.parse(document.getElementById('np-pool-data').textContent);
 
 // ตาราง DataTables server-side (สรุปสต็อกแยกพื้นที่)
 document.addEventListener('DOMContentLoaded', function () {
