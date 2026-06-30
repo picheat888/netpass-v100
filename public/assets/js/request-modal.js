@@ -102,17 +102,18 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     // Step 4: guest rows
     function guestRowHtml(i){
         // input + ที่ว่างสำหรับข้อความ validation ใต้ช่อง
-        function f(cls, ph){
-            return '<input type="text" class="form-control form-control-sm '+cls+'" placeholder="'+esc(ph)+'">'
+        // name=...[] ใส่ไว้เพื่อ autofill/a11y (JS อ่านค่าด้วย class ไม่ใช่ name)
+        function f(cls, ph, name){
+            return '<input type="text" name="'+name+'" class="form-control form-control-sm '+cls+'" placeholder="'+esc(ph)+'">'
                  + '<div class="np-field-err"></div>';
         }
         return '<div class="np-guest-row">'
             + '<button type="button" class="np-guest-del" title="x"><i class="bi bi-x-lg"></i></button>'
             + '<div class="np-guest-no">'+NP_L.no.replace('{0}', i)+'</div>'
             + '<div class="row g-2">'
-            + '<div class="col-6">'+f('g-first', NP_L.first)+'</div>'
-            + '<div class="col-6">'+f('g-last', NP_L.last)+'</div>'
-            + '<div class="col-12">'+f('g-phone', NP_L.phone)+'</div>'
+            + '<div class="col-6">'+f('g-first', NP_L.first, 'guest_first[]')+'</div>'
+            + '<div class="col-6">'+f('g-last', NP_L.last, 'guest_last[]')+'</div>'
+            + '<div class="col-12">'+f('g-phone', NP_L.phone, 'guest_phone[]')+'</div>'
             + '</div></div>';
     }
     function renumber(){
