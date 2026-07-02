@@ -243,7 +243,7 @@ $fieldErr = static function (array $errs, string $key): string {
 
 <script src="<?= base_url('assets/plugins/cropperjs/cropper.min.js') ?>"></script>
 <?php
-// ข้อความภาษา → data island (อ่านโดย profile.js; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+// ข้อความภาษา → data island
 $npProfile = [
     'lang' => [
         'avatarBadType' => lang('Profile.avatarBadType'),

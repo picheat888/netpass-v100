@@ -212,7 +212,7 @@ $_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['nam
     </div>
 </div>
 
-<!-- Data สำหรับ JS → data island -->
+<!-- JS Script -->
 <?php
 $npReq = [
     'stock'  => $_stock,
