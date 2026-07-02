@@ -6,7 +6,7 @@
 </a>
 
 <div class="np-card np-dt">
-    <!-- ตัวกรองสถานะ (DataTables วางไว้ใน toolbar ซ้าย ถัดจากค้นหา) -->
+    <!-- ตัวกรองสถานะ -->
     <div id="stToolbar" class="d-flex flex-wrap align-items-center gap-2">
         <select id="stStatus" class="form-select" style="width:auto">
             <option value=""><?= lang('Common.allStatus') ?></option>
@@ -53,14 +53,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= lang('Common.cancel') ?></button>
-                <!-- disabled ไว้ก่อน เปิดเมื่อมีการแก้ไขจริง (JS) -->
+                <!-- เปิดปุ่มเมื่อมีการแก้ไข (JS) -->
                 <button type="submit" class="btn btn-np" id="editSaveBtn" disabled><?= lang('Common.save') ?></button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- ยืนยันการแก้ไข voucher (confirm) — เด้งทับ edit modal ก่อน submit, โชว์ค่าเดิม → ค่าใหม่ -->
+<!-- ยืนยันการแก้ไข voucher ก่อน submit -->
 <div class="modal fade np-dialog-modal" id="editConfirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content np-dialog">
@@ -74,7 +74,7 @@
             </div>
             <div class="dlg-body">
                 <p><?= lang('Pool.editConfirmBody') ?></p>
-                <!-- ตารางเทียบค่าเดิม → ค่าใหม่ (เติมด้วย JS เฉพาะช่องที่เปลี่ยน) -->
+                <!-- ตารางเทียบค่าเดิม → ค่าใหม่ -->
                 <table class="dlg-cmp-table">
                     <thead>
                         <tr><th><?= lang('Common.changeField') ?></th><th><?= lang('Common.changeOld') ?></th><th><?= lang('Common.changeNew') ?></th></tr>
@@ -123,7 +123,7 @@
 
 <?= $this->section('scripts') ?>
 <?php
-// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+// ค่าจาก server → data island
 $npPoolDetail = [
     'voucherBaseUrl' => site_url('admin/pool/voucher'),
     'dataUrl'        => site_url('admin/pool/location/' . $location['id'] . '/data'),

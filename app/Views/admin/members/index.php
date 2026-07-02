@@ -16,7 +16,7 @@ $errLine = static fn (bool $enabled, string $field) => ($enabled && ! empty($mbE
 $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $enabled ? esc(old($field, $default)) : esc($default);
 ?>
 <div class="np-card np-dt np-dt-cards">
-    <!-- ตัวกรองกลุ่ม (DataTables วางไว้ใน toolbar ซ้าย ถัดจากค้นหา) -->
+    <!-- ตัวกรองกลุ่ม -->
     <div id="mbToolbar" class="d-flex flex-wrap align-items-center gap-2">
         <select id="mbGroup" class="form-select" style="width:auto">
             <option value=""><?= lang('Member.filterAll') ?></option>
@@ -24,7 +24,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
             <option value="user"><?= lang('Member.roleUser') ?></option>
         </select>
     </div>
-    <!-- ปุ่มเพิ่มสมาชิก (DataTables วางไว้ใน toolbar ขวา) -->
+    <!-- ปุ่มเพิ่มสมาชิก -->
     <div id="mbAction" class="d-flex gap-2">
         <button class="btn btn-np-outline" data-bs-toggle="modal" data-bs-target="#importModal">
             <i class="bi bi-box-arrow-in-down"></i><?= lang('Member.importBtn') ?>
@@ -272,7 +272,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
     </div>
 </div>
 
-<!-- Dialog: review ก่อนบันทึกการแก้ไขสมาชิก (confirm + ตารางเทียบค่าเดิม → ใหม่) -->
+<!-- Dialog: review ก่อนบันทึกการแก้ไขสมาชิก -->
 <div class="modal fade np-dialog-modal" id="mbEditReviewModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content np-dialog">
@@ -300,7 +300,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
     </div>
 </div>
 
-<!-- Dialog: สรุปข้อมูลก่อนยืนยันสร้างสมาชิก (confirm + ตารางค่า + บัญชีเข้าใช้งาน) -->
+<!-- Dialog: สรุปข้อมูลก่อนยืนยันสร้างสมาชิก -->
 <div class="modal fade np-dialog-modal" id="mbSummaryModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content np-dialog">
@@ -319,7 +319,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                     </thead>
                     <tbody id="sumRows"></tbody>
                 </table>
-                <!-- บัญชีเข้าใช้งาน: ให้ admin คัดลอกไปส่งผู้ใช้ -->
+                <!-- บัญชีเข้าใช้งานสำหรับส่งผู้ใช้ -->
                 <div class="np-cred-box">
                     <div class="np-cred-line">
                         <div><div class="np-cred-k"><?= lang('Member.username') ?></div><div class="np-cred-v font-mono" id="sumUser"></div></div>
@@ -485,7 +485,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
     </div>
 </div>
 
-<!-- Modal: ปรับรูปโปรไฟล์ (ใช้ร่วมทั้งเพิ่ม/แก้ไข) -->
+<!-- Modal: ปรับรูปโปรไฟล์ -->
 <link rel="stylesheet" href="<?= base_url('assets/plugins/cropperjs/cropper.min.css') ?>">
 <div class="modal fade np-modal" id="mbCropModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -530,7 +530,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                     <a href="<?= site_url('admin/members/import/template') ?>" download="member_import_template.csv" class="np-tpl-chip"><i class="bi bi-download"></i><?= lang('Member.importDownloadTpl') ?></a>
                 </div>
 
-                <!-- dropzone: ลากวาง/คลิกเลือก — input ไฟล์จริงซ่อนเต็มพื้นที่ -->
+                <!-- dropzone: ลากวาง/คลิกเลือกไฟล์ -->
                 <div class="np-drop" id="importDrop" tabindex="0" role="button" aria-label="<?= esc(lang('Member.importChooseFile'), 'attr') ?>">
                     <input type="file" name="file" id="importFile" accept=".csv">
                     <div class="np-drop-ico"><i class="bi bi-filetype-csv"></i></div>
@@ -538,7 +538,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
                     <div class="np-drop-meta"><?= lang('Member.importDropMeta') ?></div>
                 </div>
 
-                <!-- file chip: โชว์แทน dropzone เมื่อเลือกไฟล์แล้ว -->
+                <!-- file chip: โชว์เมื่อเลือกไฟล์แล้ว -->
                 <div class="np-drop-file d-none" id="importFileChip">
                     <span class="fico"><i class="bi bi-filetype-csv"></i></span>
                     <div class="meta">
@@ -605,7 +605,7 @@ $oldVal  = static fn (bool $enabled, string $field, string $default = '') => $en
 <?= $this->section('scripts') ?>
 <script src="<?= base_url('assets/plugins/cropperjs/cropper.min.js') ?>"></script>
 <?php
-// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+// ค่าจาก server → data island
 $npMembers = [
     'urls' => ['data' => site_url('admin/members/data')],
     'csrf' => ['name' => csrf_token()],

@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 <div class="np-card np-dt">
-    <!-- ตัวกรอง: ประเภทการกระทำ + ช่วงวันที่ (DataTables วางไว้ใน toolbar ซ้าย ถัดจากค้นหา) -->
+    <!-- ตัวกรอง: ประเภทการกระทำ + ช่วงวันที่ -->
     <div id="lgToolbar" class="d-flex flex-wrap align-items-center gap-2">
         <select id="lgAction" class="form-select" style="width:auto">
             <option value=""><?= lang('Activity.filterAllActions') ?></option>
@@ -13,10 +13,10 @@
         <input type="date" id="lgFrom" class="form-control" style="width:auto" aria-label="<?= esc(lang('Activity.dateFrom'), 'attr') ?>" title="<?= esc(lang('Activity.dateFrom'), 'attr') ?>">
         <span class="text-muted">–</span>
         <input type="date" id="lgTo" class="form-control" style="width:auto" aria-label="<?= esc(lang('Activity.dateTo'), 'attr') ?>" title="<?= esc(lang('Activity.dateTo'), 'attr') ?>">
-        <!-- เตือนช่วงวันที่ก่อน export — อยู่ข้างช่อง To -->
+        <!-- เตือนช่วงวันที่ก่อน export -->
         <span id="lgExportErr" class="np-field-err np-export-err d-none"><i class="bi bi-info-circle-fill"></i> <?= lang('Activity.exportNeedPeriod') ?></span>
     </div>
-    <!-- ปุ่มส่งออก (DataTables วางไว้ใน toolbar ขวา) -->
+    <!-- ปุ่มส่งออก -->
     <div id="lgActionBar" class="d-flex gap-2">
         <button type="button" id="lgExport" class="btn btn-np-outline">
             <i class="bi bi-filetype-csv me-1"></i><?= lang('Activity.export') ?>
@@ -43,7 +43,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('modals') ?>
-<!-- Dialog: รายละเอียด event (เติม body ด้วย JS) -->
+<!-- Dialog: รายละเอียด event -->
 <div class="modal fade np-dialog-modal" id="logDetailModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content np-dialog">
@@ -66,7 +66,7 @@
 
 <?= $this->section('scripts') ?>
 <?php
-// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+// ค่าจาก server → data island
 $npLogs = [
     'urls' => ['data' => site_url('admin/logs/data'), 'export' => site_url('admin/logs/export')],
     'i18n' => [

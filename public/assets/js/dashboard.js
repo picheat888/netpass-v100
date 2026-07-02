@@ -1,6 +1,5 @@
 /**
- * Dashboard (admin) — นับเลขการ์ดสถิติจาก 0 → ค่าจริง ตอนโหลดหน้า
- * อ่านค่าเป้าหมายจาก data-count, เคารพ prefers-reduced-motion (ไม่มี PHP จึงแยกไฟล์ได้)
+ * Dashboard (admin) — นับเลขการ์ดสถิติ
  */
 document.addEventListener('DOMContentLoaded', function () {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

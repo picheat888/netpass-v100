@@ -1,4 +1,3 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
 const _NPREQ = JSON.parse(document.getElementById('np-req-data').textContent);
 const NP_STOCK = _NPREQ.stock;
 const NP_CSRF = _NPREQ.csrf;
@@ -32,7 +31,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         step = n;
         document.querySelectorAll('.np-step-pane').forEach(p=>p.classList.add('d-none'));
         document.getElementById('reqStep'+n).classList.remove('d-none');
-        // รีเซ็ต scroll กลับบนสุดทุกครั้งที่เปลี่ยน step (กัน scroll ค้างจาก step ก่อน)
+        // รีเซ็ต scroll กลับบนสุด
         const body = document.querySelector('#requestModal .np-rq-body');
         if (body) body.scrollTop = 0;
         document.querySelectorAll('.np-step').forEach(s=>{
@@ -49,9 +48,9 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         document.getElementById('reqPrintAll').classList.toggle('d-none', !isResult);
         document.getElementById('reqDone').classList.toggle('d-none', !isResult);
         if(isResult){ stepTitle.textContent=''; stepSub.textContent=''; }
-        // โชว์ error + ปุ่ม Add ที่หัว เฉพาะ Step 4 (Guest details)
+        
         document.getElementById('reqStepAction').classList.toggle('d-none', n !== 4);
-        guestErr.classList.add('d-none');   // ซ่อน alert จำนวน guest เมื่อสลับ step (โชว์เฉพาะตอนกด Add เกินจำนวนใน step 4)
+        guestErr.classList.add('d-none');  
         updateNextState();
     }
 
@@ -78,13 +77,11 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     // Step 3: duration stock + select
     function refreshDurStock(){
         const locStock = NP_STOCK[selLocId] || {};
-        // duration ที่เลือกไว้ไม่มีสต็อกในพื้นที่นี้ → ยกเลิกการเลือก (เช่น เปลี่ยน location)
         if(selDur && !(locStock[selDur] > 0)){ selDur=null; selDurLabel=''; }
         document.querySelectorAll('.np-dur-card').forEach(card=>{
             const dur=card.dataset.dur, cnt=locStock[dur]||0;
             card.querySelector('.np-dur-cnt').textContent=cnt;
             card.classList.toggle('np-disabled', cnt===0);
-            // ไฮไลต์ให้ตรงกับ selDur จริงเสมอ (กันไฮไลต์ค้างทั้งที่ selDur ถูกรีเซ็ต)
             card.classList.toggle('selected', dur===selDur);
         });
         updateNextState();
@@ -101,8 +98,6 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
 
     // Step 4: guest rows
     function guestRowHtml(i){
-        // input + ที่ว่างสำหรับข้อความ validation ใต้ช่อง
-        // name=...[] ใส่ไว้เพื่อ autofill/a11y (JS อ่านค่าด้วย class ไม่ใช่ name)
         function f(cls, ph, name){
             return '<input type="text" name="'+name+'" class="form-control form-control-sm '+cls+'" placeholder="'+esc(ph)+'">'
                  + '<div class="np-field-err"></div>';
@@ -124,9 +119,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     const MAX_GUEST = 12;   // ขอได้สูงสุด 12 รายการต่อครั้ง
     function addGuest(){
         const n = guestList.querySelectorAll('.np-guest-row').length;
-        // ครบ 12 รายการต่อครั้ง — เพิ่มไม่ได้
         if(n >= MAX_GUEST){ guestErr.textContent = NP_L.maxGuest.replace('{0}', MAX_GUEST); guestErr.classList.remove('d-none'); return; }
-        // เกิน stock คงเหลือ — เพิ่มไม่ได้
         if(n >= maxStock()){ guestErr.textContent = NP_L.maxStock.replace('{0}', maxStock()); guestErr.classList.remove('d-none'); return; }
         guestErr.classList.add('d-none');
         guestList.insertAdjacentHTML('beforeend', guestRowHtml(n+1));
@@ -135,7 +128,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     document.getElementById('reqAddGuest').addEventListener('click', addGuest);
 
     guestList.addEventListener('click', function(e){
-        // ปุ่มลบแถว (เหลือแถวเดียวลบไม่ได้)
+        // ปุ่มลบแถว 
         const del=e.target.closest('.np-guest-del');
         if(!del) return;
         if(guestList.querySelectorAll('.np-guest-row').length<=1) return;
@@ -154,15 +147,15 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         return out;
     }
 
-    // ตรวจรูปแบบเบอร์โทรไทย: ขึ้นต้น 0 ตามด้วยตัวเลขรวม 9–10 หลัก (อนุญาตเว้นวรรค/ขีดคั่น)
+    // ตรวจรูปแบบเบอร์โทรไทย
     function isThaiPhone(v){ return /^0\d{8,9}$/.test(v.replace(/[\s-]/g, '')); }
 
-    // validate รายช่องในการ์ด — ช่องว่าง/เบอร์ผิด format ขึ้นขอบแดง + ข้อความใต้ช่อง, แล้ว focus ช่องแรกที่ผิด
+    // validate รายช่องในการ์ด
     function validateGuests(){
-        guestErr.classList.add('d-none');   // ซ่อน alert รวม (ใช้ validation รายช่องในการ์ด)
+        guestErr.classList.add('d-none');   
         let firstBad = null;
 
-        // Supplier — 1 ค่าต่อ request ใช้กับ guest ทุกคน บังคับกรอก
+        // Supplier
         const supInp = document.getElementById('reqSupplier');
         const supErr = supInp.nextElementSibling;
         if(!supInp.value.trim()){
@@ -175,7 +168,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         }
 
         guestList.querySelectorAll('.np-guest-row .form-control').forEach(inp=>{
-            const err = inp.nextElementSibling;   // .np-field-err
+            const err = inp.nextElementSibling;   
             let msg = '';
             if(!inp.value.trim()){ msg = NP_L.required; }
             else if(inp.classList.contains('g-phone') && !isThaiPhone(inp.value)){ msg = NP_L.phoneInvalid; }
@@ -189,13 +182,12 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
             }
         });
 
-        // เช็คเบอร์โทรซ้ำข้ามแถว (กัน copy-paste คนเดียวกันหลายรายการ) — เทียบหลังตัดขีด/ช่องว่าง
+        // เช็คเบอร์โทรซ้ำข้ามแถว 
         const seenPhone = {};
         guestList.querySelectorAll('.np-guest-row .g-phone').forEach(inp=>{
             const norm = inp.value.replace(/[\s-]/g, '');
-            if(!norm || !isThaiPhone(inp.value)) return;   // ช่องว่าง/format ผิด จับโดย loop ด้านบนแล้ว
+            if(!norm || !isThaiPhone(inp.value)) return;   
             if(seenPhone[norm]){
-                // ทำให้ทั้งใบแรกและใบที่ซ้ำขึ้นแดงพร้อมข้อความ
                 [seenPhone[norm], inp].forEach(bad=>{
                     bad.classList.add('is-invalid');
                     const e = bad.nextElementSibling;
@@ -207,14 +199,13 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
             }
         });
 
-        // เช็คชื่อ-นามสกุลซ้ำข้ามแถว (normalize ตัดช่องว่าง + ตัวพิมพ์เล็ก)
+        // เช็คชื่อ-นามสกุลซ้ำข้ามแถว 
         const seenName = {};
         guestList.querySelectorAll('.np-guest-row').forEach(row=>{
             const fIn = row.querySelector('.g-first'), lIn = row.querySelector('.g-last');
             const key = (fIn.value.trim() + '|' + lIn.value.trim()).toLowerCase().replace(/\s+/g, ' ');
-            if(key === '|') return;   // ทั้งคู่ว่าง — จับโดย loop ด้านบนแล้ว
+            if(key === '|') return;   
             if(seenName[key]){
-                // ขึ้นแดงช่องชื่อ+นามสกุลของทั้งใบแรกและใบที่ซ้ำ
                 [...seenName[key], fIn, lIn].forEach(bad=>{
                     bad.classList.add('is-invalid');
                     const e = bad.nextElementSibling;
@@ -230,7 +221,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         return true;
     }
 
-    // พิมพ์แล้วล้างสถานะ error ของช่องนั้นทันที
+    // พิมพ์แล้วล้างสถานะ error 
     guestList.addEventListener('input', function(e){
         const inp = e.target;
         if(inp.classList.contains('form-control') && inp.value.trim()){
@@ -240,7 +231,6 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         }
     });
 
-    // ช่อง supplier อยู่นอก guestList — ล้าง error เมื่อเริ่มพิมพ์
     document.getElementById('reqSupplier').addEventListener('input', function(){
         if(this.value.trim()){
             this.classList.remove('is-invalid');
@@ -253,12 +243,12 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     btnNext.addEventListener('click', function(){
         if(step===2){ refreshDurStock(); showStep(3); }
         else if(step===3){
-            // เข้า step 4: ใส่แถว guest แถวแรกถ้ายังว่าง
+            // เข้า step 4
             if(guestList.querySelectorAll('.np-guest-row').length===0) addGuest();
             showStep(4);
         }
         else if(step===4){
-            // validate รายช่อง — ช่องว่างขึ้นแดง + focus ช่องแรก
+            // validate รายช่อง 
             if(!validateGuests()) return;
             const guests=collectGuests();
             document.getElementById('confirmLoc').textContent=selLocName;
@@ -300,8 +290,8 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         .catch(()=>{ btnConf.disabled=false; btnConf.innerHTML='<i class="bi bi-check-circle me-1"></i>' + NP_L.btnConfirm; alert(NP_L.genErr); });
     });
 
-    // สร้างการ์ดตั๋ว (vm-ticket) + พิมพ์ 3 ใบ/แถว
-    // SSID เปิด (auth ที่ captive portal) → QR แค่พาเข้า Wi-Fi เปลือยๆ; กรอก voucher ที่พอร์ทัล
+    // สร้างการ์ดตั๋ว
+    // SSID Open
     function qrSvg(ssid,pass){ const qr=qrcode(0,'M'); qr.addData('WIFI:T:nopass;S:'+wifiEsc(ssid)+';;'); qr.make(); return qr.createSvgTag({cellSize:4,margin:0,scalable:true}); }
     function buildTicket(t){
         return '<div class="vm-ticket-wrap"><div class="vm-ticket">'
@@ -336,7 +326,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         document.body.appendChild(frame);
     }
 
-    // แสดงรายการที่ออกในหน้าผลลัพธ์ (step 6) + ผูกปุ่มพิมพ์
+    // แสดงรายการที่ออกในหน้าผลลัพธ์
     function renderResult(tickets){
         document.getElementById('reqResultCount').textContent = NP_L.countUnit.replace('{0}', tickets.length);
         const rows = tickets.map((t, idx) =>
@@ -357,21 +347,20 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     }
     document.getElementById('reqPrintAll').addEventListener('click', function(){ if(issuedTickets.length) printTickets(issuedTickets); });
 
-    // บันทึก voucher เป็นรูป PNG ทีละใบ — render การ์ดตั๋วเต็มใบนอกจอแล้ว capture
+    // บันทึก voucher เป็นรูป PNG ทีละใบ
     async function saveTicketImage(idx, btn){
         const t = issuedTickets[idx];
         if (!t || !window.htmlToImage) return;
         const orig = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-        // กล่องชั่วคราวนอกจอ (vm-ticket ใช้ CSS จาก style.css ของหน้าหลัก)
         const holder = document.createElement('div');
-        holder.className = 'np-capture';   // บังคับการ์ดเป็นแนวนอนเหมือนตอนพิมพ์
+        holder.className = 'np-capture';  
         holder.style.cssText = 'position:fixed;left:-99999px;top:0;width:730px;background:#fff;';
         holder.innerHTML = buildTicket(t);
         document.body.appendChild(holder);
         try {
-            await document.fonts.ready;   // กันฟอนต์ไทยยังโหลดไม่เสร็จ
+            await document.fonts.ready;  
             const node = holder.querySelector('.vm-ticket-wrap');
             const dataUrl = await htmlToImage.toPng(node, { pixelRatio: 2, backgroundColor: '#ffffff' });
             const a = document.createElement('a');
@@ -387,7 +376,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
         }
     }
 
-    // ผูกปุ่ม Save แบบ delegation (ปุ่มถูกสร้างแบบ dynamic)
+    // ผูกปุ่ม Save แบบ delegation 
     document.getElementById('reqResultList').addEventListener('click', function(e){
         const btn = e.target.closest('.np-save-img');
         if (btn) saveTicketImage(parseInt(btn.dataset.idx), btn);
@@ -411,14 +400,13 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     showStep(1);
 
     // ── เปิด modal อัตโนมัติจาก URL ──
-    // เด้ง requestModal ถ้า URL มี #request หรือ ?open=request (reload แล้วยังค้างอยู่)
     function autoOpenFromUrl(){
         const params = new URLSearchParams(location.search);
         const wantOpen = location.hash === '#request' || params.get('open') === 'request';
         if(wantOpen) bootstrap.Modal.getOrCreateInstance(reqModal).show();
     }
 
-    // ใส่ ?open=request ลง URL เมื่อ modal เปิด — reload แล้วยังจับได้ (ครอบทุกปุ่มที่เปิด modal)
+    // ใส่ ?open=request ลง URL 
     function setOpenInUrl(){
         const url = new URL(location.href);
         url.searchParams.set('open', 'request');
@@ -426,7 +414,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     }
     reqModal.addEventListener('shown.bs.modal', setOpenInUrl);
 
-    // ล้าง #request / ?open ออกจาก URL เมื่อปิด modal — reload ครั้งถัดไปจะไม่เด้งซ้ำ
+    // ล้าง #request / ?open ออกจาก URL 
     function clearOpenFromUrl(){
         const url = new URL(location.href);
         url.hash = '';
@@ -435,7 +423,7 @@ const NP_STEP_TITLES = _NPREQ.stepTitles;
     }
     reqModal.addEventListener('hidden.bs.modal', clearOpenFromUrl);
 
-    // รันหลัง DOM + bootstrap โหลดเสร็จ (สคริปต์นี้ถูก include ก่อน bootstrap.bundle)
+    // รันหลัง DOM + bootstrap โหลดเสร็จ 
     if(document.readyState === 'loading'){
         document.addEventListener('DOMContentLoaded', autoOpenFromUrl);
     } else {

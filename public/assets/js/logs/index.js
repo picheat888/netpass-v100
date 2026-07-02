@@ -1,4 +1,4 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 const NP_LOGS = JSON.parse(document.getElementById('np-logs-data').textContent);
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const fromEl = document.getElementById('lgFrom');
     const toEl   = document.getElementById('lgTo');
 
-    // ตาราง DataTables server-side — ส่งตัวกรอง action + ช่วงวันที่ไปกับ ajax
+    // ตาราง DataTables server-side
     const dt = NetPass.dataTable('#logTable', {
         filters: '#lgToolbar',
         action: '#lgActionBar',
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ส่งออก CSV — บังคับเลือกช่วงวันที่ (From + To) ก่อน
+    // ส่งออก CSV
     document.getElementById('lgExport').addEventListener('click', function () {
         if (! fromEl.value || ! toEl.value) {
             exportErr.classList.remove('d-none');
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             date_to:   toEl.value,
             search:    dt.search() || ''
         });
-        // ใช้ <a download> แทน window.location — กัน progress bar (beforeunload) ค้าง เพราะ download ไม่ navigate
+        // ใช้ <a download> แทน window.location
         const a = document.createElement('a');
         a.href = NP_LOGS.urls.export + '?' + q.toString();
         a.setAttribute('download', '');
@@ -82,13 +82,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
 
-    // ทำ key ให้อ่านง่าย: location_id → Location id
+    // ทำ key ให้อ่านง่าย
     function humanize(k) {
         const s = String(k).replace(/_/g, ' ');
         return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
-    // แปลงค่าเป็นข้อความ: array → คั่นด้วย ,  | boolean → yes/no | object → JSON
+    // แปลงค่าเป็นข้อความ
     function fmt(v) {
         if (v === null || v === undefined || v === '') { return '—'; }
         if (Array.isArray(v)) { return v.join(', '); }
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return String(v);
     }
 
-    // ตาราง key/value (ค่าเดียว)
+    // ตาราง key/value
     function kvTable(obj) {
         const rows = Object.keys(obj).map(function (k) {
             return '<tr><td class="dlg-cmp-field">' + esc(humanize(k)) + '</td>'
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return '<table class="dlg-cmp-table"><tbody>' + rows + '</tbody></table>';
     }
 
-    // ตารางเทียบ before → after (รวม key จากทั้งสองฝั่ง)
+    // ตารางเทียบ before → after
     function diffTable(before, after) {
         const keys = Array.from(new Set(Object.keys(before || {}).concat(Object.keys(after || {}))));
         const rows = keys.map(function (k) {
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
             + esc(I.before) + '</th><th>' + esc(I.after) + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
     }
 
-    // ตารางรายชื่อผู้รับ voucher (guests[])
+    // ตารางรายชื่อผู้รับ voucher
     function guestTable(guests) {
         const rows = guests.map(function (g) {
             return '<tr><td class="dlg-cmp-val">' + esc(g.name || '—') + '</td>'
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return html || ('<p class="text-muted mb-0">' + esc(I.noDetails) + '</p>');
     }
 
-    // เปิด modal จากปุ่มดู (delegation — รองรับแถวที่ DataTables วาดใหม่)
+    // เปิด modal จากปุ่มดู
     document.querySelector('#logTable').addEventListener('click', function (e) {
         const btn = e.target.closest('.np-log-view');
         if (! btn) { return; }

@@ -18,7 +18,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
 ?>
 
 <div class="np-card np-dt">
-    <!-- ปุ่มนำเข้า voucher (DataTables วางไว้ใน toolbar ขวา) -->
+    <!-- ปุ่มนำเข้า voucher -->
     <div id="poolAction" class="d-flex gap-2">
         <button class="btn btn-np-outline" data-bs-toggle="modal" data-bs-target="#addModal">
             <i class="bi bi-plus-lg me-1"></i><?= lang('Location.addTitle') ?>
@@ -109,7 +109,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
     </div>
 </div>
 
-<!-- Modal: สรุปผลนำเข้า voucher (สำเร็จ — all-or-nothing) -->
+<!-- Modal: สรุปผลนำเข้า voucher -->
 <div class="modal fade np-modal np-modal-confirm" id="poolResultModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -249,7 +249,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
     </div>
 </div>
 
-<!-- ยืนยันการแก้ไขพื้นที่ (confirm) — เด้งทับ edit modal ก่อน submit, โชว์ค่าเดิม → ค่าใหม่ -->
+<!-- ยืนยันการแก้ไขพื้นที่ ก่อน submit -->
 <div class="modal fade np-dialog-modal" id="locEditConfirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content np-dialog">
@@ -263,7 +263,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
             </div>
             <div class="dlg-body">
                 <p><?= lang('Pool.editConfirmBody') ?></p>
-                <!-- ตารางเทียบค่าเดิม → ค่าใหม่ (เติมด้วย JS เฉพาะช่องที่เปลี่ยน) -->
+                <!-- ตารางเทียบค่าเดิม → ค่าใหม่ -->
                 <table class="dlg-cmp-table">
                     <thead>
                         <tr><th><?= lang('Common.changeField') ?></th><th><?= lang('Common.changeOld') ?></th><th><?= lang('Common.changeNew') ?></th></tr>
@@ -313,7 +313,7 @@ $oldVal  = static fn (bool $enabled, string $field) => $enabled ? esc(old($field
 
 <?= $this->section('scripts') ?>
 <?php
-// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+// ค่าจาก server → data island
 $npPool = [
     'dataUrl'   => site_url('admin/pool/data'),
     'csrfName'  => csrf_token(),

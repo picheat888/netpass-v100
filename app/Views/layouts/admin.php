@@ -19,7 +19,7 @@
                         <p class="np-page-desc"><?= esc($subtitle) ?></p>
                     <?php endif; ?>
                 </div>
-                <?php /* ข้อความสำเร็จ/ผิดพลาด (message/error) แสดงเป็น Toast ดู templates/toast */ ?>
+                <?php /* ข้อความสำเร็จ/ผิดพลาด (message/error) แสดงเป็น Toast */ ?>
                 <?php if (session('errors')): ?>
                     <div class="alert alert-danger alert-dismissible py-2 mb-3" role="alert">
                         <ul class="mb-0 ps-3">

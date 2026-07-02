@@ -83,7 +83,7 @@ $fieldErr = static function (array $errs, string $key): string {
 
             <form method="post" action="<?= site_url($formBase) ?>" enctype="multipart/form-data">
                 <?= csrf_field() ?>
-                <!-- file input ของ avatar (ซ่อน เปิดผ่านปุ่มกล้องบน avatar) -->
+                <!-- file input ของ avatar (ซ่อน) -->
                 <input type="file" id="avatarInput" name="avatar" accept="image/png,image/jpeg" hidden>
 
 <?php /* ฝั่ง user ล็อกช่อง email/ชื่อ/นามสกุล (admin เป็นผู้กำหนด) — admin ยังแก้ได้ */ ?>
@@ -155,7 +155,7 @@ $fieldErr = static function (array $errs, string $key): string {
                             <button type="button" class="np-pwd-toggle" tabindex="-1" aria-label="<?= esc(lang('Profile.togglePwd'), 'attr') ?>"><i class="bi bi-eye"></i></button>
                         </div>
                         <?= $fieldErr($pwdErrors, 'new_password') ?>
-                        <!-- แถบวัดความแข็งแรง (อยู่ใต้รหัสใหม่ ฝั่งซ้าย) -->
+                        <!-- แถบวัดความแข็งแรงรหัสผ่าน -->
                         <div class="np-pwd-meter" id="pwdMeter">
                             <div class="np-pwd-meter-track"><span class="np-pwd-meter-fill"></span></div>
                             <span class="np-pwd-meter-label" id="pwdMeterLabel"></span>
@@ -172,7 +172,7 @@ $fieldErr = static function (array $errs, string $key): string {
                         <p class="np-match-msg" id="confirmMsg"></p>
                     </div>
                 </div>
-                <!-- เช็คลิสต์เงื่อนไขรหัสผ่าน — ติ๊กถูกเรียลไทม์ตอนพิมพ์ -->
+                <!-- เช็คลิสต์เงื่อนไขรหัสผ่าน -->
                 <ul class="np-pwd-rules" id="pwdRules">
                     <li data-rule="len"><i class="bi bi-circle"></i><span><?= lang('Profile.ruleLen') ?></span></li>
                     <li data-rule="upper"><i class="bi bi-circle"></i><span><?= lang('Profile.ruleUpper') ?></span></li>
@@ -203,7 +203,7 @@ $fieldErr = static function (array $errs, string $key): string {
                         <span><?= esc($initial) ?></span>
                     <?php endif ?>
                 </div>
-                <!-- ปุ่มนี้เปิด file input (ที่ซ่อนในฟอร์ม) → เข้าสู่ขั้นตอน crop -->
+                <!-- ปุ่มเปิด file input → เข้าขั้นตอน crop -->
                 <label for="avatarInput" class="btn btn-np mt-3">
                     <i class="bi bi-upload me-1"></i><?= lang('Profile.uploadNew') ?>
                 </label>

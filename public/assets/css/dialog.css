@@ -1,16 +1,5 @@
 /* ==========================================================================
    NetPass Dialog — confirm / warning / delete  (GLOBAL / reusable)
-   คอมโพเนนต์ dialog มาตรฐาน แยกจาก style.css เพื่อใช้ซ้ำข้ามระบบได้
-   โครงเดียวกัน: icon chip + หัว + body กึ่งกลาง (ไอคอนใหญ่) + ปุ่มล่าง
-   ต่างกันที่โทน: is-confirm (ฟ้า) / is-warning (เหลือง) / is-delete (แดง)
-
-   ใช้กับ Bootstrap modal:
-     <div class="modal fade np-dialog-modal">
-       <div class="modal-dialog modal-dialog-centered">
-         <form|div class="modal-content np-dialog"> ... </>
-
-   พกพา: ทุกสีอ้าง var(--np-*) แต่มี fallback ในตัว → วางใช้โปรเจกต์อื่นได้เลย
-   (ถ้าโปรเจกต์นั้นนิยาม --np-* เอง dialog จะปรับตามธีมอัตโนมัติ)
    ========================================================================== */
 
 .np-dialog-modal .modal-dialog {
@@ -24,7 +13,6 @@
   overflow: hidden;
 }
 
-/* ---- หัว: icon chip + ชื่อ + ปุ่มปิด (+ callout เต็มแถว) ---- */
 .dlg-head {
   display: flex;
   flex-wrap: wrap;
@@ -88,7 +76,6 @@
   color: var(--np-text, #1b1e2b);
 }
 
-/* ---- body: ข้อความ + ชื่อรายการ (จัดกึ่งกลาง + ไอคอนใหญ่) ---- */
 .dlg-body {
   padding: 20px 22px;
   font-size: 14px;
@@ -108,7 +95,6 @@
   text-align: center;
 }
 
-/* ---- ตารางเทียบค่าเดิม → ค่าใหม่ / สรุปค่า (confirm dialog ตอน add/edit) ---- */
 .dlg-cmp-table {
   width: 100%;
   margin-top: 14px;
@@ -172,7 +158,6 @@
   color: var(--np-red, #e5484d);
 }
 
-/* ---- กล่องผลกระทบ (เต็มแถวใต้หัว) ---- */
 .dlg-callout {
   display: flex;
   gap: 10px;
@@ -203,7 +188,6 @@
   margin-top: 0;
 }
 
-/* ---- ปุ่มล่าง ---- */
 .dlg-foot {
   display: flex;
   justify-content: flex-end;

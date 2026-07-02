@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= esc($title ?? 'NetPass') ?> · NetPass</title>
 
-    <!-- ฟอนต์หลักของระบบ (self-hosted): Poppins (ละติน) + Prompt (ไทย) + Google Sans Code (mono) -->
+    <!-- ฟอนต์หลัก (self-hosted): Poppins + Prompt + Google Sans Code -->
     <link href="<?= base_url('assets/fonts/fonts.css') ?>" rel="stylesheet">
 
     <link href="<?= base_url('assets/plugins/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">

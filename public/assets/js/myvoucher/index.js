@@ -1,4 +1,4 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 const NP_MYVOUCHER = JSON.parse(document.getElementById('np-myvoucher-data').textContent);
 
 (function () {
@@ -7,7 +7,7 @@ const NP_MYVOUCHER = JSON.parse(document.getElementById('np-myvoucher-data').tex
 
     const copiedText = NP_MYVOUCHER.i18n.copied;
 
-    // escape อักขระพิเศษตามสเปก Wi-Fi QR (\ ; , : ")
+    // escape อักขระพิเศษตามสเปก Wi-Fi QR
     const wifiEsc = (s) => String(s || '').replace(/([\\;,:"])/g, '\\$1');
 
     // เติมข้อมูล voucher ลงการ์ดตั๋ว จาก data-attribute ของปุ่มที่กด
@@ -32,17 +32,16 @@ const NP_MYVOUCHER = JSON.parse(document.getElementById('np-myvoucher-data').tex
         // จุดสีพื้นที่
         document.getElementById('vmDot').style.background = d.color || 'var(--np-blue)';
 
-        // pill สถานะ (เขียว = ใช้งานอยู่, แดง = หมดอายุ)
+        // pill สถานะ
         const ok = d.ok === '1';
         const pill = document.getElementById('vmStatus');
         document.getElementById('vmStatusText').textContent = d.status || '';
         pill.classList.toggle('is-expired', !ok);
         pill.querySelector('i').className = ok ? 'bi bi-check-lg' : 'bi bi-clock-history';
 
-        // สร้าง QR แบบ WIFI ให้สแกนเชื่อมต่อได้เลย
+        // สร้าง QR แบบ WIFI
         const box = document.getElementById('vmQr');
         box.innerHTML = '';
-        // SSID เปิด (auth ที่ captive portal) → QR แค่พาเข้า Wi-Fi เปลือยๆ; กรอก voucher ที่พอร์ทัล
         const payload = 'WIFI:T:nopass;S:' + wifiEsc(d.ssid) + ';;';
         const qr = qrcode(0, 'M');
         qr.addData(payload);
@@ -71,7 +70,7 @@ const NP_MYVOUCHER = JSON.parse(document.getElementById('np-myvoucher-data').tex
         });
     });
 
-    // บันทึกการ์ดตั๋วเป็นรูป PNG จากที่แสดงในกล่องรายละเอียด (ใช้ helper กลาง NetPass.saveCardImage)
+    // บันทึกการ์ดตั๋วเป็นรูป PNG
     const saveImgBtn = document.getElementById('vmSaveImg');
     if (saveImgBtn) {
         saveImgBtn.addEventListener('click', async function () {
@@ -116,12 +115,12 @@ document.addEventListener('DOMContentLoaded', function () {
             { orderable: false, className: 'text-end' } // ปุ่มดู
         ]
     });
-    // เปิดให้ request modal เรียก reload ตารางได้หลังขอ voucher สำเร็จ
+    // เปิดให้ request modal เรียก reload ตาราง
     window.voucherDT = dt;
     locSel.addEventListener('change', function () { dt.ajax.reload(); });
     statSel.addEventListener('change', function () { dt.ajax.reload(); });
 
-    // ───────── เลือกหลายใบ (ข้ามหน้า) → พิมพ์ตั๋ว 3 ใบ/แถว ─────────
+    // ───────── เลือกหลายใบ → พิมพ์ตั๋ว ─────────
     const selected    = new Set();
     const selPrintBtn = document.getElementById('vchPrintSel');
     const selCount    = document.getElementById('vchPrintCount');
@@ -157,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectAll.checked = boxes.length > 0 && [...boxes].every((b) => b.checked);
     }
 
-    // ติ๊กในแถว (delegation — รองรับแถวที่ DataTables วาดใหม่)
+    // ติ๊กในแถว
     tableEl.addEventListener('change', function (e) {
         const cb = e.target.closest('input.vch-pick');
         if (!cb) return;
@@ -178,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         syncSelectAll(); refreshSelUI();
     });
 
-    // สร้าง HTML การ์ดตั๋ว (ดีไซน์ vm-ticket) จากข้อมูล 1 ใบ
+    // สร้าง HTML การ์ดตั๋ว
     function buildTicket(t) {
         return '<div class="vm-ticket-wrap"><div class="vm-ticket">'
             + '<div class="vm-ticket-main">'
@@ -197,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
             + '</div></div>';
     }
 
-    // พิมพ์ตั๋วหลายใบ: grid 3 ใบ/แถว ใน iframe
+    // พิมพ์ตั๋วหลายใบ
     function printTickets(tickets) {
         const cards = tickets.map(buildTicket).join('');
         const frame = document.createElement('iframe');
@@ -224,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(frame);
     }
 
-    // กดปุ่มพิมพ์ที่เลือก → ดึงข้อมูลตั๋วตาม id แล้วพิมพ์
+    // กดปุ่มพิมพ์ที่เลือก
     selPrintBtn.addEventListener('click', async function () {
         if (selected.size === 0) return;
         selPrintBtn.disabled = true;

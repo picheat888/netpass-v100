@@ -1,5 +1,5 @@
 (function () {
-    // toggle ดู/ซ่อนรหัสผ่าน — สลับ type และไอคอน eye/eye-slash
+    // toggle ดู/ซ่อนรหัสผ่าน
     document.querySelectorAll('.np-pwd-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var inp = btn.parentElement.querySelector('input');
@@ -9,7 +9,7 @@
         });
     });
 
-    // ตอน submit: โชว์ spinner กลางปุ่ม + disable กัน double-submit
+    // ตอน submit: โชว์ spinner กลางปุ่ม + disable
     var form = document.getElementById('loginForm');
     var btn  = document.getElementById('loginBtn');
     form.addEventListener('submit', function () {

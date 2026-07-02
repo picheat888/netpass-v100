@@ -29,14 +29,14 @@ $_durations = voucher_durations();
 $_isEn      = service('request')->getLocale() === 'en';
 $_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['name']) : (($loc['name'] ?? '') ?: $loc['name_en']);
 ?>
-<!-- CSS ของ Request Modal แยกไว้ที่ assets/css/request-modal.css -->
+<!-- CSS ของ Request Modal -->
 <link rel="stylesheet" href="<?= base_url('assets/css/request-modal.css') ?>">
 
-<!-- ════════════════════ REQUEST MODAL ════════════════════ -->
+<!-- REQUEST MODAL -->
 <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <!-- แถบหัวเต็มความกว้าง: ชื่อ dialog (ซ้าย) + ปุ่มปิด (ขวา) -->
+            <!-- แถบหัว: ชื่อ dialog + ปุ่มปิด -->
             <div class="np-rq-header">
                 <div class="np-rq-brand"><span class="ico"><i class="bi bi-wifi"></i></span><?= lang('Voucher.requestTitle') ?></div>
                 <button type="button" class="np-rq-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
@@ -137,7 +137,7 @@ $_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['nam
                             </div>
                         </div>
 
-                        <!-- ── Step 4: Guests — supplier 1 ค่าต่อ request + รายชื่อ guest (แจ้งเตือนจำนวนเกิน max แสดงใต้ sub-title ของหัว step) ── -->
+                        <!-- ── Step 4: Guests — supplier + รายชื่อ guest ── -->
                         <div id="reqStep4" class="np-step-pane d-none">
                             <!-- Supplier เดียวใช้กับ guest ทุกคนในครั้งนี้ -->
                             <div class="np-guest-supplier">
@@ -178,7 +178,7 @@ $_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['nam
                             </p>
                         </div>
 
-                        <!-- ── Step 6: Result (แสดงก่อนสั่งพิมพ์) ── -->
+                        <!-- ── Step 6: Result ── -->
                         <div id="reqStep6" class="np-step-pane d-none">
                             <div class="text-center py-2">
                                 <div style="width:56px;height:56px;border-radius:50%;background:#e6f6ef;color:#0EA66B;display:inline-flex;align-items:center;justify-content:center;font-size:28px"><i class="bi bi-check-lg"></i></div>
@@ -212,7 +212,7 @@ $_locName   = static fn ($loc) => $_isEn ? (($loc['name_en'] ?? '') ?: $loc['nam
     </div>
 </div>
 
-<!-- Data สำหรับ JS (stock, csrf, lang) → data island; อ่านโดย JS ภายนอก (CSP-safe) -->
+<!-- Data สำหรับ JS → data island -->
 <?php
 $npReq = [
     'stock'  => $_stock,

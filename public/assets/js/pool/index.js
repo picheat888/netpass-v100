@@ -1,7 +1,7 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 const NP_POOL = JSON.parse(document.getElementById('np-pool-data').textContent);
 
-// ตาราง DataTables server-side (สรุปสต็อกแยกพื้นที่)
+// ตาราง DataTables server-side
 document.addEventListener('DOMContentLoaded', function () {
     const poolDT = NetPass.dataTable('#poolTable', {
         action: '#poolAction',
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     });
 
-    // นำเข้า CSV: dropzone + ส่ง AJAX (all-or-nothing) สำเร็จ → reload หน้า, ผิด → โชว์ error inline
+    // นำเข้า CSV
     const impForm = document.getElementById('poolImportForm');
     if (impForm) {
         const drop   = document.getElementById('poolImportDrop');
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await res.json();
                 if (data.csrf && csrfField) { csrfField.value = data.csrf; }
                 if (data.ok) {
-                    // สำเร็จ → ปิด modal นำเข้า, โชว์ modal สรุปผล, refresh ตาราง (ไม่ reload หน้า)
+                    // สำเร็จ → ปิด modal, โชว์ผล, refresh ตาราง
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('importModal')).hide();
                     document.getElementById('poolResCount').textContent = CNT.replace('{0}', data.imported);
                     document.getElementById('poolResLoc').textContent   = data.location || '—';
@@ -90,18 +90,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// ───────── จัดการ Location (add / edit / delete) ในหน้า Pool ─────────
-// เติมข้อมูลใน edit modal จาก data attribute ของปุ่ม
+// ───────── จัดการ Location ─────────
+// เติมข้อมูลใน edit modal
 document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
-    if (!btn) return;   // เปิดเองตอน validation error → ใช้ค่าที่ server เติมไว้
+    if (!btn) return;   // เปิดเองตอน validation error
     document.getElementById('editForm').action   = '/admin/locations/' + btn.dataset.id + '/update';
     document.getElementById('editName').value    = btn.dataset.name;
     document.getElementById('editNameEn').value  = btn.dataset.nameEn;
     document.getElementById('editSsid').value    = btn.dataset.ssid;
 });
 
-// ปุ่ม Save ของ edit: ปิดไว้จนกว่าจะมีการแก้ค่า + เด้ง confirm dialog (โชว์ค่าเดิม → ค่าใหม่) ก่อน submit
+// ปุ่ม Save ของ edit
 (function () {
     const form    = document.getElementById('editForm');
     const saveBtn = document.getElementById('editSaveBtn');
@@ -111,8 +111,8 @@ document.getElementById('editModal').addEventListener('show.bs.modal', function 
         { id: 'editName',   label: NP_POOL.i18n.name },
         { id: 'editSsid',   label: NP_POOL.i18n.ssid },
     ];
-    let snapshot = null;   // ค่าตอนเปิด modal (เทียบหา dirty)
-    let orig     = {};     // ค่าเดิมรายช่อง (สร้าง diff)
+    let snapshot = null;   // ค่าตอนเปิด modal
+    let orig     = {};     // ค่าเดิมรายช่อง
     function vals() {
         return JSON.stringify(fields.map(function (f) {
             return document.getElementById(f.id).value.trim();
@@ -127,7 +127,7 @@ document.getElementById('editModal').addEventListener('show.bs.modal', function 
     });
     form.addEventListener('input', update);
 
-    // ── confirm dialog: โชว์ค่าเดิม → ค่าใหม่ ก่อนบันทึกจริง ──
+    // ── confirm dialog ──
     const confirmModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('locEditConfirmModal'));
     function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
     function diffRow(label, o, n) {
@@ -145,13 +145,13 @@ document.getElementById('editModal').addEventListener('show.bs.modal', function 
     }
     form.addEventListener('submit', function (e) {
         e.preventDefault();
-        if (! npValidateForm(form)) return;   // ช่องบังคับว่าง → error inline
+        if (! npValidateForm(form)) return;   // ช่องบังคับว่าง
         if (saveBtn.disabled) return;          // ไม่มีการแก้ไข
         buildDiff();
         confirmModal.show();
     });
     document.getElementById('locEditConfirmBtn').addEventListener('click', function () {
-        form.submit();   // ส่งจริง (ข้าม interceptor)
+        form.submit();   // ส่งจริง
     });
 })();
 
@@ -172,7 +172,7 @@ window.addEventListener('load', function () {
     }
 });
 
-// เริ่มพิมพ์ในช่อง → ลบกรอบแดง + ข้อความ error ทันที
+// เริ่มพิมพ์ในช่อง → ลบ error
 document.querySelectorAll('.np-modal .form-control').forEach(function (inp) {
     inp.addEventListener('input', function () {
         inp.classList.remove('np-invalid');
@@ -181,7 +181,7 @@ document.querySelectorAll('.np-modal .form-control').forEach(function (inp) {
     });
 });
 
-// ตรวจช่องบังคับ (data-req) ฝั่ง client — เตือน inline ไม่ปิด/รีโหลด dialog
+// ตรวจช่องบังคับ (data-req) ฝั่ง client
 function npValidateForm(form) {
     var ok = true;
     form.querySelectorAll('[data-req]').forEach(function (inp) {
@@ -200,7 +200,7 @@ function npValidateForm(form) {
     if (! ok) { var first = form.querySelector('.np-invalid'); if (first) { first.focus(); } }
     return ok;
 }
-// add: validate inline แล้วปล่อย submit ปกติ (edit จัดการเองใน IIFE ด้านบน — มี confirm dialog)
+// add: validate inline แล้วปล่อย submit ปกติ
 document.querySelectorAll('#addModal form').forEach(function (form) {
     form.addEventListener('submit', function (e) {
         if (! npValidateForm(form)) { e.preventDefault(); }

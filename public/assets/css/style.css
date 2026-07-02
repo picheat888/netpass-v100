@@ -1,20 +1,29 @@
 /* ==========================================================================
    NetPass — Custom Theme (override Bootstrap 5)
-   สารบัญ
    ─────────────────────────────────────────────────────────────────────────
-   1. Design Tokens (:root)        ตัวแปรสี / ฟอนต์ / ระยะ / เงา
-   2. Base & Reset                 body, box-sizing, helper พื้นฐาน
-   3. Form Controls                input / select / switch ให้ใช้สีธีม
-   4. Layout — Shell               โครงหน้า (sidebar + main + content)
-   5. Sidebar                      แบรนด์ + เมนูซ้าย
-   6. Topbar                       หัวบน (title, lang, user)
-   7. Cards & Stats                การ์ด, การ์ดสถิติ, icon box
-   8. Badges / Chips / Pills       ป้ายสถานะ, จุดสี
-   9. Tables                       toolbar + ตาราง + footer
-   10. Buttons & Misc              ปุ่ม accent, dropdown, live dot, search
-   11. Scrollbar
-   12. Responsive                  ปรับตาม breakpoint (Bootstrap 5)
-   13. Login
+   1. Design Tokens
+   2. Base & Reset
+   3. Form Controls
+   4. Layout — Shell
+   5. Sidebar
+   6. Topbar
+   7. Cards & Stats
+   8. Badges / Chips / Pills / Dots
+   9. Tables & DataTables
+   10. Voucher detail modal
+   11. Buttons & Misc
+   12. My Profile
+   13. Scrollbar (WebKit)
+   14. Login
+   15. Dashboard
+   16. Tom Select
+   17. Loading UX
+   18. Branded modal 
+   19. Import dropzone 
+   20. Voucher View Details 
+   21. Activity Log 
+   ─────────────────────────────────────────────────────────────────────────
+   Responsive — media query ตาม breakpoint (desktop-first, อิง Bootstrap 5)
    ========================================================================== */
 
 /* ==========================================================================
@@ -90,7 +99,6 @@ html {
 
 body {
   margin: 0;
-  /* ล็อกความสูงเท่าจอ + ไม่ให้ body เลื่อนเอง — ให้ .np-content เป็น scroll เดียว (กัน scrollbar ซ้อน) */
   height: 100%;
   overflow: hidden;
   font-family: var(--bs-body-font-family);
@@ -103,7 +111,7 @@ body {
 }
 
 /* ==========================================================================
-   3. Form Controls — ให้ใช้สีธีม (toggle เปิด = ฟ้า NetPass)
+   3. Form Controls
    ========================================================================== */
 .form-check-input:checked {
   background-color: var(--np-primary);
@@ -161,7 +169,6 @@ body {
    ========================================================================== */
 .np-shell {
   display: flex;
-  /* 100dvh หัก address bar/toolbar ของ browser มือถือ — กัน body เลื่อนซ้อนกับ np-content (iOS 100vh bug) */
   height: 100vh;
   height: 100dvh;
   width: 100%;
@@ -173,13 +180,11 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  /* ยอมให้หดในแกนตั้ง เพื่อให้ .np-content เลื่อนในตัวเอง ไม่ดันความสูงทะลุ shell */
   min-height: 0;
 }
 
 .np-content {
   flex: 1;
-  /* เลื่อนแนวตั้งอย่างเดียว — ตั้ง x เป็น hidden กัน browser promote เป็น auto (scrollbar ซ้อน) */
   overflow-x: hidden;
   overflow-y: auto;
   padding: 26px 28px 40px;
@@ -225,7 +230,6 @@ body {
   margin-right: 5px;
 }
 
-/* โลโก้เป็นรูปภาพ: เต็มกล่อง + clip มุมตามกล่อง */
 .np-brand-logo img {
   width: 100%;
   height: 100%;
@@ -329,7 +333,6 @@ body {
   display: none;
 }
 
-/* Sidebar ย่อเหลือไอคอน: toggle hide บน tablet/desktop (JS ใส่ .np-collapsed เฉพาะ >=768) */
 .np-shell.np-collapsed .np-sidebar {
   width: 74px;
   padding-left: 12px;
@@ -343,7 +346,6 @@ body {
 .np-shell.np-collapsed .np-brand-logo {
   margin-right: 0;
 }
-/* ซ่อนข้อความ เหลือแต่ไอคอน */
 .np-shell.np-collapsed .np-brand-name,
 .np-shell.np-collapsed .np-brand-sub,
 .np-shell.np-collapsed .np-nav-label,
@@ -848,9 +850,10 @@ body {
 }
 
 /* ==========================================================================
-   9. Tables — toolbar + table + footer
-   (header เทาอ่อน, แถวเส้นบาง, hover)
+   9. Tables & DataTables
+   เลื่อนแนวนอนในตาราง, เส้นนำสายตา, badge/switch กึ่งกลาง, column widths
    ========================================================================== */
+/* ---- Tables — toolbar + table + footer ---- */
 .np-table {
   width: 100%;
   font-size: 13.5px;
@@ -914,8 +917,258 @@ body {
   white-space: nowrap;
 }
 
+/* ---- DataTables (server-side) — จัด toolbar/footer ให้เหมือนตารางเดิมของ NetPass ---- */
+.np-card.np-dt {
+  overflow: visible;
+}
+
+.np-dt .dt-container > .row {
+  --bs-gutter-x: 0;
+  margin: 0;
+  align-items: center;
+}
+
+.np-dt .dt-container > .row:first-child {
+  padding: 13px 22px;
+  border-bottom: 1px solid var(--np-border);
+  gap: 10px 12px;
+}
+
+.np-dt .dt-container > .row:last-child {
+  padding: 11px 22px;
+  border-top: 1px solid var(--np-border-2);
+}
+
+.np-dt .dt-layout-start,
+.np-dt .dt-layout-end {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.np-dt .dt-search {
+  position: relative;
+  margin-right: 0 !important;
+}
+
+.np-dt .dt-search input.form-control {
+  height: 38px;
+}
+
+.np-dt .dt-container > .row:first-child .btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.np-dt .dt-search input.form-control {
+  width: 260px;
+  max-width: 100%;
+  padding-left: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='M15 15l-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+}
+
+.np-dt .dt-length,
+.np-dt .dt-info {
+  font-size: 12.5px;
+  color: var(--np-muted-2);
+}
+
+.np-info-n {
+  font-weight: 600;
+  color: var(--np-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.np-info-filtered {
+  margin-left: 2px;
+  color: var(--np-muted-3);
+}
+
+.np-dt .dt-length select.form-select {
+  width: auto;
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.np-dt #vfToolbar,
+.np-dt #stToolbar {
+  gap: 8px;
+  margin: 0;
+}
+
+#vfToolbar .ts-wrapper,
+#stToolbar .ts-wrapper,
+#lgToolbar .ts-wrapper {
+  width: 200px;
+  min-width: 200px;
+}
+
+#vfToolbar .vf-loc .ts-control,
+#vfToolbar .vf-status .ts-control {
+  padding-left: 34px;
+}
+
+#vfToolbar .vf-loc .ts-control::before,
+#vfToolbar .vf-status .ts-control::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  background: no-repeat center / 14px;
+  pointer-events: none;
+}
+
+#vfToolbar .vf-loc .ts-control::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1.7c2.3 0 4.1 1.8 4.1 4.1 0 3-4.1 8.5-4.1 8.5S3.9 8.8 3.9 5.8C3.9 3.5 5.7 1.7 8 1.7z'/%3E%3Ccircle cx='8' cy='5.8' r='1.6'/%3E%3C/svg%3E");
+}
+
+#vfToolbar .vf-status .ts-control::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='1.5'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Ccircle cx='8' cy='8' r='2.4' fill='%237A7F92' stroke='none'/%3E%3C/svg%3E");
+}
+
+.np-dtpager {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.np-pg-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--np-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.np-pg-btn:hover {
+  background: rgba(59, 125, 221, 0.1);
+  color: var(--np-blue);
+}
+
+.np-pg-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.2);
+}
+
+.np-pg-btn.active {
+  background: var(--np-blue);
+  color: #fff;
+}
+
+.np-pg-btn.is-disabled {
+  color: var(--np-muted-3);
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+table.np-table.dataTable > tbody tr:last-child > td {
+  border-bottom: 0;
+}
+
+/* ---- Responsive — DataTables เลื่อนแนวนอน "ในตาราง" ไม่ดันทั้งหน้าทะลุจอ ---- */
+.np-dt .dt-layout-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.np-dt .dt-layout-table::-webkit-scrollbar {
+  height: 8px;
+}
+.np-dt .dt-layout-table::-webkit-scrollbar-thumb {
+  background: var(--np-line);
+  border-radius: 8px;
+}
+.np-dt .dt-layout-table::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- List tables — เส้นนำสายตาแนวตั้งระหว่างคอลัมน์ (minimal) ทุกหน้า ---- */
+.np-dt .np-table thead th + th,
+.np-dt .np-table tbody td + td {
+  border-left: 1px solid var(--np-border-2);
+}
+
+#poolTable thead th:not(:last-child) {
+  text-align: left;
+}
+
+#poolTable tbody td:nth-child(n + 2) {
+  text-align: right;
+}
+
+/* ---- Data table — badge/pill จัดกึ่งกลางคอลัมน์ ---- */
+.np-dt .np-table tbody td:has(.np-badge),
+.np-dt .np-table tbody td:has(.np-pill) {
+  text-align: center;
+}
+
+/* ---- Data table — switch (active toggle) จัดกึ่งกลางคอลัมน์ ---- */
+.np-dt .np-table tbody td:has(.form-switch) {
+  text-align: center;
+}
+.np-dt .np-table tbody td .form-check.form-switch {
+  display: inline-block;
+  min-height: 0;
+  margin: 0;
+  padding-left: 0;
+}
+.np-dt .np-table tbody td .form-check.form-switch .form-check-input {
+  float: none;
+  margin-left: 0;
+}
+
+/* ---- List tables — column widths (คุมที่ CSS แทน DataTables columns config) ---- */
+#memberTable thead th:nth-child(1) { width: 20%; }
+#memberTable thead th:nth-child(2) { width: 15%; }
+#memberTable thead th:nth-child(3) { width: 18%; }
+#memberTable thead th:nth-child(4) { width: 14%; }
+#memberTable thead th:nth-child(5) { width: 10%; }
+#memberTable thead th:nth-child(6) { width: 10%; }
+#memberTable thead th:nth-child(7) { width: 13%; }
+
+#memberTable tbody td,
+#memberTable tbody td .np-stat-sub {
+  color: #2a2a2a;
+}
+
+#locTable thead th:nth-child(1) { width: 35%; }
+#locTable thead th:nth-child(2) { width: 35%; }
+#locTable thead th:nth-child(3) { width: 30%; }
+
+#poolTable thead th:nth-child(1) { width: 30%; }
+#poolTable thead th:nth-child(2) { width: 16%; }
+#poolTable thead th:nth-child(3) { width: 16%; }
+#poolTable thead th:nth-child(4) { width: 16%; }
+#poolTable thead th:nth-child(5) { width: 22%; }
+
+#poolDetailTable thead th:nth-child(1) { width: 1%; }
+#poolDetailTable thead th:nth-child(2) { width: 20%; }
+#poolDetailTable thead th:nth-child(3) { width: 20%; }
+#poolDetailTable thead th:nth-child(4) { width: 12%; }
+#poolDetailTable thead th:nth-child(5) { width: 12%; }
+#poolDetailTable thead th:nth-child(6) { width: 15%; }
+#poolDetailTable thead th:nth-child(7) { width: 20%; }
+
 /* ============================================================
-   Voucher detail modal — การ์ดตั๋ว
+   10. Voucher detail modal
    ============================================================ */
 .vm-modal {
   max-width: 700px;
@@ -935,7 +1188,6 @@ body {
   padding: 20px 22px 16px;
 }
 
-/* กลุ่มปุ่มด้านขวาของหัว modal (บันทึกรูป + ปิด) */
 .vm-head-btns {
   display: flex;
   align-items: center;
@@ -1284,7 +1536,7 @@ body {
 }
 
 /* ==========================================================================
-   10. Buttons & Misc
+   11. Buttons & Misc
    ========================================================================== */
 
 .btn {
@@ -1404,7 +1656,6 @@ body {
   box-shadow: var(--np-shadow-pop);
 }
 
-/* หัวเมนูบัญชี: avatar + ชื่อ + email */
 .np-menu-head {
   display: flex;
   align-items: center;
@@ -1414,7 +1665,6 @@ body {
   border-bottom: 1px solid var(--np-border);
 }
 
-/* รายการในเมนู: มุมโค้ง + icon จัดแนว */
 .np-menu .dropdown-item {
   display: flex;
   align-items: center;
@@ -1434,7 +1684,6 @@ body {
   color: var(--np-muted-2);
 }
 
-/* hover ปกติ = โทนฟ้า */
 .np-menu .dropdown-item:hover,
 .np-menu .dropdown-item:focus {
   background: #eef4fd;
@@ -1446,7 +1695,6 @@ body {
   color: var(--np-blue);
 }
 
-/* Sign out = โทนแดง */
 .np-menu .dropdown-item.text-danger i {
   color: #e0716a;
 }
@@ -1462,7 +1710,6 @@ body {
   color: #d92d20;
 }
 
-/* เปิดเมนูแบบจางขึ้นเล็กน้อย — animate เฉพาะ opacity เพื่อไม่ทับ transform ที่ Popper ใช้วางตำแหน่ง */
 .np-menu.show {
   animation: npMenuIn 0.14s ease;
 }
@@ -1523,8 +1770,15 @@ body {
   background: #fafbfd;
 }
 
+.btn-np {
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
 /* ==========================================================================
-   10b. My Profile — การ์ดตัวตน + การ์ดตั้งค่า
+   12. My Profile
    ========================================================================== */
 .np-prof-card {
   padding: 0;
@@ -1768,13 +2022,11 @@ body {
   object-fit: cover;
 }
 
-/* กรอบครอปรูปโปรไฟล์: ทำ view-box/face เป็นวงกลมให้ตรงกับ avatar */
 #avatarCropModal .cropper-view-box,
 #avatarCropModal .cropper-face {
   border-radius: 50%;
 }
 
-/* พื้นที่แสดงรูปก่อนครอป */
 #avatarCropStage {
   max-height: 320px;
   background: var(--np-bg);
@@ -1813,7 +2065,7 @@ body {
 }
 
 /* ==========================================================================
-   11. Scrollbar (WebKit)
+   13. Scrollbar (WebKit)
    ========================================================================== */
 ::-webkit-scrollbar {
   width: 10px;
@@ -1832,12 +2084,7 @@ body {
 }
 
 /* ==========================================================================
-   12. Responsive — ปรับ spacing/ขนาด ตาม breakpoint (อิง Bootstrap 5)
-   ลดหลั่น padding/ฟอนต์เมื่อจอเล็กลง (เรียงจาก breakpoint ใหญ่ → เล็ก)
-   ========================================================================== */
-
-/* ==========================================================================
-   13. Login
+   14. Login
    ========================================================================== */
 .np-login-body {
   min-height: 100vh;
@@ -1864,13 +2111,7 @@ body {
 }
 
 /* ==========================================================================
-   13.1 หน้า Error — ย้ายไป public/assets/css/error.css
-   (โหลดเฉพาะหน้า error เพื่อให้เพจเบา ไม่พึ่ง style.css/bootstrap)
-   ========================================================================== */
-
-/* ==========================================================================
-   13.2 Dashboard — เอนิเมชันตอนโหลด (การ์ด rise / แท่งกราฟโต / progress ยืด)
-   stagger ผ่านตัวแปร --d (ตั้ง inline ตาม index)
+   15. Dashboard
    ========================================================================== */
 .np-rise {
   animation: np-rise 0.5s ease both;
@@ -1927,177 +2168,7 @@ body {
 }
 
 /* ==========================================================================
-   14. DataTables (server-side) — จัด toolbar/footer ให้เหมือนตารางเดิมของ NetPass
-   โครง DT2: row[0]=toolbar (search+filters | action), row กลาง=table, row[สุดท้าย]=footer
-   ========================================================================== */
-
-.np-card.np-dt {
-  overflow: visible;
-}
-
-.np-dt .dt-container > .row {
-  --bs-gutter-x: 0;
-  margin: 0;
-  align-items: center;
-}
-
-.np-dt .dt-container > .row:first-child {
-  padding: 13px 22px;
-  border-bottom: 1px solid var(--np-border);
-  gap: 10px 12px;
-}
-
-.np-dt .dt-container > .row:last-child {
-  padding: 11px 22px;
-  border-top: 1px solid var(--np-border-2);
-}
-
-.np-dt .dt-layout-start,
-.np-dt .dt-layout-end {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.np-dt .dt-search {
-  position: relative;
-  margin-right: 0 !important;
-}
-
-.np-dt .dt-search input.form-control {
-  height: 38px;
-}
-
-.np-dt .dt-container > .row:first-child .btn {
-  min-height: 38px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.np-dt .dt-search input.form-control {
-  width: 260px;
-  max-width: 100%;
-  padding-left: 36px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 16 16' fill='none' stroke='%239097AB' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='M15 15l-3.5-3.5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 12px center;
-}
-
-.np-dt .dt-length,
-.np-dt .dt-info {
-  font-size: 12.5px;
-  color: var(--np-muted-2);
-}
-
-.np-info-n {
-  font-weight: 600;
-  color: var(--np-text-2);
-  font-variant-numeric: tabular-nums;
-}
-
-.np-info-filtered {
-  margin-left: 2px;
-  color: var(--np-muted-3);
-}
-
-.np-dt .dt-length select.form-select {
-  width: auto;
-  display: inline-block;
-  margin: 0 4px;
-}
-
-.np-dt #vfToolbar,
-.np-dt #stToolbar {
-  gap: 8px;
-  margin: 0;
-}
-
-#vfToolbar .ts-wrapper,
-#stToolbar .ts-wrapper,
-#lgToolbar .ts-wrapper {
-  width: 200px;
-  min-width: 200px;
-}
-
-#vfToolbar .vf-loc .ts-control,
-#vfToolbar .vf-status .ts-control {
-  padding-left: 34px;
-}
-
-#vfToolbar .vf-loc .ts-control::before,
-#vfToolbar .vf-status .ts-control::before {
-  content: "";
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  margin-top: -7px;
-  background: no-repeat center / 14px;
-  pointer-events: none;
-}
-
-#vfToolbar .vf-loc .ts-control::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1.7c2.3 0 4.1 1.8 4.1 4.1 0 3-4.1 8.5-4.1 8.5S3.9 8.8 3.9 5.8C3.9 3.5 5.7 1.7 8 1.7z'/%3E%3Ccircle cx='8' cy='5.8' r='1.6'/%3E%3C/svg%3E");
-}
-
-#vfToolbar .vf-status .ts-control::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%237A7F92' stroke-width='1.5'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Ccircle cx='8' cy='8' r='2.4' fill='%237A7F92' stroke='none'/%3E%3C/svg%3E");
-}
-
-.np-dtpager {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.np-pg-btn {
-  min-width: 32px;
-  height: 32px;
-  padding: 0 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--np-muted);
-  font-size: 13px;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    color 0.15s;
-}
-
-.np-pg-btn:hover {
-  background: rgba(59, 125, 221, 0.1);
-  color: var(--np-blue);
-}
-
-.np-pg-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(59, 125, 221, 0.2);
-}
-
-.np-pg-btn.active {
-  background: var(--np-blue);
-  color: #fff;
-}
-
-.np-pg-btn.is-disabled {
-  color: var(--np-muted-3);
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
-}
-
-table.np-table.dataTable > tbody tr:last-child > td {
-  border-bottom: 0;
-}
-
-/* ==========================================================================
-   15. Tom Select — dropdown ที่ style ได้ (option list เข้าธีม NetPass)
+   16. Tom Select
    ========================================================================== */
 .ts-wrapper {
   font-size: 13.5px;
@@ -2200,7 +2271,7 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 /* ==========================================================================
-   16. Loading UX — skeleton shimmer (ตาราง) + top progress bar (เปลี่ยนหน้า)
+   17. Loading UX 
    ========================================================================== */
 
 .np-progress {
@@ -2275,41 +2346,7 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 /* ==========================================================================
-   17. Responsive — DataTables เลื่อนแนวนอน "ในตาราง" ไม่ดันทั้งหน้าทะลุจอ
-   (.dt-layout-table = row ที่ DataTables ใส่ตารางไว้)
-   ========================================================================== */
-.np-dt .dt-layout-table {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.btn-np {
-  transition:
-    opacity 0.15s ease,
-    background-color 0.15s ease,
-    border-color 0.15s ease;
-}
-
-/* Mobile + Tablet แนวตั้ง (≤991.98px): toolbar เรียงเป็นแถว
-   ค้นหาเต็มแถวบน / Location+Status / ปุ่ม Request — กันห่อบรรทัดมั่วบนพื้นที่แคบ */
-
-/* Tablet แนวนอน (992–1199px เช่น iPad mini/Air แนวนอน): toolbar เป็น inline แบบกระชับ
-   ช่องค้นหา + ฟิลเตอร์ขนาดพอดี (ไม่ยืดเต็มแถว) ปุ่ม Request ชิดขวา — พอดีแถวเดียว */
-
-.np-dt .dt-layout-table::-webkit-scrollbar {
-  height: 8px;
-}
-.np-dt .dt-layout-table::-webkit-scrollbar-thumb {
-  background: var(--np-line);
-  border-radius: 8px;
-}
-.np-dt .dt-layout-table::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* ==========================================================================
-   18. Branded modal (.np-modal) — ฟอร์มสร้าง/แก้ไข เข้าธีม NetPass
-   หัวมี icon chip + ชื่อ + คำอธิบาย, ฟิลด์สไตล์เดียวกับ My Profile
+   18. Branded modal
    ========================================================================== */
 .np-modal .modal-content {
   border: 0;
@@ -2370,7 +2407,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 .np-callout {
-  /* margin-top: 14px; */
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -2454,8 +2490,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
   transform: none;
   opacity: 1;
 }
-
-/* Dialog (.np-dialog / .dlg-*) -> assets/css/dialog.css (global, reusable) */
 
 .np-icon-sm {
   transition:
@@ -2720,7 +2754,7 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 /* ============================================================
-   Import dropzone — โมเดิร์น import dialog (ลากวาง) สำหรับหน้า Member
+   19. Import dropzone
    ============================================================ */
 .np-drop {
   position: relative;
@@ -2907,98 +2941,7 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 /* ==========================================================================
-   Responsive card table (.np-dt-cards) — มือถือพับแต่ละแถวเป็น "การ์ดสมาชิก"
-   แทนการเลื่อนแนวนอน: หัวการ์ด = รูป+ชื่อ, เนื้อ = label/ค่า, ท้าย = ปุ่มจัดการ
-   label ของแต่ละค่าอ่านจาก data-label (เติมโดย NetPass.dataTable ตอน draw)
-   ต้องอยู่ท้ายไฟล์เพื่อ override .np-dt .np-table {white-space:nowrap} ด้านบน
-   ========================================================================== */
-
-/* ตาราง Voucher โหมดการ์ด (มือถือ): คอลัมน์แรกเป็น checkbox จึงซ่อน
-   เนื้อการ์ดเป็น label:value ทุกแถว — checkbox/พิมพ์หลายใบยังใช้บนจอใหญ่ */
-
-/* ==========================================================================
-   Tablet (768–1199px)
-   ========================================================================== */
-
-/* ==========================================================================
-   List tables — เส้นนำสายตาแนวตั้งระหว่างคอลัมน์ (minimal) ทุกหน้า
-   ========================================================================== */
-.np-dt .np-table thead th + th,
-.np-dt .np-table tbody td + td {
-  border-left: 1px solid var(--np-border-2);
-}
-
-#poolTable thead th:not(:last-child) {
-  text-align: left;
-}
-
-#poolTable tbody td:nth-child(n + 2) {
-  text-align: right;
-}
-
-/* ==========================================================================
-   Data table — badge/pill จัดกึ่งกลางคอลัมน์
-   ========================================================================== */
-.np-dt .np-table tbody td:has(.np-badge),
-.np-dt .np-table tbody td:has(.np-pill) {
-  text-align: center;
-}
-
-/* ==========================================================================
-   Data table — switch (active toggle) จัดกึ่งกลางคอลัมน์
-   ========================================================================== */
-.np-dt .np-table tbody td:has(.form-switch) {
-  text-align: center;
-}
-.np-dt .np-table tbody td .form-check.form-switch {
-  display: inline-block;
-  min-height: 0;
-  margin: 0;
-  padding-left: 0;
-}
-.np-dt .np-table tbody td .form-check.form-switch .form-check-input {
-  float: none;
-  margin-left: 0;
-}
-
-/* ==========================================================================
-   List tables — column widths (คุมที่ CSS แทน DataTables columns config)
-   ลำดับ nth-child = ลำดับคอลัมน์ในหัวตารางของแต่ละหน้า
-   ========================================================================== */
-#memberTable thead th:nth-child(1) { width: 20%; }
-#memberTable thead th:nth-child(2) { width: 15%; }
-#memberTable thead th:nth-child(3) { width: 18%; }
-#memberTable thead th:nth-child(4) { width: 14%; }
-#memberTable thead th:nth-child(5) { width: 10%; }
-#memberTable thead th:nth-child(6) { width: 10%; }
-#memberTable thead th:nth-child(7) { width: 13%; }
-
-/* ข้อมูลในแถว Member ใช้สีเข้มเดียวกันทั้งหมด (รวมตำแหน่ง/“—” ที่ปกติเป็นสีจาง) */
-#memberTable tbody td,
-#memberTable tbody td .np-stat-sub {
-  color: #2a2a2a;
-}
-
-#locTable thead th:nth-child(1) { width: 35%; }
-#locTable thead th:nth-child(2) { width: 35%; }
-#locTable thead th:nth-child(3) { width: 30%; }
-
-#poolTable thead th:nth-child(1) { width: 30%; }
-#poolTable thead th:nth-child(2) { width: 16%; }
-#poolTable thead th:nth-child(3) { width: 16%; }
-#poolTable thead th:nth-child(4) { width: 16%; }
-#poolTable thead th:nth-child(5) { width: 22%; }
-
-#poolDetailTable thead th:nth-child(1) { width: 1%; }
-#poolDetailTable thead th:nth-child(2) { width: 20%; }
-#poolDetailTable thead th:nth-child(3) { width: 20%; }
-#poolDetailTable thead th:nth-child(4) { width: 12%; }
-#poolDetailTable thead th:nth-child(5) { width: 12%; }
-#poolDetailTable thead th:nth-child(6) { width: 15%; }
-#poolDetailTable thead th:nth-child(7) { width: 20%; }
-
-/* ==========================================================================
-   Voucher View Details — section ข้อมูลผู้ขอ (แสดงบนจอ ไม่ติดตอนพิมพ์)
+   20. Voucher View Details
    ========================================================================== */
 .vm-info {
   margin: 0 20px 22px;
@@ -3045,7 +2988,200 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 /* ==========================================================================
-   Responsive — รวม media query ตาม breakpoint (desktop-first)
+   21. Activity Log 
+   ========================================================================== */
+.np-log-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+  line-height: 1.3;
+}
+.np-log-time span {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--np-muted-2);
+}
+
+.np-log-actor {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: flex-start;
+}
+.np-log-actor-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+.np-log-actor-sub {
+  font-size: 11px;
+  color: var(--np-muted-2);
+}
+.np-log-role {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: #eef0f4;
+  color: var(--np-muted);
+  margin-top: 1px;
+}
+.np-log-role.is-admin {
+  background: #e8f0fb;
+  color: var(--np-blue);
+}
+
+.np-log-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.np-log-badge i {
+  font-size: 13px;
+}
+.np-log-badge.is-info {
+  background: #e8f0fb;
+  color: var(--np-blue);
+}
+.np-log-badge.is-teal {
+  background: #e0f3f6;
+  color: var(--np-teal);
+}
+.np-log-badge.is-amber {
+  background: #fbefd7;
+  color: #b9790a;
+}
+.np-log-badge.is-warning {
+  background: #fdeede;
+  color: #c2620a;
+}
+.np-log-badge.is-danger {
+  background: #fdecec;
+  color: var(--np-red);
+}
+.np-log-badge.is-muted {
+  background: #eef0f4;
+  color: var(--np-muted);
+}
+
+.np-log-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.np-log-act i {
+  font-size: 13px;
+}
+.np-log-act.is-info {
+  color: var(--np-blue);
+}
+.np-log-act.is-teal {
+  color: var(--np-teal);
+}
+.np-log-act.is-amber {
+  color: #b9790a;
+}
+.np-log-act.is-warning {
+  color: #c2620a;
+}
+.np-log-act.is-danger {
+  color: var(--np-red);
+}
+.np-log-act.is-muted {
+  color: var(--np-muted);
+}
+
+#logTable th,
+#logTable td {
+  white-space: nowrap;
+}
+
+.np-log-target {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.np-log-target-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text);
+}
+.np-log-target-type {
+  font-size: 11px;
+  color: var(--np-muted-2);
+}
+.np-log-ip {
+  font-size: 12px;
+  color: var(--np-muted);
+}
+.np-export-err {
+  margin: 0;
+}
+
+.np-log-ipaddr {
+  display: inline-block;
+  width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-size: 12px;
+  color: var(--np-text-2);
+}
+
+.np-log-dt {
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--np-text);
+}
+.np-log-dt b {
+  font-weight: 400;
+}
+.np-log-name {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--np-text);
+  white-space: nowrap;
+}
+.np-log-type {
+  font-size: 12.5px;
+  color: var(--np-text-2);
+  white-space: nowrap;
+}
+.np-log-details {
+  display: inline-block;
+  width: 320px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-size: 12.5px;
+  color: var(--np-muted);
+}
+
+.np-log-section {
+  margin: 16px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--np-muted-2);
+}
+
+/* ==========================================================================
+   Responsive
    ========================================================================== */
 
 @media (max-width: 1199.98px) {
@@ -3055,12 +3191,10 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-  /* ช่องค้นหาสั้นลง */
   .np-dt .dt-search input.form-control {
     width: 200px;
   }
 
-  /* ฟิลเตอร์ Location/Status กว้าง 158px */
   #vfToolbar .ts-wrapper,
   #mbToolbar .ts-wrapper,
   #stToolbar .ts-wrapper,
@@ -3181,7 +3315,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
 }
 
 @media (max-width: 767.98px) {
-  /* Mobile: sidebar เลื่อนเข้า/ออกแบบ off-canvas + ฉากหลังทึบ */
   .np-sidebar {
     position: fixed;
     z-index: 1050;
@@ -3239,7 +3372,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
   .np-list-foot {
     padding: 11px 14px;
   }
-  /* โหมดการ์ดเรียงแนวตั้ง ไม่ต้องเลื่อนแนวนอน — ปิด overflow ทั้ง 2 แกน กัน scrollbar ซ้อน */
   .np-dt-cards .dt-layout-table {
     overflow: visible !important;
   }
@@ -3362,7 +3494,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
     border-left: 0;
   }
 
-  /* Profile: ยุบเป็นคอลัมน์เดียว */
   .np-prof-cols {
     grid-template-columns: 1fr;
   }
@@ -3399,7 +3530,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
     grid-template-columns: 1fr;
   }
 
-  /* Profile: header ห่อบรรทัดบนจอเล็ก */
   .np-prof-head {
     flex-wrap: wrap;
     gap: 14px;
@@ -3409,7 +3539,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
     width: 100%;
   }
 
-  /* Voucher detail modal: เลย์เอาต์มือถือ (ตั๋วเรียงแนวตั้ง + ฟอนต์เล็กลง) */
   .vm-info .vm-info-title {
     margin-bottom: 5px;
   }
@@ -3437,7 +3566,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
     right: -10px;
   }
 
-  /* ── ย่อ View modal ให้พอดี iPhone SE + เลื่อนในตัวถ้ายังยาว ── */
   .vm-content {
     max-height: calc(100dvh - 1.5rem);
     overflow-y: auto;
@@ -3486,7 +3614,6 @@ table.np-table.dataTable > tbody tr:last-child > td {
     font-size: 12px;
   }
 
-  /* ลดขนาดตัวอักษรในตั๋วลง ~2-3px ให้พอดีจอแคบ */
   .vm-ticket-title {
     font-size: 12px;
   }
@@ -3538,203 +3665,3 @@ table.np-table.dataTable > tbody tr:last-child > td {
   }
 }
 
-/* ==========================================================================
-   19. Activity Log — เซลล์ตาราง + badge การกระทำ
-   ========================================================================== */
-.np-log-time {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--np-text);
-  line-height: 1.3;
-}
-.np-log-time span {
-  display: block;
-  font-size: 11.5px;
-  font-weight: 400;
-  color: var(--np-muted-2);
-}
-
-.np-log-actor {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  align-items: flex-start;
-}
-.np-log-actor-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--np-text);
-}
-.np-log-actor-sub {
-  font-size: 11px;
-  color: var(--np-muted-2);
-}
-.np-log-role {
-  font-size: 9.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 1px 6px;
-  border-radius: 5px;
-  background: #eef0f4;
-  color: var(--np-muted);
-  margin-top: 1px;
-}
-.np-log-role.is-admin {
-  background: #e8f0fb;
-  color: var(--np-blue);
-}
-
-/* badge การกระทำ — โทนตามชนิด */
-.np-log-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.np-log-badge i {
-  font-size: 13px;
-}
-.np-log-badge.is-info {
-  background: #e8f0fb;
-  color: var(--np-blue);
-}
-.np-log-badge.is-teal {
-  background: #e0f3f6;
-  color: var(--np-teal);
-}
-.np-log-badge.is-amber {
-  background: #fbefd7;
-  color: #b9790a;
-}
-.np-log-badge.is-warning {
-  background: #fdeede;
-  color: #c2620a;
-}
-.np-log-badge.is-danger {
-  background: #fdecec;
-  color: var(--np-red);
-}
-.np-log-badge.is-muted {
-  background: #eef0f4;
-  color: var(--np-muted);
-}
-
-/* การกระทำ — ข้อความสีตาม tone (ไม่มีพื้น badge) */
-.np-log-act {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 400;
-  white-space: nowrap;
-}
-.np-log-act i {
-  font-size: 13px;
-}
-.np-log-act.is-info {
-  color: var(--np-blue);
-}
-.np-log-act.is-teal {
-  color: var(--np-teal);
-}
-.np-log-act.is-amber {
-  color: #b9790a;
-}
-.np-log-act.is-warning {
-  color: #c2620a;
-}
-.np-log-act.is-danger {
-  color: var(--np-red);
-}
-.np-log-act.is-muted {
-  color: var(--np-muted);
-}
-
-/* ไม่บีบตาราง — เซลล์ไม่ตัดบรรทัด แล้วเลื่อนแนวนอนแทน */
-#logTable th,
-#logTable td {
-  white-space: nowrap;
-}
-
-.np-log-target {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.np-log-target-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--np-text);
-}
-.np-log-target-type {
-  font-size: 11px;
-  color: var(--np-muted-2);
-}
-.np-log-ip {
-  font-size: 12px;
-  color: var(--np-muted);
-}
-/* เตือนช่วงวันที่ — อยู่ข้างช่อง To ในแถบตัวกรอง (จัดกึ่งกลางแนวตั้ง) */
-.np-export-err {
-  margin: 0;
-}
-
-/* IP — ล็อกความกว้างคงที่ (พอดี IPv4) เกินตัดด้วย … */
-.np-log-ipaddr {
-  display: inline-block;
-  width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  font-size: 12px;
-  color: var(--np-text-2);
-}
-
-/* แถวเดียวแนวนอน (flat) — ไม่ซ้อนบรรทัด */
-.np-log-dt {
-  white-space: nowrap;
-  font-size: 13px;
-  color: var(--np-text);
-}
-.np-log-dt b {
-  font-weight: 400;
-}
-.np-log-name {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--np-text);
-  white-space: nowrap;
-}
-.np-log-type {
-  font-size: 12.5px;
-  color: var(--np-text-2);
-  white-space: nowrap;
-}
-/* รายละเอียดย่อ — บรรทัดเดียว ตัดด้วย … (ดูเต็มที่ tooltip / ปุ่มดู) */
-.np-log-details {
-  display: inline-block;
-  width: 320px;
-  max-width: 320px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  font-size: 12.5px;
-  color: var(--np-muted);
-}
-
-/* หัวข้อส่วนใน modal รายละเอียด (เช่น รายชื่อผู้รับ voucher) */
-.np-log-section {
-  margin: 16px 0 0;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--np-muted-2);
-}

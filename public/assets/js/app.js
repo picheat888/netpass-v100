@@ -1,11 +1,11 @@
-// NetPass — JS ส่วนกลาง (toggle sidebar)
+// NetPass — JS ส่วนกลาง
 document.addEventListener('DOMContentLoaded', function () {
     var shell  = document.querySelector('.np-shell');
     var toggle = document.getElementById('npSidebarToggle');
 
     if (toggle && shell) {
         toggle.addEventListener('click', function () {
-            // mobile (<768) = เลื่อน sidebar เข้า/ออก, tablet/desktop (>=768) = ย่อเหลือไอคอน/ขยาย
+            // toggle sidebar (มือถือ = เลื่อนเข้า/ออก, จอใหญ่ = ย่อ/ขยาย)
             if (window.innerWidth < 768) {
                 shell.classList.toggle('np-open');
             } else {
@@ -21,14 +21,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // select[data-autosubmit] (เช่น แถวต่อหน้า ใน list footer) → submit ฟอร์มเมื่อเปลี่ยนค่า
-    // ใช้ delegated listener แทน inline onchange เพื่อรองรับ CSP (script-src 'self')
+    // select[data-autosubmit] → submit ฟอร์มเมื่อเปลี่ยนค่า
     document.addEventListener('change', function (e) {
         var sel = e.target.closest('select[data-autosubmit]');
         if (sel && sel.form) { sel.form.submit(); }
     });
 
-    // ── แถบ progress ด้านบน ตอนนำทาง/โหลดหน้า ──
+    // แถบ progress ด้านบน ตอนนำทาง/โหลดหน้า
     var bar = document.createElement('div');
     bar.className = 'np-progress';
     document.body.appendChild(bar);
@@ -37,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(barTimer);
         bar.classList.add('active');
         bar.style.width = '0';
-        // ค่อยๆ คืบไป ~90% (ค้างรอหน้าใหม่โหลด)
+        // ค่อยๆ คืบไป ~90%
         requestAnimationFrame(function () { bar.style.width = '90%'; });
     }
     function finishBar() {
@@ -57,53 +56,48 @@ document.addEventListener('DOMContentLoaded', function () {
         if (anchor.origin && anchor.origin !== location.origin) { return; }
         startBar();
     }, true);
-    // bubble phase + เช็ค defaultPrevented: ถ้าฟอร์มถูก preventDefault (เช่น เปิด review/summary แทน
-    // การส่งจริง หรือ validation ไม่ผ่าน) จะไม่เริ่มแถบ → ไม่ค้างที่ 90%
+    // เริ่มแถบเมื่อ submit ฟอร์ม POST จริง (ข้ามถ้าถูก preventDefault)
     document.addEventListener('submit', function (e) {
         if (e.defaultPrevented) { return; }
         if (e.target && e.target.method && e.target.method.toLowerCase() === 'post') { startBar(); }
     });
     window.addEventListener('beforeunload', startBar);
-    // หน้าใหม่โหลดเสร็จ → ปิดแถบ (กันค้างตอนกด back)
+    // หน้าใหม่โหลดเสร็จ → ปิดแถบ
     window.addEventListener('pageshow', finishBar);
 });
 
 /* ============================================================
    Dialog ซ้อน Dialog — จัด z-index ให้ถูกชั้น
-   Bootstrap เวอร์ชันนี้ไม่ bump z-index เอง (modal ซ้อนเลย z เท่ากัน ดูแบน)
-   → ดัน dialog ชั้นบนให้สูงขึ้น + backdrop ชั้นบนให้ "อยู่เหนือ" dialog ชั้นล่าง
-     (ทำให้ dialog ชั้นล่าง dim มีมิติ) และซ่อน backdrop ชั้นล่างกันหน้าเว็บมืดซ้อน
    ============================================================ */
 (function () {
     document.addEventListener('show.bs.modal', function (e) {
-        // จำนวน modal ที่เปิดอยู่ "ก่อนหน้า" (show.bs.modal ยิงก่อนได้ class .show)
+        // จำนวน modal ที่เปิดอยู่ก่อนหน้า
         var openCount = document.querySelectorAll('.modal.show').length;
         if (openCount < 1) { return; }                 // เป็น dialog แรก → ปล่อยปกติ
 
         var zIndex = 1055 + openCount * 30;
         e.target.style.zIndex = zIndex;
-        // backdrop ของ dialog นี้ถูก append ทีหลัง → รอ tick แล้วจัด z-index
+        // จัด z-index backdrop ของ dialog นี้
         window.setTimeout(function () {
             var bds = document.querySelectorAll('.modal-backdrop');
             if (! bds.length) { return; }
             var top = bds[bds.length - 1];
-            top.style.zIndex = zIndex - 10;                  // อยู่เหนือ dialog ชั้นล่าง → dim ชั้นล่าง
-            for (var i = 0; i < bds.length - 1; i++) {  // ซ่อน backdrop ชั้นล่าง (กันมืดซ้อน)
+            top.style.zIndex = zIndex - 10;                  // อยู่เหนือ dialog ชั้นล่าง
+            for (var i = 0; i < bds.length - 1; i++) {  // ซ่อน backdrop ชั้นล่าง
                 bds[i].style.display = 'none';
             }
         }, 0);
     });
 
     document.addEventListener('hidden.bs.modal', function () {
-        // ปิด dialog ชั้นบน → คืน backdrop ที่เหลือให้แสดง + คง modal-open ถ้ายังมี dialog เปิด
+        // ปิด dialog ชั้นบน → คืน backdrop ที่เหลือให้แสดง
         document.querySelectorAll('.modal-backdrop').forEach(function (backdrop) { backdrop.style.display = ''; });
         if (document.querySelectorAll('.modal.show').length) {
             document.body.classList.add('modal-open');
         }
     });
 
-    // กด Esc ตอนมี dialog ซ้อน → ปิดเฉพาะตัวบนสุด (กัน focus trap ของชั้นล่างไปปิดผิดตัว)
-    // ใช้ capture + stopPropagation เพื่อชิงก่อน handler ของ Bootstrap ที่อยู่บน element
+    // กด Esc ตอนมี dialog ซ้อน → ปิดเฉพาะตัวบนสุด
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') { return; }
         var open = document.querySelectorAll('.modal.show');
@@ -124,12 +118,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ============================================================
    NetPass.dataTable — helper กลางสำหรับตาราง DataTables (server-side)
-   ใช้ซ้ำทุกหน้า list: Voucher / Voucher Pool / Location / Member
    ============================================================ */
 window.NetPass = window.NetPass || {};
 (function (NP) {
 
-    // ข้อความ DataTables ตามภาษา (เลือกจาก <html lang>)
+    // ข้อความ DataTables ตามภาษา
     var LANG = {
         th: {
             processing: 'กำลังโหลด…',
@@ -156,18 +149,15 @@ window.NetPass = window.NetPass || {};
     };
 
     // สร้าง DataTable server-side พร้อมค่า default ของระบบ
-    // opts.filters = selector ของกล่องตัวกรอง (DataTables วางไว้ใน toolbar ด้านบนซ้าย)
     NP.dataTable = function (selector, opts) {
         opts = opts || {};
         var locale = document.documentElement.lang === 'th' ? 'th' : 'en';
 
-        // layout:
-        //   บน  = [ค้นหา + ตัวกรอง (ซ้าย)] ........ [ปุ่ม action (ขวา)]
-        //   ล่าง = [แถวต่อหน้า + แสดง N–N (ซ้าย)] .. [pager (ขวา)]
+        // layout toolbar
         var filtersNode = opts.filters ? document.querySelector(opts.filters) : null;
         var actionNode  = opts.action ? document.querySelector(opts.action) : null;
 
-        // pager ที่ render เอง (คุมรูปแบบ « ‹ N N N › » + ghost ได้เต็มที่)
+        // pager ที่ render เอง
         var pager = document.createElement('div');
         pager.className = 'np-dtpager';
 
@@ -175,12 +165,12 @@ window.NetPass = window.NetPass || {};
             topStart: filtersNode ? ['search', filtersNode] : 'search',
             topEnd: actionNode || null,
             bottomStart: ['pageLength', 'info'],
-            bottomEnd: pager   // ใช้ pager ของเราแทน 'paging' ของ DataTables
+            bottomEnd: pager   // ใช้ pager ของเราเอง
         };
         delete opts.filters;
         delete opts.action;
 
-        // info: เน้น "ตัวเลข" (semibold + tabular) ลดน้ำหนักคำเชื่อม — สแกนเร็ว ไม่กระตุกตอนเปลี่ยนหน้า
+        // info: ข้อความ "แสดง N–N จาก N"
         function infoText(start, end, total, max) {
             var wrapNum = function (value) { return '<span class="np-info-n">' + value + '</span>'; };
             if (total === 0) {
@@ -210,7 +200,7 @@ window.NetPass = window.NetPass || {};
             layout: layout
         }, opts));
 
-        // วาด pager เอง: « ‹ [เลขหน้า 3 ตัว] › »  (ghost button + เน้นหน้าปัจจุบัน)
+        // วาด pager เอง
         function btn(label, target, opt) {
             opt = opt || {};
             var cls = 'np-pg-btn' + (opt.active ? ' active' : '') + (opt.disabled ? ' is-disabled' : '');
@@ -218,7 +208,7 @@ window.NetPass = window.NetPass || {};
                 + ' data-pg="' + target + '">' + label + '</button>';
         }
         function renderPager() {
-            var info  = dt.page.info();           // page (0-based), pages
+            var info  = dt.page.info();
             var p     = info.page;
             var pages = info.pages;
             if (pages <= 0) { pager.innerHTML = ''; return; }
@@ -239,13 +229,12 @@ window.NetPass = window.NetPass || {};
             if (btn && ! btn.disabled) { dt.page(parseInt(btn.dataset.pg, 10)).draw('page'); }
         });
 
-        // แต่ง select "แถวต่อหน้า" ของ DataTables (สร้างตอน init) ให้เป็น dropdown ธีม
+        // แต่ง select "แถวต่อหน้า" ให้เป็น dropdown ธีม
         dt.on('init.dt', function () {
             NP.enhanceSelects(dt.table().container());
         });
 
-        // เติม data-label ให้ทุกเซลล์จากหัวตาราง — ใช้เป็น label เวลาตารางพับเป็นการ์ดบนมือถือ
-        // (เพิ่มเฉพาะ attribute ไม่กระทบหน้าตา desktop; หน้าไหนไม่ใส่คลาส .np-dt-cards ก็ไม่มีผล)
+        // เติม data-label ให้ทุกเซลล์ (สำหรับการ์ดมือถือ)
         var headerLabels = [];
         dt.on('draw.dt', function () {
             if (! headerLabels.length) {
@@ -263,7 +252,7 @@ window.NetPass = window.NetPass || {};
             });
         });
 
-        // skeleton shimmer ทับพื้นที่ตารางตอนกำลังโหลดข้อมูล (แทน spinner)
+        // skeleton shimmer ตอนกำลังโหลดข้อมูล
         var tableRow = dt.table().node().closest('.dt-layout-row') || dt.table().node().parentElement;
         if (tableRow) {
             tableRow.style.position = 'relative';
@@ -280,12 +269,12 @@ window.NetPass = window.NetPass || {};
             }
             skel.innerHTML = html;
             tableRow.appendChild(skel);
-            // โชว์/ซ่อน skeleton + สำรองความสูงให้แถวตาราง (ตอนโหลดแรกตารางว่าง ไม่งั้น skeleton ล้นทับ footer)
+            // โชว์/ซ่อน skeleton + สำรองความสูงให้แถวตาราง
             function toggleSkel(on) {
                 skel.classList.toggle('show', on);
                 tableRow.style.minHeight = on ? (skel.offsetHeight ? skel.scrollHeight + 'px' : '276px') : '';
             }
-            toggleSkel(true);   // โหลดครั้งแรก: โชว์ทันที (กัน event processing แรกหลุด)
+            toggleSkel(true);   // โหลดครั้งแรก: โชว์ทันที
             dt.on('processing.dt', function (e, settings, processing) { toggleSkel(!!processing); });
             dt.on('draw.dt', function () { toggleSkel(false); });
         }
@@ -293,19 +282,18 @@ window.NetPass = window.NetPass || {};
         return dt;
     };
 
-    // แทน native <select> ด้วย dropdown ที่ style ได้ (Tom Select) — option list เข้าธีม NetPass
+    // แทน native <select> ด้วย dropdown ที่ style ได้ (Tom Select)
     NP.enhanceSelects = function (root) {
         if (! window.TomSelect) { return; }
         (root || document).querySelectorAll('select.form-select').forEach(function (el) {
             if (el.tomselect || el.dataset.noTs !== undefined) { return; }
             var origId = el.id;
             new TomSelect(el, {
-                controlInput: null,        // ไม่มีช่องพิมพ์ค้นหา — เป็น dropdown styled เฉยๆ
+                controlInput: null,        // ไม่มีช่องพิมพ์ค้นหา
                 allowEmptyOption: true,
                 hideSelected: false
             });
-            // a11y: controlInput:null ทำให้ TomSelect ชี้ <label for> ไปที่ id "<id>-ts-control"
-            // ที่ไม่ถูกสร้างจริง → ชี้ label กลับไปที่ <select> เดิม (element ที่ label อ้างได้ถูกต้อง)
+            // a11y: ชี้ <label for> กลับไปที่ <select> เดิม
             if (origId) {
                 var lbl = document.querySelector('label[for="' + origId + '-ts-control"]');
                 if (lbl) { lbl.setAttribute('for', origId); }
@@ -313,12 +301,11 @@ window.NetPass = window.NetPass || {};
         });
     };
 
-    // บันทึกการ์ดตั๋ว (.vm-ticket-wrap) เป็นรูป PNG — โคลนนอกจอ แล้วเรนเดอร์ด้วย html-to-image
-    // ตัดปุ่ม copy ออก + แทนไอคอน wifi (icon font) ด้วย inline SVG ให้ติดมาในรูป
+    // บันทึกการ์ดตั๋ว (.vm-ticket-wrap) เป็นรูป PNG
     NP.saveCardImage = async function (cardEl, filename) {
         if (! cardEl || ! window.htmlToImage) { return; }
         var holder = document.createElement('div');
-        holder.className = 'np-capture';   // บังคับการ์ดเป็นแนวนอนเหมือนตอนพิมพ์
+        holder.className = 'np-capture';   // บังคับการ์ดเป็นแนวนอน
         holder.style.cssText = 'position:fixed;left:-99999px;top:0;width:730px;background:#fff;';
         holder.appendChild(cardEl.cloneNode(true));
         holder.querySelectorAll('.vm-copy').forEach(function (el) { el.remove(); });
@@ -326,7 +313,7 @@ window.NetPass = window.NetPass || {};
         if (titleIcon) { titleIcon.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="#3b7ddd" viewBox="0 0 16 16" style="flex-shrink:0"><path d="M15.384 6.115a.485.485 0 0 0-.047-.736A12.444 12.444 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049z"/><path d="M13.229 8.271c.216-.216.194-.578-.063-.745A9.456 9.456 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7c1.689 0 3.24.5 4.576 1.336.206.132.48.108.653-.065zm-2.183 2.183c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.06 0-2.062.254-2.946.704-.285.145-.326.524-.1.75l.015.015c.16.16.408.19.611.09A5.478 5.478 0 0 1 8 10c.764 0 1.49.156 2.15.435.203.1.45.07.611-.09l.085-.092zM9.06 12.44c.196-.196.198-.52-.04-.66A1.99 1.99 0 0 0 8 11.5a1.99 1.99 0 0 0-1.02.28c-.238.14-.236.464-.04.66l.706.706a.5.5 0 0 0 .707 0l.707-.707z"/></svg>'; }
         document.body.appendChild(holder);
         try {
-            await document.fonts.ready;   // กันฟอนต์ไทยยังโหลดไม่เสร็จ
+            await document.fonts.ready;
             var node = holder.querySelector('.vm-ticket-wrap');
             var dataUrl = await htmlToImage.toPng(node, { pixelRatio: 2, backgroundColor: '#ffffff' });
             var a = document.createElement('a');
@@ -338,7 +325,7 @@ window.NetPass = window.NetPass || {};
         }
     };
 
-    // เปิดใช้กับ select ทั้งหน้าเมื่อโหลดเสร็จ (toolbar filters / ฟอร์ม)
+    // เปิดใช้กับ select ทั้งหน้าเมื่อโหลดเสร็จ
     document.addEventListener('DOMContentLoaded', function () {
         NP.enhanceSelects(document);
     });

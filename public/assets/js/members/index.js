@@ -1,10 +1,10 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 const NP_MEMBERS = JSON.parse(document.getElementById('np-members-data').textContent);
 
 // เติมข้อมูลใน edit modal จาก data attribute ของปุ่ม
 document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
-    if (!btn) return;   // เปิดเองตอน validation error → ใช้ค่าที่ server เติมไว้
+    if (!btn) return;
     const d = btn.dataset;
     document.getElementById('editForm').action     = '/admin/members/' + d.id + '/update';
     document.getElementById('editEmail').value      = d.email || '';
@@ -12,11 +12,11 @@ document.getElementById('editModal').addEventListener('show.bs.modal', function 
     document.getElementById('editLastname').value   = d.lastname || '';
     document.getElementById('editUsername').value   = d.username || '';
     document.getElementById('editPosition').value   = d.position || '';
-    // role ถูกแปลงเป็น Tom Select แล้ว → ตั้งค่าผ่าน API (ตั้ง .value เฉยๆ ไม่อัปเดตหน้าตา)
+    // ตั้งค่า role ผ่าน Tom Select API
     const roleEl = document.getElementById('editRole');
     if (roleEl.tomselect) { roleEl.tomselect.setValue(d.role || 'user'); }
     else { roleEl.value = d.role || 'user'; }
-    // เติมรูปปัจจุบัน (หรือตัวอักษรย่อ) ลงกล่อง avatar แบบสร้าง element ตรง ไม่ผ่าน innerHTML
+    // เติมรูปปัจจุบันลงกล่อง avatar
     const box = document.getElementById('editAvatarBox');
     box.textContent = '';
     if (d.img) {
@@ -37,11 +37,11 @@ document.getElementById('mbDeleteModal').addEventListener('show.bs.modal', funct
     const btn = e.relatedTarget;
     if (!btn) return;
     document.getElementById('mbDeleteForm').action = '/admin/members/' + btn.dataset.id + '/delete';
-    // ครอบชื่อด้วยเครื่องหมาย "…" ให้เด่น (ว่างเปล่า → ไม่ใส่)
+    // ครอบชื่อด้วยเครื่องหมายคำพูด
     document.getElementById('mbDeleteName').textContent = btn.dataset.name ? '"' + btn.dataset.name + '"' : '';
 });
 
-// เติม action + username ใน reset-password modal (ล้างช่องรหัสเดิม)
+// เติม action + username ใน reset-password modal
 document.getElementById('mbResetModal').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
     if (!btn) return;
@@ -55,13 +55,12 @@ document.getElementById('mbResetModal').addEventListener('show.bs.modal', functi
     const e2 = document.querySelector('#mbResetForm .np-field-err'); if (e2) e2.remove();
 });
 
-// สลับสถานะบัญชี: ปิดใช้งาน → ยืนยันแบบ Warning, เปิดใช้งาน → ยืนยันแบบ Confirm
-// (delegation บน #memberTable เพราะ DataTables วาดแถวใหม่ทุกครั้งที่เปลี่ยนหน้า/ค้นหา)
+// สลับสถานะบัญชี
 document.getElementById('memberTable').addEventListener('change', function (e) {
     const sw = e.target.closest('input.mb-toggle');
     if (!sw) return;
-    const activating = sw.checked;        // สถานะที่ผู้ใช้ต้องการ
-    sw.checked = !activating;             // คืนค่าเดิมไว้ก่อน รอยืนยันใน dialog
+    const activating = sw.checked;
+    sw.checked = !activating;             // คืนค่าเดิมไว้ก่อน รอยืนยัน
     const id   = sw.dataset.id;
     const name = sw.dataset.name ? '"' + sw.dataset.name + '"' : '';
     const target = activating
@@ -93,11 +92,11 @@ document.addEventListener('DOMContentLoaded', function () {
             { orderable: false, className: 'text-end' } // จัดการ
         ]
     });
-        window.memberDT = dt;   // ใช้ reload หลัง import
+        window.memberDT = dt;
     grpSel.addEventListener('change', function () { dt.ajax.reload(); });
 });
 
-// ───────── รูปโปรไฟล์: เลือกไฟล์ → ครอป/ซูมวงกลม → พรีวิว (ใช้ร่วมเพิ่ม/แก้ไข) ─────────
+// ───────── รูปโปรไฟล์: เลือกไฟล์ → ครอป/ซูม → พรีวิว ─────────
 window.addEventListener('load', function () {
     const cropEl  = document.getElementById('mbCropModal');
     const cropImg = document.getElementById('mbCropImg');
@@ -148,7 +147,7 @@ window.addEventListener('load', function () {
     });
     cropEl.addEventListener('hidden.bs.modal', function () {
         if (cropper) { cropper.destroy(); cropper = null; }
-        // เก็บกวาด backdrop ที่อาจค้างจากการซ้อน modal
+        // เก็บกวาด backdrop ที่อาจค้าง
         setTimeout(function () {
             if (document.querySelector('.modal.show')) {
                 document.body.classList.add('modal-open');
@@ -172,7 +171,7 @@ window.addEventListener('load', function () {
         }, type, 0.9);
     });
 
-    // ───────── แถบวัด + เช็คลิสต์รหัสผ่าน + ปุ่มสุ่ม (ฟอร์มเพิ่มสมาชิก) ─────────
+    // ───────── แถบวัด + เช็คลิสต์รหัสผ่าน + ปุ่มสุ่ม ─────────
     const newPwd     = document.getElementById('addPwd');
     const rulesBox   = document.getElementById('addPwdRules');
     const meter      = document.getElementById('addPwdMeter');
@@ -212,7 +211,7 @@ window.addEventListener('load', function () {
         });
     }
 
-    // ปุ่มสุ่มรหัสผ่าน — สร้างรหัสแข็งแรง (พิมพ์ใหญ่/เล็ก/เลข/อักขระพิเศษ) แล้วโชว์ให้ admin เห็น/คัดลอก
+    // ปุ่มสุ่มรหัสผ่าน
     function npGenPassword(len) {
         const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ', L = 'abcdefghijkmnpqrstuvwxyz', D = '23456789', S = '!@#$%^&*?-_=+';
         const all = U + L + D + S;
@@ -226,7 +225,7 @@ window.addEventListener('load', function () {
     if (randomBtn && newPwd) {
         randomBtn.addEventListener('click', function () {
             newPwd.value = npGenPassword(12);
-            newPwd.type = 'text';   // โชว์ให้เห็น (admin ต้องนำไปแจ้งผู้ใช้)
+            newPwd.type = 'text';   // โชว์ให้เห็น
             const eye = newPwd.parentElement.querySelector('.np-pwd-toggle i');
             if (eye) { eye.className = 'bi bi-eye-slash'; }
             newPwd.classList.remove('np-invalid');
@@ -236,7 +235,7 @@ window.addEventListener('load', function () {
         });
     }
 
-    // ───────── reset รหัสผ่าน: meter + checklist + สุ่ม (ใช้ tests/STRENGTH/npGenPassword ร่วม) ─────────
+    // ───────── reset รหัสผ่าน: meter + checklist + สุ่ม ─────────
     function setupPwdField(pwd, rules, mt, mtLabel, rndBtn) {
         if (! pwd) { return; }
         function evalP() {
@@ -270,12 +269,12 @@ window.addEventListener('load', function () {
     setupPwdField(document.getElementById('rsPwd'), document.getElementById('rsPwdRules'),
                   document.getElementById('rsPwdMeter'), document.getElementById('rsPwdMeterLabel'),
                   document.getElementById('rsRandomPwd'));
-    // ฟอร์มรีเซ็ต: ตรวจ inline แล้ว submit ตรง
+    // ฟอร์มรีเซ็ต: ตรวจ inline แล้ว submit
     document.getElementById('mbResetForm').addEventListener('submit', function (e) {
         if (! npValidateForm(this)) { e.preventDefault(); }
     });
 
-    // ───────── สรุปข้อมูลก่อนยืนยันสร้างสมาชิก (เปิดเดี่ยว — ปิดฟอร์มก่อน ไม่ให้ backdrop ซ้อนมืด) ─────────
+    // ───────── สรุปข้อมูลก่อนยืนยันสร้างสมาชิก ─────────
     const addForm    = document.getElementById('addForm');
     const addModalEl = document.getElementById('addModal');
     const bsAdd      = bootstrap.Modal.getOrCreateInstance(addModalEl);
@@ -304,13 +303,12 @@ window.addEventListener('load', function () {
     }
     let addConfirmed = false;
     addForm.addEventListener('submit', function (e) {
-        if (addConfirmed) { return; }       // ยืนยันในสรุปแล้ว → submit จริง
+        if (addConfirmed) { return; }
         e.preventDefault();
         if (! npValidateForm(addForm)) { return; }
         buildSummary();
-        bsSum.show();                        // ซ้อนทับฟอร์ม (backdrop ชั้นบนโปร่งใส ไม่มืดซ้อน)
+        bsSum.show();
     });
-    // Back = ปิดสรุป กลับไปฟอร์มเดิมที่ยังเปิดอยู่ด้านล่าง (ใช้ data-bs-dismiss)
     // OK = สร้างจริง
     document.getElementById('mbSummaryConfirm').addEventListener('click', function () {
         addConfirmed = true;
@@ -358,7 +356,7 @@ window.addEventListener('load', function () {
     }
     function updateEditSaveState() { editSaveBtn.disabled = ! editChanged(); }
 
-    // snapshot ตอน modal แสดงเต็มที่ (หลังเติมค่า + Tom Select set แล้ว) → ปุ่มเริ่มเป็น disable
+    // snapshot ตอน modal แสดงเต็มที่
     editModalEl.addEventListener('shown.bs.modal', function () {
         editSnapshot = editVals();
         editAvatarChanged = false;
@@ -388,9 +386,9 @@ window.addEventListener('load', function () {
         if (editConfirmed) { return; }
         e.preventDefault();
         if (! npValidateForm(editFormEl)) { return; }
-        if (! editChanged()) { return; }     // ไม่มีการเปลี่ยน → ไม่ทำอะไร (ปุ่ม disable อยู่แล้ว)
+        if (! editChanged()) { return; }     // ไม่มีการเปลี่ยน → ไม่ทำอะไร
         buildEditReview();
-        bsEditReview.show();                 // ซ้อนทับ edit modal (backdrop โปร่งใส)
+        bsEditReview.show();
     });
     document.getElementById('mbEditReviewConfirm').addEventListener('click', function () {
         editConfirmed = true;
@@ -407,7 +405,7 @@ window.addEventListener('load', function () {
         });
     });
 
-    // เปิด modal เดิมกลับมาเมื่อ validation ฝั่ง server ไม่ผ่าน (fallback)
+    // เปิด modal เดิมกลับมาเมื่อ validation ฝั่ง server ไม่ผ่าน
     if (NP_MEMBERS.openModal === 'add') {
         bootstrap.Modal.getOrCreateInstance(document.getElementById('addModal')).show();
     } else if (NP_MEMBERS.openModal === 'edit') {
@@ -425,7 +423,7 @@ document.querySelectorAll('.np-modal-member .form-control').forEach(function (in
     });
 });
 
-// ── client-side validation: เตือน inline ในตัว modal ไม่ปิด/รีโหลด ──
+// ── client-side validation: เตือน inline ในตัว modal ──
 function npAddErr(inp, message) {
     inp.classList.add('np-invalid');
     const anchor = inp.closest('.np-pwd-wrap') || inp;
@@ -445,12 +443,12 @@ function npValidateForm(form) {
     form.querySelectorAll('[data-req]').forEach(function (inp) {
         if (inp.value.trim() === '') { ok = false; npAddErr(inp, inp.dataset.reqmsg); }
     });
-    // อีเมล: ไม่บังคับ แต่ถ้ากรอกต้องถูก format
+    // อีเมล: ตรวจ format
     const em = form.querySelector('input[name="email"]');
     if (em && em.value.trim() !== '' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em.value.trim())) {
         ok = false; npAddErr(em, em.dataset.fmtmsg);
     }
-    // รหัสผ่าน: ความแข็งแรง (ช่องใดก็ตามที่มี data-weakmsg — ฟอร์มเพิ่ม/รีเซ็ต)
+    // รหัสผ่าน: ความแข็งแรง
     const pwd = form.querySelector('[data-weakmsg]');
     if (pwd && pwd.value.trim() !== '') {
         const strong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(pwd.value);
@@ -518,9 +516,9 @@ function npValidateForm(form) {
     }
 
     // ── dropzone interaction ──
-    // คลิก dropzone → เปิด file picker (input ซ่อนอยู่) / ลากวาง → ดัก drop เองแล้วยัด dataTransfer.files เข้า input
+    // คลิก dropzone → เปิด file picker
     drop.addEventListener('click', function (e) {
-        // กัน re-entrancy: fileInput.click() สร้าง click ที่ bubble กลับมาที่ .np-drop → ห้ามเปิด picker ซ้ำ
+        // กัน re-entrancy
         if (e.target === fileInput) return;
         fileInput.click();
     });
@@ -529,32 +527,32 @@ function npValidateForm(form) {
         drop.addEventListener(ev, function (e) { e.preventDefault(); e.stopPropagation(); drop.classList.add('is-drag'); });
     });
     drop.addEventListener('dragleave', function (e) {
-        if (e.target === drop) drop.classList.remove('is-drag');   // เอาไฮไลต์ออกเฉพาะตอนออกนอกกล่องจริง
+        if (e.target === drop) drop.classList.remove('is-drag');   // เอาไฮไลต์ออก
     });
     drop.addEventListener('drop', function (e) {
         e.preventDefault(); e.stopPropagation();
         drop.classList.remove('is-drag');
         if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
-            fileInput.files = e.dataTransfer.files;   // ใส่ไฟล์ที่ลากเข้า input โดยตรง
+            fileInput.files = e.dataTransfer.files;   // ใส่ไฟล์ที่ลากเข้า input
             reflectFile();
         }
     });
     document.getElementById('importFileRemove').addEventListener('click', resetDrop);
-    // เปิด modal ใหม่ทุกครั้ง → ล้างสถานะ dropzone
+    // เปิด modal ใหม่ → ล้างสถานะ dropzone
     document.getElementById('importModal').addEventListener('hidden.bs.modal', resetDrop);
 
-    // ── ตารางแถวพลาดใน result (DataTables client-side, 10/หน้า) ──
+    // ── ตารางแถวพลาดใน result ──
     function renderFailures(failures) {
         const wrap   = document.getElementById('resFailWrap');
         const dialog = document.querySelector('#resultModal .modal-dialog');
         const rows = (failures || []).map(function (f) { return [f.row, f.username || '—', f.reason]; });
         if (!rows.length) {
             wrap.classList.add('d-none');
-            dialog.classList.remove('is-wide');   // สำเร็จล้วน → กล่องแคบสมดุล (เฉพาะวง %)
+            dialog.classList.remove('is-wide');   // สำเร็จล้วน → กล่องแคบ
             if (failDT) { failDT.clear().draw(); }
             return;
         }
-        dialog.classList.add('is-wide');          // มีแถวพลาด → ขยายกล่องให้ตารางพอดี
+        dialog.classList.add('is-wide');          // มีแถวพลาด → ขยายกล่อง
         if (failDT) {
             failDT.clear().rows.add(rows).draw();
         } else {
@@ -574,7 +572,7 @@ function npValidateForm(form) {
         }
         wrap.classList.remove('d-none');
     }
-    // คำนวณความกว้างคอลัมน์ใหม่หลัง modal โชว์ (กัน layout เพี้ยนเพราะ init ตอนซ่อน)
+    // คำนวณความกว้างคอลัมน์ใหม่หลัง modal โชว์
     document.getElementById('resultModal').addEventListener('shown.bs.modal', function () {
         if (failDT) { failDT.columns.adjust(); }
     });

@@ -1,4 +1,4 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 var NP_FPW = JSON.parse(document.getElementById('np-fpw-data').textContent);
 
 (function () {
@@ -9,7 +9,7 @@ var NP_FPW = JSON.parse(document.getElementById('np-fpw-data').textContent);
     var meterLabel = document.getElementById('fMeterLabel');
     var matchMsg = document.getElementById('fMatch');
     var submitBtn = document.getElementById('fSubmit');
-    var rulesPassed = 0;   // จำนวนกฎที่ผ่านล่าสุด (อัปเดตใน evaluate)
+    var rulesPassed = 0;   
     var STRENGTH = NP_FPW.strength;
     var MATCH_OK = NP_FPW.matchOk;
     var MATCH_BAD = NP_FPW.matchBad;
@@ -61,7 +61,7 @@ var NP_FPW = JSON.parse(document.getElementById('np-fpw-data').textContent);
         });
     });
 
-    // ตอน submit: spinner กลางปุ่ม + disable กัน double-submit
+    // ตอน submit: spinner กลางปุ่ม + disable
     document.querySelector('form').addEventListener('submit', function () {
         submitBtn.disabled = true;
         submitBtn.querySelector('.np-btn-label').classList.add('d-none');

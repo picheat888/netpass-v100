@@ -26,7 +26,7 @@ $btn    = $isEn ? 'Back to home' : 'กลับหน้าหลัก';
 </head>
 <body class="np-err-body is-danger">
     <main class="np-err">
-        <!-- catch-all: ไม่โชว์เลข/รายละเอียด → ไอคอนใหญ่แทน -->
+        <!-- catch-all: ไม่โชว์เลข/รายละเอียด -->
         <div class="np-err-glyph">
             <svg viewBox="0 0 24 24"><path d="m2 2 20 20"/><path d="M5.782 5.782A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.307-.193"/><path d="M21.532 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7.008 7.008 0 0 0 10 5.07"/></svg>
         </div>

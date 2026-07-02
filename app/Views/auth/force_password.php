@@ -76,7 +76,7 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
 
     <div class="np-login-foot">© <?= date('Y') ?> NetPass · v1.0</div>
 
-    <!-- Modal: เตือนก่อนออกจากระบบ (ยังไม่ตั้งรหัส → เข้าระบบไม่ได้) — dialog โทน warning -->
+    <!-- Modal: เตือนก่อนออกจากระบบ -->
     <div class="modal fade np-dialog-modal" id="cancelModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content np-dialog">
@@ -101,7 +101,7 @@ $fieldErr = static fn (string $field) => ! empty($fErrors[$field])
 
     <script src="<?= base_url('assets/plugins/bootstrap/bootstrap.bundle.min.js') ?>"></script>
     <?php
-    // ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+    // ค่าจาก server → data island
     $npFpw = [
         'strength' => ['', lang('Profile.pwdWeak'), lang('Profile.pwdFair'), lang('Profile.pwdGood'), lang('Profile.pwdStrong')],
         'matchOk'  => lang('Profile.confirmMatchOk'),

@@ -7,7 +7,7 @@ $locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name'])
 ?>
 
 <div class="np-card np-dt np-dt-cards">
-    <!-- ตัวกรอง (DataTables วางไว้ใน toolbar ซ้าย ถัดจากช่องค้นหา) -->
+    <!-- ตัวกรอง -->
     <div id="vfToolbar" class="d-flex flex-wrap align-items-center gap-2">
         <select id="vfLoc" class="form-select vf-loc" style="width:auto">
             <option value=""><?= lang('Voucher.filterAll') ?></option>
@@ -21,7 +21,7 @@ $locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name'])
             <option value="expired"><?= lang('Voucher.filterExpired') ?></option>
         </select>
     </div>
-    <!-- ปุ่มพิมพ์ตั๋วที่เลือก + ขอ voucher (DataTables วางไว้ใน toolbar ขวา) -->
+    <!-- ปุ่มพิมพ์ตั๋วที่เลือก + ขอ voucher -->
     <div id="vfAction" class="d-flex gap-2">
         <button type="button" id="vchPrintSel" class="btn btn-np-outline d-none">
             <i class="bi bi-printer me-1"></i><?= lang('Voucher.btnPrint') ?> (<span id="vchPrintCount">0</span>)
@@ -50,7 +50,7 @@ $locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name'])
 <?= $this->endSection() ?>
 
 <?= $this->section('modals') ?>
-<!-- Modal: รายละเอียด Voucher — การ์ดตั๋ว เติมข้อมูลจาก data-attribute ของปุ่ม -->
+<!-- Modal: รายละเอียด Voucher — การ์ดตั๋ว -->
 <div class="modal fade" id="voucherModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered vm-modal">
         <div class="modal-content vm-content">
@@ -120,7 +120,7 @@ $locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name'])
                         </div>
                     </div>
 
-                    <!-- ฝั่งขวา: QR (มีรอยปรุคั่น) — หัวเป็นชื่อ Wi-Fi -->
+                    <!-- ฝั่งขวา: QR + ชื่อ Wi-Fi -->
                     <div class="vm-ticket-qr">
                         <div class="vm-qr-name font-mono" id="vmQrName"></div>
                         <div class="vm-qr" id="vmQr"></div>
@@ -143,10 +143,10 @@ $locName = static fn ($loc) => $isEn ? (($loc['name_en'] ?? '') ?: $loc['name'])
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<!-- QR generator (สร้าง QR ฝั่ง client — ข้อมูลไม่ออกนอกเบราว์เซอร์) -->
+<!-- QR generator (สร้าง QR ฝั่ง client) -->
 <script src="<?= base_url('assets/plugins/qrcode/qrcode-generator.min.js') ?>"></script>
 <?php
-// ค่าจาก server → data island (อ่านโดย JS ภายนอก; CSP script-src ไม่บล็อก JSON ที่ไม่ถูก execute)
+// ค่าจาก server → data island
 $npMyVoucher = [
     'urls' => [
         'data'    => site_url('myvoucher/data'),

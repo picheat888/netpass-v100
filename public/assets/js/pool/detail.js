@@ -1,7 +1,7 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 const NP_POOL_DETAIL = JSON.parse(document.getElementById('np-pool-detail-data').textContent);
 
-// edit modal — เติมค่าจากปุ่มที่กด (รองรับแถวที่ DataTables สร้างใหม่)
+// edit modal — เติมค่าจากปุ่มที่กด
 const editForm     = document.getElementById('editForm');
 const editUser     = document.getElementById('editUser');
 const editPass     = document.getElementById('editPass');
@@ -15,23 +15,23 @@ document.getElementById('editModal').addEventListener('show.bs.modal', function 
     origPass = b.dataset.pass || '';
     editUser.value = origUser;
     editPass.value = origPass;
-    refreshDirty();   // เปิดมายังไม่แก้ → ปุ่มบันทึก disabled
+    refreshDirty();   // เปิดมายังไม่แก้
 });
 
-// เปิดปุ่มบันทึกเฉพาะเมื่อค่าต่างจากเดิม (ไม่มีการแก้ไข = disabled)
+// เปิดปุ่มบันทึกเฉพาะเมื่อค่าต่างจากเดิม
 function refreshDirty() {
     editSaveBtn.disabled = editUser.value === origUser && editPass.value === origPass;
 }
 editUser.addEventListener('input', refreshDirty);
 editPass.addEventListener('input', refreshDirty);
 
-// กด Save → ไม่ submit ทันที เด้ง dialog ยืนยันก่อน (โชว์ค่าเดิม → ค่าใหม่)
+// กด Save → เด้ง dialog ยืนยันก่อน
 const editConfirmModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editConfirmModal'));
 
 // escape ข้อความก่อนยัดเป็น HTML
 function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
 
-// 1 แถวตารางเทียบค่าเดิม → ค่าใหม่ (username/password เป็น mono)
+// 1 แถวตารางเทียบค่าเดิม → ค่าใหม่
 function diffRow(label, oldV, newV) {
     return '<tr>'
         + '<td class="dlg-cmp-field">' + esc(label) + '</td>'
@@ -50,16 +50,16 @@ function buildDiff() {
 
 editForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (editSaveBtn.disabled) return;   // ไม่มีการแก้ไข — ไม่ทำอะไร
+    if (editSaveBtn.disabled) return;   // ไม่มีการแก้ไข
     buildDiff();
     editConfirmModal.show();
 });
-// ยืนยัน → submit จริง (native submit ไม่วนกลับเข้า interceptor)
+// ยืนยัน → submit จริง
 document.getElementById('editConfirmBtn').addEventListener('click', function () {
     editForm.submit();
 });
 
-// delete voucher modal — เติม action + username จากปุ่มที่กด
+// delete voucher modal — เติม action + username
 document.getElementById('vDeleteModal').addEventListener('show.bs.modal', function (e) {
     const b = e.relatedTarget; if (!b) return;
     document.getElementById('vDeleteForm').action = NP_POOL_DETAIL.voucherBaseUrl + '/' + b.dataset.id + '/delete';

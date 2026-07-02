@@ -1,8 +1,5 @@
 /* ==========================================================================
    NetPass — Error pages (404 / 403 / 400 / 500 / production)
-   ดีไซน์ minimal อิง colorlib-19: ตัวเลข code ใหญ่บางๆ ไล่สี (gradient clipped text)
-   ฟอนต์ Kanit + ลิงก์เส้นประ — โหลดคู่กับ fonts.css เท่านั้น (ไม่พึ่ง bootstrap/style.css)
-   tone เปลี่ยนตาม class ที่ <body>: is-info / is-warning / is-danger
    ========================================================================== */
 
 .np-err-body {
@@ -24,7 +21,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* โทน gradient + icon ตามชนิด error (ปุ่มกลับใช้สีแบรนด์คงที่ --link) */
 .np-err-body.is-info {
   --accent: #3b7ddd;
   --grad: linear-gradient(130deg, #6db3ff, #3b7ddd);
@@ -38,7 +34,6 @@
   --grad: linear-gradient(130deg, #ff8079, #e5484d);
 }
 
-/* คอลัมน์เนื้อหากึ่งกลาง */
 .np-err {
   width: 100%;
   max-width: 767px;
@@ -47,7 +42,6 @@
   animation: np-err-rise 0.5s ease both;
 }
 
-/* icon minimal เส้นบาง */
 .np-err-icon {
   margin: 0 auto 2px;
   color: var(--accent);
@@ -64,7 +58,6 @@
   fill: none;
 }
 
-/* ตัวเลข code — ใหญ่ บาง ไล่สี (หัวใจของสไตล์นี้) */
 .np-err-num {
   margin: 0;
   font-size: clamp(120px, 22vw, 200px);
@@ -77,7 +70,6 @@
   color: transparent;
 }
 
-/* hero แบบไอคอนใหญ่ (production ที่ไม่โชว์เลข code) */
 .np-err-glyph {
   margin: 8px auto 4px;
   width: clamp(120px, 20vw, 168px);
@@ -95,7 +87,6 @@
   fill: none;
 }
 
-/* subtitle — ตัวบาง เว้นวรรคตัวอักษร */
 .np-err-sub {
   margin: 6px 0 0;
   font-size: clamp(20px, 4.5vw, 33px);
@@ -114,7 +105,6 @@
   color: var(--muted);
 }
 
-/* ลิงก์กลับหน้าหลัก — เส้นใต้ประ สีแบรนด์ อยู่บรรทัดของตัวเอง */
 .np-err-link {
   display: inline-block;
   margin-top: 28px;

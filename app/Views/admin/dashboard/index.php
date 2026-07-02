@@ -43,13 +43,13 @@ $stats = [
                     <div class="np-section-title"><?= lang('Dashboard.chartTitle') ?></div>
                     <div class="np-section-sub"><?= lang('Dashboard.chartSub') ?></div>
                 </div>
-                <!-- ป้าย live (จุดเขียวกะพริบ) มุมขวาบนกราฟ ตาม mockup -->
+                <!-- ป้าย live มุมขวาบนกราฟ -->
                 <span class="d-inline-flex align-items-center gap-2 fw-semibold"
                       style="font-size:12px;color:var(--np-ok-fg);background:var(--np-ok-bg);padding:5px 11px;border-radius:20px">
                     <span class="np-livedot"></span><?= lang('Dashboard.chartLive') ?>
                 </span>
             </div>
-            <!-- พื้นที่กราฟ: flex-grow เต็มความสูงการ์ด, แท่งสูงเป็น % (สเกลตามค่าสูงสุด), label แยกแถวด้านล่าง -->
+            <!-- พื้นที่กราฟ -->
             <div class="d-flex flex-column flex-grow-1">
                 <div class="d-flex justify-content-between gap-2 flex-grow-1 position-relative" style="min-height:150px">
                     <span class="np-bar-gl" style="bottom:25%"></span>

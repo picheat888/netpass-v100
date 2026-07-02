@@ -1,4 +1,4 @@
-// อ่านค่าจาก server ผ่าน data island (CSP-safe — ไม่มี inline executable JS)
+// อ่านค่าจาก server ผ่าน data island
 const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textContent);
 
 (function () {
@@ -7,10 +7,10 @@ const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textCon
 
     const copiedText = NP_VOUCHER.i18n.copied;
 
-    // escape อักขระพิเศษตามสเปก Wi-Fi QR (\ ; , : ")
+    // escape อักขระพิเศษตามสเปก Wi-Fi QR
     const wifiEsc = (s) => String(s || '').replace(/([\\;,:"])/g, '\\$1');
 
-    // เติมข้อมูล voucher ลงการ์ดตั๋ว จาก data-attribute ของปุ่มที่กด
+    // เติมข้อมูล voucher ลงการ์ดตั๋ว
     modal.addEventListener('show.bs.modal', function (e) {
         const b = e.relatedTarget;
         if (!b) return;
@@ -32,18 +32,17 @@ const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textCon
         // จุดสีพื้นที่
         document.getElementById('vmDot').style.background = d.color || 'var(--np-blue)';
 
-        // pill สถานะ (เขียว = ใช้งานอยู่, แดง = หมดอายุ)
+        // pill สถานะ
         const ok = d.ok === '1';
         const pill = document.getElementById('vmStatus');
         document.getElementById('vmStatusText').textContent = d.status || '';
         pill.classList.toggle('is-expired', !ok);
-        // ไอคอน: ใช้งานอยู่ = เครื่องหมายถูก, หมดอายุ = นาฬิกา
+        // ไอคอนสถานะ
         pill.querySelector('i').className = ok ? 'bi bi-check-lg' : 'bi bi-clock-history';
 
-        // สร้าง QR แบบ WIFI ให้สแกนเชื่อมต่อได้เลย
+        // สร้าง QR แบบ WIFI
         const box = document.getElementById('vmQr');
         box.innerHTML = '';
-        // SSID เปิด (auth ที่ captive portal) → QR แค่พาเข้า Wi-Fi เปลือยๆ; กรอก voucher ที่พอร์ทัล
         const payload = 'WIFI:T:nopass;S:' + wifiEsc(d.ssid) + ';;';
         const qr = qrcode(0, 'M');
         qr.addData(payload);
@@ -63,7 +62,7 @@ const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textCon
                 t.value = val; document.body.appendChild(t); t.select();
                 document.execCommand('copy'); t.remove();
             }
-            // feedback: เปลี่ยนเป็นเครื่องหมายถูกชั่วครู่
+            // feedback
             const icon = btn.querySelector('i');
             const prev = icon.className;
             icon.className = 'bi bi-check-lg';
@@ -73,7 +72,7 @@ const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textCon
         });
     });
 
-    // ปุ่มพิมพ์ตั๋ว: clone การ์ดตั๋วไปไว้ iframe เอกสารใหม่แล้วสั่งพิมพ์ (เลี่ยงปัญหา print ของ modal)
+    // ปุ่มพิมพ์ตั๋ว
     const printBtn = document.getElementById('vmPrint');
     if (printBtn) {
         const CSS_MAIN  = NP_VOUCHER.assets.cssMain;
@@ -87,7 +86,7 @@ const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textCon
             const frame = document.createElement('iframe');
             frame.setAttribute('aria-hidden', 'true');
             frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
-            // พิมพ์เมื่อ iframe (รวม stylesheet) โหลดเสร็จ แล้วลบทิ้ง
+            // พิมพ์เมื่อ iframe โหลดเสร็จ แล้วลบทิ้ง
             frame.onload = function () {
                 frame.contentWindow.focus();
                 frame.contentWindow.print();
@@ -110,7 +109,7 @@ const NP_VOUCHER = JSON.parse(document.getElementById('np-voucher-data').textCon
         });
     }
 
-    // บันทึกการ์ดตั๋วเป็นรูป PNG จากที่แสดงในกล่องรายละเอียด (ใช้ helper กลาง NetPass.saveCardImage)
+    // บันทึกการ์ดตั๋วเป็นรูป PNG
     const saveImgBtn = document.getElementById('vmSaveImg');
     if (saveImgBtn) {
         saveImgBtn.addEventListener('click', async function () {
@@ -142,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
             url: NP_VOUCHER.urls.data,
             data: function (d) { d.loc = locSel.value; d.status = statSel.value; }
         },
-        order: [[5, 'desc']],   // เรียงตามวันที่ขอ ล่าสุดก่อน (คอลัมน์เลื่อน +1 จาก checkbox)
+        order: [[5, 'desc']],   // เรียงตามวันที่ขอ ล่าสุดก่อน
         columns: [
             { orderable: false, className: 'text-center' }, // checkbox
             { orderable: false },                       // ผู้ขอ
@@ -155,12 +154,12 @@ document.addEventListener('DOMContentLoaded', function () {
             { orderable: false, className: 'text-end' } // ปุ่มดู
         ]
     });
-    // เปิดให้ request modal เรียก reload ตารางได้หลังขอ voucher สำเร็จ
+    // เปิดให้ request modal เรียก reload ตารางได้
     window.voucherDT = dt;
     locSel.addEventListener('change', function () { dt.ajax.reload(); });
     statSel.addEventListener('change', function () { dt.ajax.reload(); });
 
-    // ───────── เลือกหลายใบ (ข้ามหน้า) → พิมพ์ตั๋ว 3 ใบ/แถว ─────────
+    // ───────── เลือกหลายใบ → พิมพ์ตั๋ว ─────────
     const selected    = new Set();
     const selPrintBtn = document.getElementById('vchPrintSel');
     const selCount    = document.getElementById('vchPrintCount');
@@ -196,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectAll.checked = boxes.length > 0 && [...boxes].every((b) => b.checked);
     }
 
-    // ติ๊กในแถว (delegation — รองรับแถวที่ DataTables วาดใหม่)
+    // ติ๊กในแถว
     tableEl.addEventListener('change', function (e) {
         const cb = e.target.closest('input.vch-pick');
         if (!cb) return;
@@ -211,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         refreshSelUI();
     });
-    // วาดแถวใหม่ (เปลี่ยนหน้า/ค้นหา) → ติ๊กกลับให้ตามที่เลือกไว้
+    // วาดแถวใหม่ → ติ๊กกลับให้ตามที่เลือกไว้
     dt.on('draw.dt', function () {
         tableEl.querySelectorAll('tbody input.vch-pick').forEach(function (cb) {
             cb.checked = selected.has(cb.value);
@@ -219,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
         syncSelectAll(); refreshSelUI();
     });
 
-    // สร้าง HTML การ์ดตั๋ว (ดีไซน์ vm-ticket เดิม) จากข้อมูล 1 ใบ
+    // สร้าง HTML การ์ดตั๋ว
     function buildTicket(t) {
         return '<div class="vm-ticket-wrap"><div class="vm-ticket">'
             + '<div class="vm-ticket-main">'
@@ -238,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
             + '</div></div>';
     }
 
-    // พิมพ์ตั๋วหลายใบ: grid 3 ใบ/แถว (ย่อด้วย zoom) ใน iframe
+    // พิมพ์ตั๋วหลายใบ
     function printTickets(tickets) {
         const cards = tickets.map(buildTicket).join('');
         const frame = document.createElement('iframe');
@@ -265,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(frame);
     }
 
-    // กดปุ่มพิมพ์ที่เลือก → ดึงข้อมูลตั๋วตาม id แล้วพิมพ์
+    // กดปุ่มพิมพ์ที่เลือก → ดึงข้อมูลตั๋วแล้วพิมพ์
     selPrintBtn.addEventListener('click', async function () {
         if (selected.size === 0) return;
         selPrintBtn.disabled = true;

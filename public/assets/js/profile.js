@@ -1,5 +1,4 @@
-// โปรไฟล์: ครอป/ซูมรูป avatar, เช็คลิสต์+ความแข็งแรงรหัสผ่าน, toggle ดูรหัส, ล้าง error ตอนพิมพ์
-// ข้อความภาษาอ่านจาก data island #np-profile-data (ตั้งใน view; CSP-safe)
+// โปรไฟล์
 window.addEventListener('load', function () {
     const dataEl = document.getElementById('np-profile-data');
     const L = (dataEl ? JSON.parse(dataEl.textContent).lang : null) || {};
@@ -18,8 +17,8 @@ window.addEventListener('load', function () {
     const zoom    = document.getElementById('avatarZoom');
     const bsModal = new bootstrap.Modal(modalEl);
     let cropper = null, objectUrl = null, prevZoom = 0;
-    let avatarChanged = false;      // เปลี่ยนรูปใหม่หรือยัง (ใช้คุมปุ่ม Save)
-    let syncSave = function () {};  // อัปเดตสถานะปุ่ม Save (กำหนดจริงในบล็อกปุ่ม Save)
+    let avatarChanged = false;      
+    let syncSave = function () {};  
 
     input.addEventListener('change', function () {
         const file = input.files[0];
@@ -38,11 +37,11 @@ window.addEventListener('load', function () {
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         objectUrl = URL.createObjectURL(file);
         cropImg.src = objectUrl;
-        bsView.hide();      // ปิด dialog แสดงรูป
-        bsModal.show();     // เปิดหน้าจอ crop
+        bsView.hide();     
+        bsModal.show();    
     });
 
-    // เริ่ม cropper เมื่อ modal แสดงเต็มที่ (กรอบจัตุรัสกลางภาพ ลากเลื่อน/ซูมรูปได้)
+    // เริ่ม cropper
     modalEl.addEventListener('shown.bs.modal', function () {
         prevZoom = 0; zoom.value = 0;
         cropper = new Cropper(cropImg, {
@@ -52,7 +51,6 @@ window.addEventListener('load', function () {
         });
     });
 
-    // แถบเลื่อน = ซูมแบบสัมพัทธ์ (เลื่อนขวา = ซูมเข้า)
     zoom.addEventListener('input', function () {
         if (!cropper) return;
         const v = parseFloat(zoom.value);
@@ -60,7 +58,6 @@ window.addEventListener('load', function () {
         prevZoom = v;
     });
 
-    // ปิด modal → ล้าง cropper + เก็บกวาด backdrop ที่อาจค้างจากการสลับ 2 modal
     modalEl.addEventListener('hidden.bs.modal', function () {
         if (cropper) { cropper.destroy(); cropper = null; }
         setTimeout(function () {
@@ -73,7 +70,7 @@ window.addEventListener('load', function () {
         }, 250);
     });
 
-    // ใช้รูปนี้ → ครอปเป็น 256×256 แล้วแทนไฟล์ในฟอร์ม + พรีวิวบน avatar
+    // ครอปรูปเป็น 256×256 แล้วแทนไฟล์ในฟอร์ม
     document.getElementById('avatarCropApply').addEventListener('click', function () {
         if (!cropper) return;
         const type = (input.files[0] && input.files[0].type === 'image/png') ? 'image/png' : 'image/jpeg';
@@ -86,15 +83,15 @@ window.addEventListener('load', function () {
                 input.files = dt.files;
             }
             const preview = '<img src="' + canvas.toDataURL(type) + '" alt="">';
-            box.innerHTML = preview;          // อัปเดต avatar บนแถบหัว
-            viewBox.innerHTML = preview;      // อัปเดตรูปใน dialog ด้วย
+            box.innerHTML = preview;         
+            viewBox.innerHTML = preview;    
             bsModal.hide();
-            avatarChanged = true;             // มีการเปลี่ยนรูป → เปิดปุ่ม Save
+            avatarChanged = true;           
             syncSave();
         }, type, 0.9);
     });
 
-    // เช็คลิสต์ + แถบวัดความแข็งแรงรหัสผ่าน — เรียลไทม์ตอนพิมพ์
+    // เช็คลิสต์ + แถบวัดความแข็งแรงรหัสผ่าน
     const newPwd     = document.querySelector('input[name="new_password"]');
     const rulesBox   = document.getElementById('pwdRules');
     const meter      = document.getElementById('pwdMeter');
@@ -107,7 +104,7 @@ window.addEventListener('load', function () {
             number: function (v) { return /[0-9]/.test(v); },
             symbol: function (v) { return /[^A-Za-z0-9]/.test(v); },
         };
-        // ระดับความแข็งแรง: นับเงื่อนไขที่ผ่าน → 0..4 (อ่อน/พอใช้/ดี/แข็งแรง)
+        // ระดับความแข็งแรง
         const STRENGTH = [
             { lvl: 0, label: '' },
             { lvl: 1, label: L.pwdWeak },
@@ -125,7 +122,7 @@ window.addEventListener('load', function () {
                 li.classList.toggle('ok', ok);
                 li.querySelector('i').className = ok ? 'bi bi-check-circle-fill' : 'bi bi-circle';
             });
-            // map จำนวนเงื่อนไขที่ผ่าน → ระดับ (1-2=อ่อน, 3=พอใช้, 4=ดี, 5=แข็งแรง)
+            // map จำนวนเงื่อนไขที่ผ่าน → ระดับ
             let s = 0;
             if (v.length === 0)      { s = 0; }
             else if (passed <= 2)    { s = 1; }
@@ -141,7 +138,7 @@ window.addEventListener('load', function () {
         function show() { rulesBox.classList.add('show'); if (meter) meter.classList.add('show'); }
         function hide() { rulesBox.classList.remove('show'); if (meter) meter.classList.remove('show'); }
 
-        // แสดงเช็คลิสต์/แถบความแข็งแรงเมื่อพิมพ์ไปแล้วอย่างน้อย 1 ตัวอักษร (ไม่ใช่แค่ focus)
+        // แสดงเช็คลิสต์/แถบความแข็งแรงเมื่อพิมพ์
         newPwd.addEventListener('input', function () {
             if (newPwd.value.length >= 1) { show(); } else { hide(); }
             evaluate();
@@ -149,7 +146,7 @@ window.addEventListener('load', function () {
             syncPwdBtn();
         });
 
-        // ── แจ้งเตือนเรียลไทม์: รหัสยืนยันตรง/ไม่ตรง ──
+        // ── แจ้งเตือนรหัสยืนยันตรง/ไม่ตรง
         const confirmPwd = document.querySelector('input[name="confirm_password"]');
         const confirmMsg = document.getElementById('confirmMsg');
         const MATCH_OK  = L.matchOk;
@@ -169,7 +166,7 @@ window.addEventListener('load', function () {
         }
         if (confirmPwd) { confirmPwd.addEventListener('input', function () { checkMatch(); syncPwdBtn(); }); }
 
-        // ── ปุ่ม Change password: เปิดเฉพาะเมื่อกรอกครบ 3 ช่อง + รหัสใหม่ผ่านเกณฑ์ + ยืนยันตรง ──
+        // ปุ่ม Change password
         const curPwd = document.querySelector('input[name="current_password"]');
         const pwdBtn = document.getElementById('pwdSubmitBtn');
         function syncPwdBtn() {
@@ -182,13 +179,13 @@ window.addEventListener('load', function () {
         }
         if (curPwd) { curPwd.addEventListener('input', syncPwdBtn); }
 
-        // ถ้ามีค่าค้างไว้หลัง validation error → แสดงผลทันทีโดยไม่ต้องพิมพ์ใหม่
+        // ถ้ามีค่าค้างไว้หลัง validation error
         if (newPwd.value.length >= 1) { show(); evaluate(); }
         checkMatch();
-        syncPwdBtn();   // เริ่มต้น: ปิดปุ่มจนกว่าจะกรอกครบ
+        syncPwdBtn();   
     }
 
-    // ── ปุ่ม Save (ข้อมูลโปรไฟล์): เปิดเฉพาะเมื่อมีการแก้ค่า หรือเปลี่ยนรูป ──
+    // ปุ่ม Save: เปิดเมื่อมีการแก้ค่า/เปลี่ยนรูป
     const saveBtn = document.getElementById('profSaveBtn');
     if (saveBtn) {
         const watch = ['email', 'firstname', 'lastname']
@@ -200,10 +197,10 @@ window.addEventListener('load', function () {
             saveBtn.disabled = ! changed;
         };
         watch.forEach(function (f) { f.addEventListener('input', syncSave); });
-        syncSave();   // เริ่มต้น: ปิดปุ่มจนกว่าจะมีการแก้
+        syncSave();   
     }
 
-    // ปุ่ม eye เปิด/ปิดดูรหัสผ่าน (ทุกช่องรหัสผ่าน)
+    // ปุ่ม eye เปิด/ปิดดูรหัสผ่าน 
     document.querySelectorAll('.np-pwd-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () {
             const inp = btn.parentElement.querySelector('input');
